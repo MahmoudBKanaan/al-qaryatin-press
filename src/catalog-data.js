@@ -151,7 +151,7 @@ export const products = [
       "Silver or gold foil stamping",
       "Lamination choice: none, gloss or matte"
     ],
-    "image": "./media/product-5.webp",
+    "image": "./media/product-5-v2.webp",
     "options": [
       {
         "id": "inside-printing",
