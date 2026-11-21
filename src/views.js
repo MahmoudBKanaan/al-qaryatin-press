@@ -120,7 +120,7 @@ export function contact(t, lang) {
   const address = [label(business, 'street', lang), label(business, 'district', lang),
     label(business, 'city', lang) + ' ' + business.postcode].join(lang === 'ar' ? '، ' : ', ');
   return `<section class="visit-card">
-    <div class="visit-lead"><p class="eyebrow">${t.area}</p><h2>${t.contactTitle}</h2><p>${t.contactText}</p><a class="button button-outline" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a></div>
+    <div class="visit-lead"><p class="eyebrow">${t.area}</p><h2>${t.contactTitle}</h2><p>${t.contactText}</p><a class="button button-tonal" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a></div>
     <dl class="visit-details m3-list">
       <div class="m3-list-item"><dt>${icon('location', 'm3-list-leading')}${t.address}</dt><dd>${escapeHtml(address)}</dd></div>
       <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.hours}</dt><dd>${label(business, 'hours', lang)}<br>${t.friday}</dd></div>
@@ -133,7 +133,7 @@ export function home(t, lang) {
     <div class="hero-media"><img src="./media/hero.webp" alt="" width="1480" height="987" fetchpriority="high"></div>
     <div class="hero-copy wrap">
       <div>
-        <p class="eyebrow"><span class="brand-line"></span>${t.area}</p>
+        <p class="eyebrow">${t.area}</p>
         <h1 id="page-title" tabindex="-1"><span>${t.heroOne}</span><em>${t.heroTwo}</em></h1>
         <p class="hero-description">${t.heroDescription}</p>
         <div class="hero-actions"><a class="button button-gold" href="#/catalogue">${icon('grid')}${t.explore}</a><a class="button button-light" href="#/calculator">${icon('calculator')}${t.estimate}</a></div>
@@ -147,7 +147,7 @@ export function home(t, lang) {
         `<li class="category-grid-item"><a href="${categoryRoute(category.id)}"><span class="category-icon">${icon(category.id)}</span><span>${escapeHtml(label(category, 'label', lang))}</span>${icon('chevron', 'm3-list-trailing')}</a></li>`).join('')}</ul>
     </section>
     <section aria-labelledby="featured-title" class="featured-section">
-      <div class="section-heading"><div><h2 id="featured-title">${t.featured}</h2></div><a class="button button-outline" href="#/catalogue">${t.viewAll}</a></div>
+      <div class="section-heading"><div><h2 id="featured-title">${t.featured}</h2></div><a class="button button-tonal" href="#/catalogue">${t.viewAll}</a></div>
       ${productGrid(featuredProducts, t, lang)}
     </section>
     ${quoteBand(t)}
@@ -207,7 +207,7 @@ export function productDetail(product, t, lang, related) {
       ${options.length ? `<div class="surface spec-card finishes"><h2>${t.finishes}</h2><ul class="finishes-list m3-list" role="list">${options.map(option =>
         `<li class="m3-list-item"><span>${escapeHtml(label(option, 'label', lang))}</span>${option.dimensions ? `<bdi class="detail-note m3-list-trailing">${escapeHtml(option.dimensions)}</bdi>` : ''}</li>`).join('')}</ul></div>` : ''}
     </section>
-    ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-outline" href="${catalogueBack}">${t.back}</a></div>${productGrid(related, t, lang)}</section>` : ''}
+    ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-tonal" href="${catalogueBack}">${t.back}</a></div>${productGrid(related, t, lang)}</section>` : ''}
   </div>`;
 }
 

@@ -120,3 +120,17 @@ test('card collections and option lists preserve native list and selection seman
     assert.match(about(t, lang), /<li class="m3-list-item"><details><summary>/);
   }
 });
+
+test('the public theme uses fill-only icons, elevation, and reduced-motion states', async () => {
+  const css = await readFile(new URL('styles.css', site), 'utf8');
+  const icons = await readFile(new URL('src/icons.js', site), 'utf8');
+  const defaultTheme = css.split('@media (forced-colors: active)')[0];
+  const borders = defaultTheme.matchAll(/(?:^|[;{])\s*border(?:-(?:width|color|style|top|right|bottom|left|block(?:-start|-end)?|inline(?:-start|-end)?)(?:-(?:width|style|color))?)?\s*:\s*([^;}\n]+)/gm);
+  for (const border of borders) assert.equal(border[1].trim(), '0', border[0]);
+  assert.doesNotMatch(defaultTheme + icons, /stroke(?:-[a-z-]+)?\s*=|button-outline|brand-line/i);
+  assert.match(icons, /fill="currentColor"/);
+  assert.match(defaultTheme, /\.product-card[\s\S]*box-shadow: var\(--elevation-1\)/);
+  assert.match(defaultTheme, /\.page-enter\s*\{\s*animation: page-arrival/);
+  assert.match(defaultTheme, /\.cards-enter\s*>/);
+  assert.match(defaultTheme, /@media \(prefers-reduced-motion: reduce\)\s*\{[\s\S]*animation: none !important/);
+});

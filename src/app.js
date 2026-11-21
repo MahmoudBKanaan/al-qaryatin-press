@@ -16,7 +16,7 @@ try {
   if (localStorage.getItem('qaryatin-language') === 'ar') language = 'ar';
 } catch { /* Local storage may be unavailable. */ }
 
-let currentPage = 'home';
+let currentPage = null;
 let catalogue = { category: 'all', query: '', order: '' };
 let quote = emptyQuote('');
 let noticeTimer;
@@ -51,6 +51,7 @@ function readCatalogue(params) {
 
 function render({ focusPage = false } = {}) {
   const { path, params } = readRoute();
+  const enterPage = currentPage === null || focusPage;
   const t = copy[language];
   document.documentElement.lang = language;
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
@@ -89,7 +90,9 @@ function render({ focusPage = false } = {}) {
   }
 
   document.title = currentPage === 'home' ? label(business, 'name', language) + ' | ' + pageTitle : pageTitle + ' | ' + label(business, 'name', language);
-  app.innerHTML = header(currentPage, t, language) + `<main id="main" tabindex="-1">${content}</main>` + footer(t, language) + briefDialog(t);
+  app.innerHTML = header(currentPage, t, language) +
+    `<main id="main"${enterPage ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
+    footer(t, language) + briefDialog(t);
   if (focusPage) {
     window.scrollTo(0, 0);
     document.querySelector('#page-title')?.focus({ preventScroll: true });
@@ -115,7 +118,7 @@ function catalogueResults(t) {
   return {
     count: number(items.length, language) + count.slice(String(items.length).length),
     html: items.length ? productGrid(items, t, language)
-      : `<section class="empty-state m3-empty-state" aria-labelledby="catalogue-empty-title"><span class="category-icon">${icon('search')}</span><h2 id="catalogue-empty-title">${t.noProducts}</h2><p>${t.noProductsText}</p><button class="button button-outline" type="button" data-action="clear-filters">${t.clearFilters}</button></section>`,
+      : `<section class="empty-state m3-empty-state" aria-labelledby="catalogue-empty-title"><span class="category-icon">${icon('search')}</span><h2 id="catalogue-empty-title">${t.noProducts}</h2><p>${t.noProductsText}</p><button class="button button-tonal" type="button" data-action="clear-filters">${t.clearFilters}</button></section>`,
   };
 }
 
@@ -135,7 +138,7 @@ function cataloguePage(t) {
     </div>`;
 }
 
-function updateCatalogue() {
+function updateCatalogue({ animateCards = false } = {}) {
   const t = copy[language];
   const params = new URLSearchParams();
   if (catalogue.category !== 'all') params.set('category', catalogue.category);
@@ -146,7 +149,9 @@ function updateCatalogue() {
     button.setAttribute('aria-pressed', String(button.dataset.category === catalogue.category)));
   const { count, html } = catalogueResults(t);
   document.querySelector('#result-count').textContent = count;
-  document.querySelector('#catalogue-results').innerHTML = html;
+  const results = document.querySelector('#catalogue-results');
+  results.innerHTML = html;
+  if (animateCards) results.querySelector('.product-grid')?.classList.add('cards-enter');
 }
 
 function updateQuoteRoute() {
@@ -164,7 +169,7 @@ function briefDialog(t) {
   return `<dialog class="brief-dialog" id="brief-dialog" aria-labelledby="brief-title"><div class="dialog-content">
     <div class="dialog-heading"><h2 id="brief-title">${t.brief}</h2><form method="dialog"><button class="icon-button" aria-label="${language === 'ar' ? 'إغلاق' : 'Close'}">${icon('close')}</button></form></div>
     <textarea class="brief-text" id="brief-text" aria-label="${t.brief}" readonly rows="8"></textarea>
-    <div class="dialog-actions"><a class="button button-outline" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a><button type="button" class="button button-primary" data-action="copy">${icon('copy')}${t.prepBrief}</button></div>
+    <div class="dialog-actions"><a class="button button-tonal" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a><button type="button" class="button button-primary" data-action="copy">${icon('copy')}${t.prepBrief}</button></div>
   </div></dialog>`;
 }
 
@@ -205,8 +210,10 @@ app.addEventListener('click', event => {
   const button = event.target.closest('button');
   if (!button) return;
   if (button.dataset.category) {
-    catalogue.category = button.dataset.category;
-    updateCatalogue();
+    if (catalogue.category !== button.dataset.category) {
+      catalogue.category = button.dataset.category;
+      updateCatalogue({ animateCards: true });
+    }
     return;
   }
   switch (button.dataset.action) {
@@ -227,7 +234,7 @@ app.addEventListener('click', event => {
       catalogue.category = 'all';
       catalogue.query = '';
       document.querySelector('#catalogue-search').value = '';
-      updateCatalogue();
+      updateCatalogue({ animateCards: true });
       document.querySelector('#catalogue-search').focus();
       break;
     case 'brief': {
@@ -262,7 +269,7 @@ app.addEventListener('change', event => {
   const field = event.target;
   if (field.id === 'catalogue-order') {
     catalogue.order = field.value;
-    updateCatalogue();
+    updateCatalogue({ animateCards: true });
   }
   if (field.id === 'quote-product') {
     quote = emptyQuote(field.value);
