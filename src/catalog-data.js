@@ -252,7 +252,7 @@ export const products = [
       "Quantity",
       "Lamination choice: none, gloss or matte"
     ],
-    "image": "./media/product-7.webp",
+    "image": "./media/product-7-v2.webp",
     "options": [
       {
         "id": "double-sided-printing",

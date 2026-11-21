@@ -26,7 +26,7 @@ test('the site ships valid scripts, mockups, and both Arabic font subsets', asyn
   assert.equal(new Set(products.map(product => product.id)).size, products.length);
   for (const product of products) {
     assert.equal(product.available, true, product.id);
-    assert.match(product.image, /^\.\/media\/product-\d+\.webp$/);
+    assert.match(product.image, /^\.\/media\/product-\d+(?:-v\d+)?\.webp$/);
     await access(new URL(product.image, site));
     for (const option of product.options) {
       if (option.productId) assert.ok(getProduct(option.productId)?.available, option.productId);
