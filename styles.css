@@ -1,4 +1,20 @@
 @font-face {
+  font-family: "GE SS Two";
+  font-style: normal;
+  font-weight: 500;
+  src: local("GESSTwoMedium-Medium"), local("GE SS Two Medium");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFC;
+}
+
+@font-face {
+  font-family: "GE SS Two";
+  font-style: normal;
+  font-weight: 700;
+  src: local("GESSTwoBold-Bold"), local("GE SS Two Bold");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFC;
+}
+
+@font-face {
   font-family: "Alexandria";
   font-style: normal;
   font-weight: 100 900;
@@ -62,6 +78,7 @@
   --arabic: "Alexandria", Tahoma, sans-serif;
   --sans: "DM Sans", "Alexandria", system-ui, sans-serif;
   --serif: "Instrument Serif", Georgia, serif;
+  --label-weight: 600;
   font-family: var(--sans);
   color: var(--on-surface);
   background: var(--surface);
@@ -70,16 +87,22 @@
 }
 
 :root[dir="rtl"] { --sans: var(--arabic); --serif: var(--arabic); }
+:root[lang="ar"] {
+  --arabic: "GE SS Two", "Alexandria", Tahoma, sans-serif;
+  --label-weight: 500;
+  font-weight: 500;
+}
 *, *::before, *::after { box-sizing: border-box; border: 0; }
 body { margin: 0; min-width: 290px; }
 body, button, input, select, textarea { font-family: var(--sans); }
+:where(:root[lang="ar"]) :is(button, input, select, textarea) { font-weight: 500; }
 #app { min-height: 100vh; display: flex; flex-direction: column; }
 main { flex: 1; }
 img { display: block; max-width: 100%; }
 h1, h2, h3, p, figure, dl, dd { margin: 0; }
 p { line-height: 1.65; }
 h1, h2 { font-family: var(--serif); font-weight: 400; line-height: 1.02; }
-[dir="rtl"] h1, [dir="rtl"] h2 { font-weight: 680; line-height: 1.32; }
+[dir="rtl"] h1, [dir="rtl"] h2 { font-weight: 700; line-height: 1.32; }
 h1 { font-size: clamp(3rem, 6vw, 5.8rem); letter-spacing: -.025em; }
 h2 { font-size: clamp(2.25rem, 4.3vw, 3.875rem); letter-spacing: -.025em; }
 [dir="rtl"] h1, [dir="rtl"] h2 { letter-spacing: 0; }
@@ -147,6 +170,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: #59708d; }
 .brand img { width: 43px; height: 43px; object-fit: contain; }
 .brand span { display: grid; gap: .17rem; }
 .brand strong { font: 750 1.26rem/1.18 var(--arabic); text-align: start; color: #0d2849; }
+:root[lang="ar"] .brand strong { font-weight: 700; }
 .brand small { font: 700 .59rem/1.2 "DM Sans", var(--sans); letter-spacing: .17em; color: #1e3d62; }
 .brand-light strong, .brand-light small { color: #fff; }
 .navigation-list { display: flex; gap: .2rem; align-items: center; justify-content: center; }
@@ -157,7 +181,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: #59708d; }
   padding-inline: .95rem;
   border-radius: 100px;
   font-size: .875rem;
-  font-weight: 600;
+  font-weight: var(--label-weight);
   color: #37465b;
   white-space: nowrap;
   transition: background-color .18s ease;
@@ -237,7 +261,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: #59708d; }
 .product-link:hover .card-info { background: var(--list-tonal); }
 .product-link:active .card-info { background: var(--primary-container); }
 .product-link:hover .card-more { background: var(--list-warm); color: var(--on-gold); }
-.card-category { font-size: .81rem; color: #57677a; font-weight: 600; }
+.card-category { font-size: .81rem; color: #57677a; font-weight: var(--label-weight); }
 .card-info h3 { font-size: clamp(1.04rem, 1.65vw, 1.22rem); font-weight: 700; }
 .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; padding-top: .45rem; }
 .card-pricing { display: grid; gap: .12rem; min-width: 0; }
@@ -343,7 +367,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: #59708d; }
   border-radius: 9px;
 
   color: #263b57;
-  font-weight: 600;
+  font-weight: var(--label-weight);
   font-size: .84rem;
   background: var(--list-surface);
   box-shadow: var(--elevation-1);
@@ -368,7 +392,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: #59708d; }
 
 .product-page { padding-block: 1.2rem 4.9rem; }
 .breadcrumb { margin-block-end: .8rem; }
-.breadcrumb-list { display: flex; align-items: center; gap: .16rem .35rem; flex-wrap: wrap; min-height: 50px; font-size: .875rem; font-weight: 600; color: var(--on-surface-variant); }
+.breadcrumb-list { display: flex; align-items: center; gap: .16rem .35rem; flex-wrap: wrap; min-height: 50px; font-size: .875rem; font-weight: var(--label-weight); color: var(--on-surface-variant); }
 .breadcrumb-list li { display: flex; align-items: center; gap: .34rem; min-inline-size: 0; }
 .breadcrumb a { display: flex; align-items: center; min-height: 44px; padding-inline: .42rem; border-radius: 8px; }
 .breadcrumb a:hover { background: var(--list-hover); color: var(--primary); }
@@ -424,7 +448,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: #59708d; }
 .requirements-list > .m3-list-item::before { content: ''; flex: 0 0 .42rem; height: .42rem; border-radius: 50%; background: #997129; }
 .finishes { grid-column: 1 / -1; }
 .finishes-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
-.finishes-list > .m3-list-item { display: flex; align-items: center; gap: .65rem; min-height: 52px; border-radius: 12px; padding: .55rem .75rem; background: var(--list-tonal); color: var(--primary); font-size: .9rem; font-weight: 600; }
+.finishes-list > .m3-list-item { display: flex; align-items: center; gap: .65rem; min-height: 52px; border-radius: 12px; padding: .55rem .75rem; background: var(--list-tonal); color: var(--primary); font-size: .9rem; font-weight: var(--label-weight); }
 .finishes-list > .m3-list-item::before { content: ''; flex: 0 0 .47rem; height: .47rem; border-radius: 50%; background: #997129; }
 .finishes-list .m3-list-trailing { margin-inline-start: auto; color: var(--on-surface-variant); text-align: end; }
 .detail-note { font-size: .875rem; }
