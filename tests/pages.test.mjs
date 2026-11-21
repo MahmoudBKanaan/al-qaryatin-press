@@ -5,7 +5,9 @@ import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { getProduct, products } from '../dist/src/catalog.js';
 import { calculateQuote, getPricePresets, getPriceRange } from '../dist/src/quote.js';
-import { productRoute, quoteRoute } from '../dist/src/views.js';
+import { about, categoryChip, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
+import { calculatorPage } from '../dist/src/calculator-view.js';
+import { copy } from '../dist/src/copy.js';
 
 const site = new URL('../dist/', import.meta.url);
 
@@ -87,4 +89,34 @@ test('the calculator rounds the order total and keeps custom quotes separate', (
   assert.equal(paperBoxes.subtotal, 2500);
   assert.equal(customBoxes.status, 'review');
   assert.equal(customBoxes.subtotal, null);
+});
+
+test('card collections and option lists preserve native list and selection semantics', () => {
+  const product = getProduct('paper-boxes');
+  const state = { productId: product.id, preset: 0, quantity: product.minimum, options: [], extraEnabled: true, extra: '' };
+  for (const lang of ['en', 'ar']) {
+    const t = copy[lang];
+    const templates = [
+      home(t, lang),
+      header('calculator', t, lang),
+      productDetail(product, t, lang, []),
+      calculatorPage(state, t, lang),
+      about(t, lang),
+      footer(t, lang),
+    ];
+    for (const template of templates) {
+      const lists = template.match(/<(?:ul|ol)(?:\s[^>]*)?>/g) ?? [];
+      assert.ok(lists.length, lang);
+      for (const list of lists) {
+        assert.match(list, /role="list"/, list);
+        assert.match(list, /m3-(?:card-list|list)/, list);
+      }
+    }
+    assert.match(productGrid(products, t, lang), /<ul class="product-grid m3-card-list" role="list">/);
+    assert.match(categoryChip('all', t.all, 'all'), /aria-pressed="true".*class="icon chip-check"/);
+    const calculator = calculatorPage(state, t, lang);
+    assert.equal((calculator.match(/type="radio" name="preset"/g) ?? []).length, 3);
+    assert.match(calculator, /<select id="quote-product"/);
+    assert.match(about(t, lang), /<li class="m3-list-item"><details><summary>/);
+  }
 });

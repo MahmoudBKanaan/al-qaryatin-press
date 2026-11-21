@@ -1,5 +1,6 @@
 export const copy = {
   en: {
+    primaryNav: 'Main navigation', footerNav: 'Footer navigation', breadcrumbs: 'Breadcrumbs',
     skip: 'Skip to content', home: 'Home', catalog: 'Catalogue', calculator: 'Price calculator', about: 'About', visit: 'Visit the press', directions: 'Get directions', lang: 'العربية', switchLanguage: 'Switch to Arabic',
     area: 'Hafr Al Batin, Saudi Arabia', heroOne: 'Print made to', heroTwo: 'stand out.', heroDescription: 'Commercial print, custom packaging and signage from Al Qaryatin Press. Serving Hafr Al Batin since 2005.', explore: 'Explore catalogue', estimate: 'Calculate a price', browseTitle: 'Find what you need', featured: 'Featured products', featuredText: 'Explore some of our most requested print formats.', viewAll: 'View all products',
     contactTitle: 'Visit our print shop', contactText: 'Bring your artwork, measurements or samples. We can help you choose the right materials and finish for your project.', address: 'Address', hours: 'Opening hours', friday: 'Closed Friday', brandPromise: 'Commercial print, packaging and signage in Hafr Al Batin, Saudi Arabia.',
@@ -20,6 +21,7 @@ export const copy = {
     ], notFound: 'Product not found', notFoundText: 'This product may be unavailable. Browse the catalogue to see the current range.', copyright: 'Al Qaryatin Press',
   },
   ar: {
+    primaryNav: 'القائمة الرئيسية', footerNav: 'روابط التذييل', breadcrumbs: 'مسار التنقل',
     skip: 'انتقل إلى المحتوى', home: 'الرئيسية', catalog: 'الكتالوج', calculator: 'حاسبة الأسعار', about: 'عن المطابع', visit: 'زيارة المطابع', directions: 'احصل على الاتجاهات', lang: 'English', switchLanguage: 'التبديل إلى الإنجليزية',
     area: 'حفر الباطن، المملكة العربية السعودية', heroOne: 'مطبوعات', heroTwo: 'تلفت الأنظار.', heroDescription: 'مطابع القريتين للمطبوعات التجارية والتغليف المخصص واللوحات. نخدم حفر الباطن منذ عام ٢٠٠٥.', explore: 'تصفح الكتالوج', estimate: 'احسب السعر', browseTitle: 'اعثر على ما تحتاجه', featured: 'منتجات مختارة', featuredText: 'تعرّف على مجموعة من منتجات الطباعة والتغليف.', viewAll: 'عرض جميع المنتجات',
     contactTitle: 'تفضل بزيارة المطابع', contactText: 'أحضر تصميمك أو مقاساتك أو عيناتك. نساعدك في اختيار الخامة والتشطيب المناسبين لمشروعك.', address: 'العنوان', hours: 'ساعات العمل', friday: 'الجمعة مغلق', brandPromise: 'المطبوعات التجارية والتغليف واللوحات في حفر الباطن، المملكة العربية السعودية.',

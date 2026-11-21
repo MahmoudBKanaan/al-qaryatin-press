@@ -48,17 +48,17 @@ function orderFields(product, state, t, lang) {
   return `<fieldset class="preset-field" aria-describedby="preset-note">
       <legend>${t.preset}</legend>
       <p class="preset-note" id="preset-note">${t.presetHint}</p>
-      <div class="preset-options">${presets.map((preset, index) => `<label class="preset-choice">
+      <ul class="preset-options m3-list" role="list">${presets.map((preset, index) => `<li class="m3-list-item"><label class="preset-choice">
         <input type="radio" name="preset" value="${index}" ${state.preset === index ? 'checked' : ''}>
         <span class="preset-description"><strong>${presetLabels[index]}</strong><small>${escapeHtml(label(preset, 'size', lang))}</small></span>
         <span class="preset-quantity"><bdi>${number(preset.quantity, lang)}</bdi> ${quantityUnit(preset.quantity, t, lang)}</span>
-      </label>`).join('')}</div>
+      </label></li>`).join('')}</ul>
     </fieldset>
     <label class="field"><span>${t.quantity}</span><input id="quote-quantity" name="quantity" inputmode="numeric" value="${escapeHtml(state.quantity)}" aria-describedby="qty-note"><small id="qty-note">${t.range} <bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}. ${t.qtyHint}</small></label>
     ${options.length ? `<fieldset class="field-block"><legend>${t.finishes}</legend>
-      ${[...optionGroups].map(([group, items]) => `<label class="field"><span>${groupLabel(group)}</span><select name="group-${group}"><option value="">${t.noOptions}</option>
-        ${items.map(option => `<option value="${option.id}" ${isSelected(option) ? 'selected' : ''}>${optionText(option)}</option>`).join('')}</select></label>`).join('')}
-      ${standalone.map(option => `<label class="check-row"><input type="checkbox" name="option" value="${option.id}" ${isSelected(option) ? 'checked' : ''}><span>${optionText(option)}</span></label>`).join('')}
+      ${optionGroups.size ? `<ul class="m3-list option-groups" role="list">${[...optionGroups].map(([group, items]) => `<li class="m3-list-item"><label class="field"><span>${groupLabel(group)}</span><select name="group-${group}"><option value="">${t.noOptions}</option>
+        ${items.map(option => `<option value="${option.id}" ${isSelected(option) ? 'selected' : ''}>${optionText(option)}</option>`).join('')}</select></label></li>`).join('')}</ul>` : ''}
+      ${standalone.length ? `<ul class="m3-list finish-options" role="list">${standalone.map(option => `<li class="m3-list-item"><label class="check-row"><input type="checkbox" name="option" value="${option.id}" ${isSelected(option) ? 'checked' : ''}><span>${optionText(option)}</span></label></li>`).join('')}</ul>` : ''}
     </fieldset>` : ''}
     <label class="check-row extra-choice"><input type="checkbox" name="extra-enabled" ${state.extraEnabled ? 'checked' : ''}><span>${t.reviewExtra}</span></label>
     <label class="field extra-field" ${state.extraEnabled ? '' : 'hidden'}><span>${t.extra}</span><textarea name="extra" rows="3" maxlength="1200" placeholder="${t.extraPlaceholder}">${escapeHtml(state.extra)}</textarea></label>`;
@@ -66,7 +66,7 @@ function orderFields(product, state, t, lang) {
 
 export function quoteSummary(product, state, t, lang) {
   if (!product) {
-    return `<section class="surface estimate-card"><p class="eyebrow">${t.summary}</p><div class="estimate-empty"><span class="category-icon">${icon('receipt')}</span><h2>${t.pending}</h2><p>${t.pendingText}</p></div></section>`;
+    return `<section class="surface estimate-card" aria-labelledby="estimate-empty-title"><p class="eyebrow">${t.summary}</p><div class="estimate-empty m3-empty-state"><span class="category-icon">${icon('receipt')}</span><h2 id="estimate-empty-title">${t.pending}</h2><p>${t.pendingText}</p></div></section>`;
   }
   const result = calculateQuote(product, { ...state, customRequirements: state.extraEnabled });
   const title = { estimate: t.ready, review: t.review, invalid: t.invalid, unavailable: t.unavailable }[result.status];
@@ -79,15 +79,15 @@ export function quoteSummary(product, state, t, lang) {
     <p class="eyebrow">${t.summary}</p>
     <div class="estimate-product"><img src="${product.image}" alt="" width="92" height="70"><div><a href="${productRoute(product.id)}">${escapeHtml(label(product, 'name', lang))}</a><small><bdi>${product.code}</bdi></small></div></div>
     <div class="estimate-live">
-      <dl class="estimate-lines">
-        ${result.preset ? `<div><dt>${t.preset}</dt><dd>${escapeHtml(label(result.preset, 'size', lang))}</dd></div>` : ''}
-        ${result.quantity !== null ? `<div><dt>${t.quantity}</dt><dd>${number(result.quantity, lang)}</dd></div>` : ''}
-        ${knownBase ? `<div><dt>${t.baseSubtotal}</dt><dd><bdi>${money(result.baseSubtotal, lang)}</bdi></dd></div>` : ''}
+      <dl class="estimate-lines m3-list">
+        ${result.preset ? `<div class="m3-list-item"><dt>${t.preset}</dt><dd>${escapeHtml(label(result.preset, 'size', lang))}</dd></div>` : ''}
+        ${result.quantity !== null ? `<div class="m3-list-item"><dt>${t.quantity}</dt><dd>${number(result.quantity, lang)}</dd></div>` : ''}
+        ${knownBase ? `<div class="m3-list-item"><dt>${t.baseSubtotal}</dt><dd><bdi>${money(result.baseSubtotal, lang)}</bdi></dd></div>` : ''}
       </dl>
-      <div class="estimate-result ${hasSubtotal ? 'has-subtotal' : ''}"><h2>${hasSubtotal ? '' : icon('info')}${title}</h2>
+      <section class="estimate-result ${hasSubtotal ? 'has-subtotal' : ''}" aria-labelledby="estimate-result-title"><h2 id="estimate-result-title">${hasSubtotal ? '' : icon('info')}${title}</h2>
         ${hasSubtotal ? `<p class="result-price"><bdi>${money(result.subtotal, lang)}</bdi></p>` : ''}
-        ${issues.length ? `<ul>${issues.map(issue => `<li>${escapeHtml(issue)}</li>`).join('')}</ul>` : ''}
-      </div>
+        ${issues.length ? `<ul class="m3-list estimate-issues" role="list">${issues.map(issue => `<li class="m3-list-item">${escapeHtml(issue)}</li>`).join('')}</ul>` : ''}
+      </section>
     </div>
     <p class="estimate-note">${t.estimateNote}</p>
     ${canCopy ? `<button type="button" class="button button-primary copy-brief" data-action="brief">${icon('file')}${t.showBrief}</button>` : ''}

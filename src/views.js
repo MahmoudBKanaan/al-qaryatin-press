@@ -47,9 +47,11 @@ export function header(page, t, lang) {
   return `<header class="site-header">
     <div class="wrap header-inner">
       ${brand(lang)}
-      <nav id="main-navigation" class="navigation" aria-label="${t.catalog}">
-        ${[['home', '', t.home], ['catalogue', 'catalogue', t.catalog], ['calculator', 'calculator', t.calculator], ['about', 'about', t.about]].map(([id, url, text]) =>
-          `<a href="#/${url}" ${(page === id || page === 'product' && id === 'catalogue') ? 'aria-current="page"' : ''}>${text}</a>`).join('')}
+      <nav id="main-navigation" class="navigation" aria-label="${t.primaryNav}">
+        <ul class="navigation-list m3-card-list" role="list">
+          ${[['home', '', t.home], ['catalogue', 'catalogue', t.catalog], ['calculator', 'calculator', t.calculator], ['about', 'about', t.about]].map(([id, url, text]) =>
+            `<li><a href="#/${url}"${page === id || (page === 'product' && id === 'catalogue') ? ' aria-current="page"' : ''}>${text}</a></li>`).join('')}
+        </ul>
       </nav>
       <div class="header-actions">
         <button class="button button-text language" type="button" data-action="language" aria-label="${t.switchLanguage}">${icon('language')}${t.lang}</button>
@@ -64,7 +66,13 @@ export function footer(t, lang) {
   return `<footer class="site-footer">
     <div class="wrap footer-inner">
       <div class="footer-brand">${brand(lang, true)}<p>${t.brandPromise}</p></div>
-      <nav class="footer-nav" aria-label="${t.catalog}"><a href="#/catalogue">${t.catalog}</a><a href="#/calculator">${t.calculator}</a><a href="#/about">${t.about}</a></nav>
+      <nav class="footer-nav" aria-label="${t.footerNav}">
+        <ul class="footer-nav-list m3-card-list" role="list">
+          <li><a href="#/catalogue">${t.catalog}</a></li>
+          <li><a href="#/calculator">${t.calculator}</a></li>
+          <li><a href="#/about">${t.about}</a></li>
+        </ul>
+      </nav>
       <a class="footer-visit" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a>
     </div>
     <div class="wrap footer-bottom"><span>&copy; ${number(new Date().getFullYear(), lang)} ${t.copyright}</span><bdi>@${business.username}</bdi></div>
@@ -87,8 +95,13 @@ export function productCard(product, t, lang) {
   </article>`;
 }
 
+export function productGrid(items, t, lang) {
+  return `<ul class="product-grid m3-card-list" role="list">${items.map(product =>
+    `<li class="product-grid-item">${productCard(product, t, lang)}</li>`).join('')}</ul>`;
+}
+
 export function categoryChip(id, title, current) {
-  return `<button type="button" class="filter-chip" data-category="${id}" aria-pressed="${id === current}">${icon(id === 'all' ? 'grid' : id)}${escapeHtml(title)}</button>`;
+  return `<button type="button" class="filter-chip" data-category="${id}" aria-pressed="${id === current}">${icon(id === 'all' ? 'grid' : id, 'chip-leading')}${icon('check', 'chip-check')}${escapeHtml(title)}</button>`;
 }
 
 export function pageHeading(title, text, eyebrow = '') {
@@ -108,9 +121,9 @@ export function contact(t, lang) {
     label(business, 'city', lang) + ' ' + business.postcode].join(lang === 'ar' ? '، ' : ', ');
   return `<section class="visit-card">
     <div class="visit-lead"><p class="eyebrow">${t.area}</p><h2>${t.contactTitle}</h2><p>${t.contactText}</p><a class="button button-outline" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a></div>
-    <dl class="visit-details">
-      <div>${icon('location')}<div><dt>${t.address}</dt><dd>${escapeHtml(address)}</dd></div></div>
-      <div>${icon('clock')}<div><dt>${t.hours}</dt><dd>${label(business, 'hours', lang)}<br>${t.friday}</dd></div></div>
+    <dl class="visit-details m3-list">
+      <div class="m3-list-item"><dt>${icon('location', 'm3-list-leading')}${t.address}</dt><dd>${escapeHtml(address)}</dd></div>
+      <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.hours}</dt><dd>${label(business, 'hours', lang)}<br>${t.friday}</dd></div>
     </dl>
   </section>`;
 }
@@ -130,12 +143,12 @@ export function home(t, lang) {
   <div class="wrap home-content">
     <section class="category-section" aria-labelledby="category-title">
       <h2 id="category-title" class="sr-only">${t.browseTitle}</h2>
-      <div class="category-links">${categories.map(category =>
-        `<a href="${categoryRoute(category.id)}"><span class="category-icon">${icon(category.id)}</span><span>${escapeHtml(label(category, 'label', lang))}</span></a>`).join('')}</div>
+      <ul class="category-links m3-card-list" role="list">${categories.map(category =>
+        `<li class="category-grid-item"><a href="${categoryRoute(category.id)}"><span class="category-icon">${icon(category.id)}</span><span>${escapeHtml(label(category, 'label', lang))}</span>${icon('chevron', 'm3-list-trailing')}</a></li>`).join('')}</ul>
     </section>
     <section aria-labelledby="featured-title" class="featured-section">
       <div class="section-heading"><div><h2 id="featured-title">${t.featured}</h2></div><a class="button button-outline" href="#/catalogue">${t.viewAll}</a></div>
-      <div class="product-grid">${featuredProducts.map(product => productCard(product, t, lang)).join('')}</div>
+      ${productGrid(featuredProducts, t, lang)}
     </section>
     ${quoteBand(t)}
     ${contact(t, lang)}
@@ -151,7 +164,13 @@ export function productDetail(product, t, lang, related) {
   const catalogueBack = categoryRoute(product.category);
   const specLang = lang === 'ar' ? ' lang="en" dir="ltr"' : '';
   return `<div class="wrap product-page">
-    <nav class="breadcrumb" aria-label="${t.catalog}"><a href="${route('catalogue')}">${t.catalog}</a>${icon('chevron')}<a href="${catalogueBack}">${escapeHtml(label(category, 'label', lang))}</a>${icon('chevron')}<bdi>${product.code}</bdi></nav>
+    <nav class="breadcrumb" aria-label="${t.breadcrumbs}">
+      <ol class="breadcrumb-list m3-card-list" role="list">
+        <li><a href="${route('catalogue')}">${t.catalog}</a></li>
+        <li>${icon('chevron')}<a href="${catalogueBack}">${escapeHtml(label(category, 'label', lang))}</a></li>
+        <li>${icon('chevron')}<bdi aria-current="page">${product.code}</bdi></li>
+      </ol>
+    </nav>
     <div class="product-hero">
       <figure class="product-figure"><img src="${product.image}" alt="${name}" width="960" height="720"><figcaption>${t.referenceImage}</figcaption></figure>
       <section class="product-overview">
@@ -163,28 +182,32 @@ export function productDetail(product, t, lang, related) {
           <p class="price-caption">${t.priceRange}</p>
           <bdi class="product-price">${priceRange(range, lang)}</bdi>
           <p class="range-note">${t.rangeNote}</p>
-          <dl class="order-examples">${[[t.smallOrder, range.small], [t.largeOrder, range.large]].map(([name, order]) =>
-            `<div><dt>${name}</dt><dd>${escapeHtml(label(order, 'size', lang))}<small>${number(order.quantity, lang)} ${quantityUnit(order.quantity, t, lang)}</small></dd></div>`).join('')}</dl>
+          <dl class="order-examples m3-list">${[[t.smallOrder, range.small], [t.largeOrder, range.large]].map(([name, order]) =>
+            `<div class="m3-list-item"><dt>${name}</dt><dd>${escapeHtml(label(order, 'size', lang))}<small>${number(order.quantity, lang)} ${quantityUnit(order.quantity, t, lang)}</small></dd></div>`).join('')}</dl>
         </div>
-        <dl class="product-stats">
-          <div>${icon('layers')}<div><dt>${t.min}</dt><dd>${number(product.minimum, lang)} ${quantityUnit(product.minimum, t, lang)}</dd></div></div>
-          <div>${icon('clock')}<div><dt>${t.lead}</dt><dd>${escapeHtml(label(product, 'turnaround', lang).replace(/^(Approximately |حوالي )/, ''))}</dd></div></div>
+        <dl class="product-stats m3-list">
+          <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.min}</dt><dd>${number(product.minimum, lang)} ${quantityUnit(product.minimum, t, lang)}</dd></div>
+          <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.lead}</dt><dd>${escapeHtml(label(product, 'turnaround', lang).replace(/^(Approximately |حوالي )/, ''))}</dd></div>
         </dl>
         <a class="button button-primary product-calculate" href="${quoteRoute(product.id)}">${icon('calculator')}${t.estimate}</a>
       </section>
     </div>
     <section class="spec-section">
       <div class="surface spec-card"><h2>${t.details}</h2>${t.specificationsLanguage ? `<p class="detail-note">${t.specificationsLanguage}</p>` : ''}
-        <dl><dt>${t.material}</dt><dd${specLang}>${escapeHtml(product.material)}</dd><dt>${t.specification}</dt><dd${specLang}>${escapeHtml(product.specifications)}</dd>
-        <dt>${t.range}</dt><dd><bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}</dd></dl>
+        <dl class="specification-list m3-list">
+          <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.material}</dt><dd${specLang}>${escapeHtml(product.material)}</dd></div>
+          <div class="m3-list-item"><dt>${icon('print', 'm3-list-leading')}${t.specification}</dt><dd${specLang}>${escapeHtml(product.specifications)}</dd></div>
+          <div class="m3-list-item"><dt>${icon('packaging', 'm3-list-leading')}${t.range}</dt><dd><bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}</dd></div>
+        </dl>
       </div>
       <div class="surface spec-card"><h2>${t.prepare}</h2><p>${t.prepareText}</p>
-        <ul${specLang}>${[product.requirements, ...product.intake].filter(Boolean).map(text => `<li>${escapeHtml(text)}</li>`).join('')}</ul>
+        <ul class="requirements-list m3-list" role="list"${specLang}>${[product.requirements, ...product.intake].filter(Boolean).map(text =>
+          `<li class="m3-list-item">${escapeHtml(text)}</li>`).join('')}</ul>
       </div>
-      ${options.length ? `<div class="surface spec-card finishes"><h2>${t.finishes}</h2><ul>${options.map(option =>
-        `<li><span>${escapeHtml(label(option, 'label', lang))}${option.dimensions ? ` <bdi class="detail-note">(${escapeHtml(option.dimensions)})</bdi>` : ''}</span></li>`).join('')}</ul></div>` : ''}
+      ${options.length ? `<div class="surface spec-card finishes"><h2>${t.finishes}</h2><ul class="finishes-list m3-list" role="list">${options.map(option =>
+        `<li class="m3-list-item"><span>${escapeHtml(label(option, 'label', lang))}</span>${option.dimensions ? `<bdi class="detail-note m3-list-trailing">${escapeHtml(option.dimensions)}</bdi>` : ''}</li>`).join('')}</ul></div>` : ''}
     </section>
-    ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-outline" href="${catalogueBack}">${t.back}</a></div><div class="product-grid">${related.map(item => productCard(item, t, lang)).join('')}</div></section>` : ''}
+    ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-outline" href="${catalogueBack}">${t.back}</a></div>${productGrid(related, t, lang)}</section>` : ''}
   </div>`;
 }
 
@@ -192,10 +215,13 @@ export function about(t, lang) {
   return `${pageHeading(t.aboutTitle, t.aboutText, t.area)}
     <div class="wrap about-content">
       <section><div class="section-heading"><div><h2>${t.orderTitle}</h2><p>${t.orderIntro}</p></div></div>
-        <div class="steps-grid">${t.orderSteps.map(([symbol, title, description]) =>
-          `<article class="surface order-step"><span class="category-icon">${icon(symbol)}</span><h3>${title}</h3><p>${description}</p></article>`).join('')}</div>
+        <ol class="steps-grid m3-card-list" role="list">${t.orderSteps.map(([symbol, title, description]) =>
+          `<li class="surface order-step"><span class="category-icon">${icon(symbol)}</span><h3>${title}</h3><p>${description}</p></li>`).join('')}</ol>
       </section>
-      <section class="faq-section"><h2>${t.faq}</h2><div class="faq-list">${t.faqs.map(([question, answer]) => `<details><summary>${question}${icon('chevron')}</summary><p>${answer}</p></details>`).join('')}</div></section>
+      <section class="faq-section"><h2>${t.faq}</h2>
+        <ul class="faq-list m3-list" role="list">${t.faqs.map(([question, answer]) =>
+          `<li class="m3-list-item"><details><summary><span>${question}</span>${icon('chevron', 'm3-list-trailing')}</summary><p>${answer}</p></details></li>`).join('')}</ul>
+      </section>
       ${contact(t, lang)}
     </div>`;
 }

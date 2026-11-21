@@ -5,7 +5,7 @@ import { icon } from './icons.js';
 import { getPricePresets } from './quote.js';
 import {
   about, categoryChip, escapeHtml, footer, header, home, label, localeId, number,
-  pageHeading, productCard, productDetail, route,
+  pageHeading, productDetail, productGrid, route,
 } from './views.js';
 
 const app = document.querySelector('#app');
@@ -114,9 +114,8 @@ function catalogueResults(t) {
   const count = items.length + ' ' + (items.length === 1 && language === 'en' ? 'product' : t.found);
   return {
     count: number(items.length, language) + count.slice(String(items.length).length),
-    html: items.length ? `<div class="product-grid">${items.map(item =>
-      productCard(item, t, language)).join('')}</div>`
-      : `<div class="empty-state"><span class="category-icon">${icon('search')}</span><h2>${t.noProducts}</h2><p>${t.noProductsText}</p><button class="button button-outline" type="button" data-action="clear-filters">${t.clearFilters}</button></div>`,
+    html: items.length ? productGrid(items, t, language)
+      : `<section class="empty-state m3-empty-state" aria-labelledby="catalogue-empty-title"><span class="category-icon">${icon('search')}</span><h2 id="catalogue-empty-title">${t.noProducts}</h2><p>${t.noProductsText}</p><button class="button button-outline" type="button" data-action="clear-filters">${t.clearFilters}</button></section>`,
   };
 }
 
@@ -127,10 +126,10 @@ function cataloguePage(t) {
       <div class="catalogue-toolbar">
         <label class="search-field"><span class="sr-only">${t.search}</span>${icon('search')}<input id="catalogue-search" type="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off"></label>
       </div>
-      <div class="filters" role="group" aria-label="${t.category}">
-        ${categoryChip('all', t.all, catalogue.category)}
-        ${categories.map(category => categoryChip(category.id, label(category, 'label', language), catalogue.category)).join('')}
-      </div>
+      <ul class="filters m3-chip-set" role="list" aria-label="${t.category}">
+        <li>${categoryChip('all', t.all, catalogue.category)}</li>
+        ${categories.map(category => `<li>${categoryChip(category.id, label(category, 'label', language), catalogue.category)}</li>`).join('')}
+      </ul>
       <div class="catalogue-meta"><p id="result-count" role="status">${list.count}</p><label><span>${t.sort}</span><select id="catalogue-order"><option value="">${t.catalogOrder}</option><option value="name" ${catalogue.order === 'name' ? 'selected' : ''}>${t.nameOrder}</option></select></label></div>
       <div id="catalogue-results">${list.html}</div>
     </div>`;
@@ -191,6 +190,18 @@ async function copyBrief() {
 }
 
 app.addEventListener('click', event => {
+  const navigationLink = event.target.closest('.navigation a');
+  if (navigationLink?.hash === location.hash && !event.defaultPrevented &&
+      !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+    const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
+    if (expanded) {
+      event.preventDefault();
+      expanded.click();
+      expanded.focus({ preventScroll: true });
+      return;
+    }
+  }
+
   const button = event.target.closest('button');
   if (!button) return;
   if (button.dataset.category) {
