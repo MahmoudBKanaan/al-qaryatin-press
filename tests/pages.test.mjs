@@ -3,11 +3,12 @@ import { execFileSync } from 'node:child_process';
 import { access, readFile, readdir } from 'node:fs/promises';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { getProduct, products } from '../dist/src/catalog.js';
+import { categories, getProduct, products } from '../dist/src/catalog.js';
 import { calculateQuote, getPricePresets, getPriceRange } from '../dist/src/quote.js';
 import { about, categoryChip, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage } from '../dist/src/calculator-view.js';
 import { copy } from '../dist/src/copy.js';
+import { mountProductTape } from '../dist/src/product-tape.js';
 
 const site = new URL('../dist/', import.meta.url);
 
@@ -133,4 +134,57 @@ test('the public theme uses fill-only icons, elevation, and reduced-motion state
   assert.match(defaultTheme, /\.page-enter\s*\{\s*animation: page-arrival/);
   assert.match(defaultTheme, /\.cards-enter\s*>/);
   assert.match(defaultTheme, /@media \(prefers-reduced-motion: reduce\)\s*\{[\s\S]*animation: none !important/);
+});
+
+test('the side tape uses two matching category runs and a persistent localized pause control', async (t) => {
+  const previousStorage = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+  const preferences = new Map();
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: { getItem: key => preferences.get(key), setItem: (key, value) => preferences.set(key, value) },
+  });
+  t.after(() => {
+    if (previousStorage) Object.defineProperty(globalThis, 'localStorage', previousStorage);
+    else delete globalThis.localStorage;
+  });
+
+  function createTape() {
+    const classes = new Set();
+    const button = {
+      setAttribute(name, value) { this[name] = value; },
+      addEventListener(name, callback) { this[name] = callback; },
+    };
+    const root = {
+      classList: { toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); } },
+      querySelector(selector) {
+        assert.equal(selector, '.product-tape-toggle');
+        return button;
+      },
+    };
+    return { root, button, classes, setLanguage: mountProductTape(root) };
+  }
+
+  const tape = createTape();
+  const markup = tape.root.innerHTML;
+  assert.deepEqual([...markup.matchAll(/data-tape-category="([^"]+)"/g)].map(match => match[1]),
+    [...categories, ...categories].map(category => category.id));
+  assert.match(markup, /class="product-tape-window" aria-hidden="true"/);
+  assert.match(tape.button['aria-label'], /^Pause/);
+  tape.button.click();
+  assert.ok(tape.classes.has('is-paused'));
+  assert.match(tape.button['aria-label'], /^Resume/);
+  tape.setLanguage('ar');
+  assert.match(tape.button['aria-label'], /^استئناف/);
+  assert.equal(tape.root.innerHTML, markup);
+
+  const restored = createTape();
+  assert.ok(restored.classes.has('is-paused'));
+  restored.button.click();
+  assert.ok(!restored.classes.has('is-paused'));
+
+  const index = await readFile(new URL('index.html', site), 'utf8');
+  const css = await readFile(new URL('styles.css', site), 'utf8');
+  assert.match(index, /id="product-tape" class="product-tape"><\/div>\s*<div id="app"/);
+  assert.match(css, /@keyframes product-waterfall\s*\{\s*from\s*\{\s*transform: translateY\(-50%\)[\s\S]*to\s*\{\s*transform: translateY\(0\)/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.product-tape-track \{ animation: none;/);
 });

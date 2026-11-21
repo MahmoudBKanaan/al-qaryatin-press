@@ -2,6 +2,7 @@ import { business, categories, getProduct, isAvailable, products } from './catal
 import { calculatorPage, makeBrief, quoteSummary } from './calculator-view.js';
 import { copy } from './copy.js';
 import { icon } from './icons.js';
+import { mountProductTape } from './product-tape.js';
 import { getPricePresets } from './quote.js';
 import {
   about, categoryChip, escapeHtml, footer, header, home, label, localeId, number,
@@ -11,6 +12,7 @@ import {
 const app = document.querySelector('#app');
 const notice = document.querySelector('#notice');
 const skipLink = document.querySelector('.skip-link');
+const setTapeLanguage = mountProductTape(document.querySelector('#product-tape'));
 let language = 'en';
 try {
   if (localStorage.getItem('qaryatin-language') === 'ar') language = 'ar';
@@ -55,6 +57,7 @@ function render({ focusPage = false } = {}) {
   const t = copy[language];
   document.documentElement.lang = language;
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+  setTapeLanguage(language);
   skipLink.textContent = t.skip;
 
   let content;

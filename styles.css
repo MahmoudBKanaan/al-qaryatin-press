@@ -696,7 +696,70 @@ select:focus-visible { background-image: var(--select-arrow-light); }
 .faq-list details[open] p { animation: item-arrival var(--motion-standard) var(--ease-emphasized); }
 .extra-field:not([hidden]) { animation: item-arrival var(--motion-standard) var(--ease-emphasized); }
 
+.product-tape {
+  --tape-width: 2.75rem;
+  --tape-inset: .55rem;
+  --tape-pitch: 2.7rem;
+  --tape-glyph: 1.24rem;
+  --tape-top: clamp(6.3rem, 17svh, 10.2rem);
+  position: fixed;
+  z-index: 4;
+  inset-block-start: var(--tape-top);
+  inset-inline-end: var(--tape-inset);
+  display: grid;
+  justify-items: center;
+  gap: .2rem;
+  inline-size: var(--tape-width);
+  padding-block: .38rem;
+  border-radius: 100px;
+  background: linear-gradient(180deg, #193457, var(--navy));
+  color: var(--gold);
+  box-shadow: var(--elevation-3);
+  pointer-events: none;
+}
+.product-tape:empty { display: none; }
+.product-tape-window {
+  inline-size: 100%;
+  block-size: min(calc(var(--tape-pitch) * 7.25), 57svh);
+  overflow: hidden;
+  mask-image: linear-gradient(transparent, #000 11%, #000 89%, transparent);
+}
+.product-tape-track {
+  display: flex;
+  flex-direction: column;
+  animation: product-waterfall 30s linear infinite;
+}
+.product-tape-run {
+  display: grid;
+  flex: none;
+  grid-auto-rows: var(--tape-pitch);
+  place-items: center;
+}
+.product-tape-item { display: grid; place-items: center; }
+.product-tape-item .icon { inline-size: var(--tape-glyph); block-size: var(--tape-glyph); }
+.product-tape.is-paused .product-tape-track { animation-play-state: paused; }
+.product-tape-toggle {
+  display: grid;
+  place-items: center;
+  inline-size: max(24px, calc(var(--tape-width) - .75rem));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 0;
+  color: inherit;
+  background: #ffffff16;
+  pointer-events: auto;
+  transition: background-color var(--motion-fast), color var(--motion-fast);
+}
+.product-tape-toggle .icon { inline-size: .85rem; block-size: .85rem; }
+.product-tape-toggle:hover, .product-tape-toggle:focus-visible { background: var(--gold); color: var(--on-gold); }
+
+@keyframes product-waterfall {
+  from { transform: translateY(-50%); }
+  to { transform: translateY(0); }
+}
+
 @media (max-width: 1110px) {
+  .product-tape { --tape-width: 1.875rem; --tape-inset: .25rem; --tape-pitch: 2.38rem; --tape-glyph: 1.05rem; }
   .wrap { width: min(var(--wrap), 100% - 4.5rem); }
   .navigation a { padding-inline: .7rem; }
   .header-quote { display: none; }
@@ -705,6 +768,19 @@ select:focus-visible { background-image: var(--select-arrow-light); }
 }
 
 @media (max-width: 800px) {
+  .product-tape {
+    --tape-width: 1.625rem;
+    --tape-inset: .25rem;
+    --tape-pitch: 2.1rem;
+    --tape-glyph: .9rem;
+    --tape-top: clamp(4.85rem, 15svh, 8rem);
+    padding-block: .27rem;
+    box-shadow: var(--elevation-2);
+  }
+  .product-tape:not(:empty) ~ #app :is(main .wrap, .footer-inner, .footer-bottom) {
+    width: calc(100% - 3.125rem);
+    margin-inline: 1rem 2.125rem;
+  }
   .wrap { width: calc(100% - 2rem); }
   .header-inner { min-height: 65px; display: flex; justify-content: space-between; }
   .brand img { width: 36px; height: 36px; }
@@ -815,7 +891,13 @@ select:focus-visible { background-image: var(--select-arrow-light); }
   .category-links a { gap: .42rem; padding-inline: .48rem; }
 }
 
+@media (max-height: 400px) {
+  .product-tape-window { block-size: min(calc(var(--tape-pitch) * 5.25), 44svh); }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .product-tape-track { animation: none; }
+  .product-tape-toggle { display: none; }
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   :is(.button, .product-card, .card-image img, .category-links a, .snackbar) { transform: none !important; }
   .brief-dialog[open]::backdrop { animation: none !important; }
