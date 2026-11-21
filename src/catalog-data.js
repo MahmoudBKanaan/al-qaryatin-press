@@ -458,7 +458,7 @@ export const products = [
       "Gold or silver colour",
       "Pin or magnetic rear fastener"
     ],
-    "image": "./media/product-13.webp",
+    "image": "./media/product-13-v2.webp",
     "options": []
   },
   {
