@@ -43,7 +43,7 @@ function brand(lang, light = false) {
   </a>`;
 }
 
-export function header(page, t, lang) {
+export function header(page, t, lang, cartCount = 0) {
   return `<header class="site-header">
     <div class="wrap header-inner">
       ${brand(lang)}
@@ -54,8 +54,9 @@ export function header(page, t, lang) {
         </ul>
       </nav>
       <div class="header-actions">
-        <button class="button button-text language" type="button" data-action="language" aria-label="${t.switchLanguage}">${icon('language')}${t.lang}</button>
+        <button class="button button-text language" type="button" data-action="language" aria-label="${t.switchLanguage}">${icon('language')}<span class="language-label">${t.lang}</span></button>
         <a class="button button-primary header-quote" href="#/calculator">${icon('calculator')}${t.estimate}</a>
+        <a class="icon-button header-cart" id="header-cart" href="#/cart" aria-label="${t.cartTitle} (${number(cartCount, lang)})"${page === 'cart' ? ' aria-current="page"' : ''}>${icon('cart')}<span class="cart-badge" aria-hidden="true"${cartCount ? '' : ' hidden'}>${number(cartCount, lang)}</span></a>
         <button class="icon-button menu-toggle" type="button" aria-controls="main-navigation" aria-expanded="false" aria-label="${lang === 'ar' ? 'القائمة' : 'Menu'}" data-action="menu">${icon('menu')}</button>
       </div>
     </div>
@@ -189,7 +190,10 @@ export function productDetail(product, t, lang, related) {
           <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.min}</dt><dd>${number(product.minimum, lang)} ${quantityUnit(product.minimum, t, lang)}</dd></div>
           <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.lead}</dt><dd>${escapeHtml(label(product, 'turnaround', lang).replace(/^(Approximately |حوالي )/, ''))}</dd></div>
         </dl>
-        <a class="button button-primary product-calculate" href="${quoteRoute(product.id)}">${icon('calculator')}${t.estimate}</a>
+        <div class="product-order-actions">
+          <button type="button" class="button button-primary" data-action="add-product-to-cart" data-product-id="${product.id}">${icon('cart')}${t.addSmallOrder}</button>
+          <a class="button button-tonal" href="${quoteRoute(product.id)}">${icon('calculator')}${t.estimate}</a>
+        </div>
       </section>
     </div>
     <section class="spec-section">

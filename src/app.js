@@ -1,5 +1,7 @@
 import { business, categories, getProduct, isAvailable, products } from './catalog.js';
 import { calculatorPage, makeBrief, quoteSummary } from './calculator-view.js';
+import { addCartItem, persistCart, readCart, removeCartItem, updateCartQuantity } from './cart.js';
+import { cartCopy, cartPage, updateCartEstimate } from './cart-view.js';
 import { copy } from './copy.js';
 import { icon } from './icons.js';
 import { mountProductTape } from './product-tape.js';
@@ -22,6 +24,7 @@ try {
 let currentPage = null;
 let catalogue = { category: 'all', query: '', order: '' };
 let quote = emptyQuote('');
+let cart = readCart();
 let noticeTimer;
 
 function emptyQuote(productId) {
@@ -83,6 +86,10 @@ function render({ focusPage = false } = {}) {
     currentPage = 'calculator';
     pageTitle = t.calculator;
     content = calculatorPage(quote, t, language);
+  } else if (path === 'cart') {
+    currentPage = 'cart';
+    pageTitle = t.cartTitle;
+    content = cartPage(cart, t, language);
   } else if (path === 'about') {
     currentPage = 'about';
     pageTitle = t.about;
@@ -94,7 +101,7 @@ function render({ focusPage = false } = {}) {
   }
 
   document.title = currentPage === 'home' ? label(business, 'name', language) + ' | ' + pageTitle : pageTitle + ' | ' + label(business, 'name', language);
-  app.innerHTML = header(currentPage, t, language) +
+  app.innerHTML = header(currentPage, t, language, cart.length) +
     `<main id="main"${enterPage ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
     footer(t, language) + briefDialog(t);
   if (currentPage === 'catalogue') revealCatalogueCategory();
@@ -188,6 +195,58 @@ function updateSummary() {
   summary.innerHTML = quoteSummary(getProduct(quote.productId), quote, copy[language], language);
 }
 
+function saveCart(updated) {
+  cart = updated;
+  persistCart(undefined, cart);
+  const link = document.querySelector('#header-cart');
+  const count = number(cart.length, language);
+  const badge = link.querySelector('.cart-badge');
+  link.setAttribute('aria-label', copy[language].cartTitle + ' (' + count + ')');
+  badge.textContent = count;
+  badge.hidden = cart.length === 0;
+}
+
+function addOrderItem(configuration) {
+  const updated = addCartItem(cart, configuration);
+  const t = copy[language];
+  if (!updated) {
+    showNotice(t.cartInvalid);
+    return;
+  }
+  saveCart(updated);
+  showNotice(t.cartAdded);
+}
+
+function invalidCartField() {
+  return app.querySelector('input[name="cart-quantity"][aria-invalid="true"]');
+}
+
+function updateCartField(field) {
+  const index = Number(field.dataset.cartIndex);
+  const updated = updateCartQuantity(cart, index, field.value);
+  const message = cartCopy[language].invalidQuantity;
+  field.setCustomValidity(updated ? '' : message);
+  field.setAttribute('aria-invalid', String(!updated));
+  const error = app.querySelector('#cart-quantity-error-' + index);
+  error.hidden = !!updated;
+  if (updated) field.removeAttribute('aria-describedby');
+  else field.setAttribute('aria-describedby', error.id);
+  if (updated) {
+    saveCart(updated);
+    updateCartEstimate(app, cart, copy[language], language, index);
+  }
+
+  const action = app.querySelector('#cart-order');
+  const invalid = Boolean(invalidCartField());
+  app.querySelector('.cart-message').hidden = invalid;
+  if (invalid) {
+    action.removeAttribute('href');
+    action.setAttribute('aria-disabled', 'true');
+  } else {
+    action.removeAttribute('aria-disabled');
+  }
+}
+
 function briefDialog(t) {
   return `<dialog class="brief-dialog" id="brief-dialog" aria-labelledby="brief-title"><div class="dialog-content">
     <div class="dialog-heading"><h2 id="brief-title">${t.brief}</h2><form method="dialog"><button class="icon-button" aria-label="${language === 'ar' ? 'إغلاق' : 'Close'}">${icon('close')}</button></form></div>
@@ -228,6 +287,14 @@ function setMenuExpanded(button, expanded) {
 }
 
 app.addEventListener('click', event => {
+  if (event.target.closest('#cart-order')) {
+    const invalid = invalidCartField();
+    if (invalid) {
+      event.preventDefault();
+      invalid.reportValidity();
+      return;
+    }
+  }
   const isPlainClick = event.button === 0 && !event.defaultPrevented &&
     !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
   const catalogueProduct = currentPage === 'catalogue' && event.target.closest('.product-link');
@@ -291,6 +358,21 @@ app.addEventListener('click', event => {
     case 'copy':
       void copyBrief();
       break;
+    case 'add-product-to-cart':
+      addOrderItem(emptyQuote(button.dataset.productId));
+      break;
+    case 'add-quote-to-cart':
+      addOrderItem(quote);
+      break;
+    case 'remove-cart-item': {
+      const index = Number(button.dataset.cartIndex);
+      saveCart(removeCartItem(cart, index));
+      render();
+      const replacement = document.querySelector('#cart-quantity-' + Math.min(index, cart.length - 1));
+      (replacement || document.querySelector('#page-title')).focus();
+      showNotice(cartCopy[language].removed);
+      break;
+    }
   }
 });
 
@@ -305,6 +387,7 @@ app.addEventListener('input', event => {
     updateSummary();
   }
   if (field.name === 'extra') quote.extra = field.value;
+  if (field.name === 'cart-quantity') updateCartField(field);
 });
 
 app.addEventListener('change', event => {
@@ -362,7 +445,7 @@ document.addEventListener('pointerdown', event => {
   const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
   if (expanded && !event.target.closest('#main-navigation, .menu-toggle')) setMenuExpanded(expanded, false);
 });
-matchMedia('(max-width: 800px)').addEventListener('change', () => {
+matchMedia('(max-width: 900px)').addEventListener('change', () => {
   const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
   if (expanded) setMenuExpanded(expanded, false);
 });

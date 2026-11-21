@@ -8,6 +8,7 @@ import { calculateQuote, getPricePresets, getPriceRange } from '../dist/src/quot
 import { about, categoryChip, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage } from '../dist/src/calculator-view.js';
 import { copy } from '../dist/src/copy.js';
+import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, removeCartItem, summarizeCart, updateCartQuantity, whatsappOrderUrl } from '../dist/src/cart.js';
 import { mountProductTape } from '../dist/src/product-tape.js';
 
 const site = new URL('../dist/', import.meta.url);
@@ -100,6 +101,83 @@ test('the calculator accepts grouped quantities from Arabic and English keyboard
     assert.deepEqual(calculateQuote(product, { quantity }), expected);
   }
   assert.equal(calculateQuote(product, { quantity: '12,50' }).status, 'invalid');
+});
+
+test('the cart merges identical configurations and retains distinct lines', () => {
+  const item = { productId: 'custom-paper-cards', preset: 1, options: ['double-sided-printing'] };
+  const before = addCartItem([], { ...item, quantity: 99 });
+  assert.deepEqual(summarizeCart(before), { estimatedSubtotal: null, reviewCount: 1 });
+
+  const merged = addCartItem(before, { ...item, quantity: '١' });
+  assert.equal(before[0].quantity, 99);
+  assert.equal(merged.length, 1);
+  assert.equal(merged[0].quantity, 100);
+  assert.deepEqual(summarizeCart(merged), { estimatedSubtotal: 35, reviewCount: 0 });
+
+  let cart = addCartItem(merged, { ...item, preset: 2, quantity: 100 });
+  cart = addCartItem(cart, { ...item, options: [], quantity: 100 });
+  cart = addCartItem(cart, { productId: 'business-cards', preset: 0, quantity: 500 });
+  assert.equal(cart.length, 4);
+  assert.equal(updateCartQuantity(cart, 0, '١٬٢٥٠')[0].quantity, 1250);
+  assert.equal(updateCartQuantity(cart, 0, '0'), null);
+  assert.equal(updateCartQuantity(cart, 0, '12,50'), null);
+  assert.equal(updateCartQuantity(cart, 0, 100001), null);
+  assert.equal(addCartItem(cart, item), null);
+  assert.equal(addCartItem(cart, { ...item, quantity: 100000 }), null);
+  assert.equal(addCartItem(cart, { ...item, quantity: 100, options: ['gloss-lamination', 'matte-lamination'] }), null);
+  assert.deepEqual(removeCartItem(cart, 1), [cart[0], cart[2], cart[3]]);
+});
+
+test('the cart persists selections and recovers from invalid or blocked storage', () => {
+  const notes = 'Use the supplied artwork. Keep the back blank.';
+  const item = { productId: 'paper-boxes', preset: 2, quantity: 1200, options: ['matte-lamination'], extraEnabled: true, extra: notes };
+  const cart = addCartItem([], item);
+  let stored;
+  const storage = { getItem: () => stored, setItem: (_, value) => { stored = value; } };
+
+  assert.deepEqual(readCart(storage), []);
+  persistCart(storage, cart);
+  assert.deepEqual(readCart(storage), cart);
+  stored = JSON.stringify([...cart, { productId: 'paper-boxes' }, null, { productId: 'not-a-product', quantity: 1 }]);
+  assert.deepEqual(readCart(storage), cart);
+  stored = '{';
+  assert.deepEqual(readCart(storage), []);
+  const blocked = {
+    getItem() { throw Error('Storage blocked'); },
+    setItem() { throw Error('Storage blocked'); },
+  };
+  assert.deepEqual(readCart(blocked), []);
+  assert.doesNotThrow(() => persistCart(blocked, cart));
+});
+
+test('WhatsApp checkout encodes every item in the current language', () => {
+  const primary = getProduct('custom-paper-cards');
+  const secondary = getProduct('paper-boxes');
+  const note = 'Design + proof & delivery 🖨️\nأرفق التصميم\uD800';
+  const first = { productId: primary.id, preset: 1, quantity: 250, options: ['double-sided-printing'] };
+  const second = { productId: secondary.id, preset: 0, quantity: 1000, options: ['matte-lamination'], extraEnabled: true, extra: note };
+  const cart = addCartItem(addCartItem([], first), second);
+  assert.deepEqual(summarizeCart(cart), { estimatedSubtotal: 87.5, reviewCount: 1 });
+
+  for (const lang of ['en', 'ar']) {
+    const t = copy[lang];
+    const localized = lang === 'ar';
+    const url = new URL(whatsappOrderUrl(cart, t, lang));
+    const message = url.searchParams.get('text');
+    assert.equal(url.origin, 'https://wa.me');
+    assert.equal(url.pathname, '/966568080265');
+    assert.equal(message, orderMessage(cart, t, lang).replace('\uD800', '\uFFFD'));
+    assert.ok(message.includes(localized ? primary.nameAr : primary.name));
+    assert.ok(message.includes(localized ? secondary.nameAr : secondary.name));
+    assert.ok(message.includes(primary.code) && message.includes(secondary.code));
+    assert.ok(message.includes(t.quantity + (localized ? ' — ٢٥٠' : ' — 250')));
+    assert.ok(message.includes(localized ? '١٠ × ٧ سم' : '10 × 7 cm'));
+    assert.ok(message.includes(describeCartItem(cart[0], t, lang).optionLabels[0]));
+    assert.ok(message.includes(describeCartItem(cart[1], t, lang).optionLabels[0]));
+    assert.ok(message.includes(note.replace('\uD800', '\uFFFD')));
+    assert.ok(message.includes(t.ready) && message.includes(t.review));
+    assert.equal(whatsappOrderUrl([], t, lang), '');
+  }
 });
 
 test('card collections and option lists preserve native list and selection semantics', () => {

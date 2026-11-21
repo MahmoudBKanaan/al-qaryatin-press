@@ -73,7 +73,7 @@ export function quoteSummary(product, state, t, lang) {
   const issues = lang === 'ar' ? result.issuesAr : result.issues;
   const hasSubtotal = result.subtotal !== null;
   const knownBase = !hasSubtotal && result.baseSubtotal !== null;
-  const canCopy = result.status === 'estimate' || result.status === 'review';
+  const canOrder = result.status === 'estimate' || result.status === 'review';
 
   return `<section class="surface estimate-card">
     <p class="eyebrow">${t.summary}</p>
@@ -90,7 +90,10 @@ export function quoteSummary(product, state, t, lang) {
       </section>
     </div>
     <p class="estimate-note">${t.estimateNote}</p>
-    ${canCopy ? `<button type="button" class="button button-primary copy-brief" data-action="brief">${icon('file')}${t.showBrief}</button>` : ''}
+    ${canOrder ? `<div class="quote-actions">
+      <button type="button" class="button button-primary" data-action="add-quote-to-cart">${icon('cart')}${t.addToCart}</button>
+      <button type="button" class="button button-tonal copy-brief" data-action="brief">${icon('file')}${t.showBrief}</button>
+    </div>` : ''}
   </section>`;
 }
 
