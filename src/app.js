@@ -3,7 +3,7 @@ import { calculatorPage, makeBrief, quoteSummary } from './calculator-view.js';
 import { copy } from './copy.js';
 import { icon } from './icons.js';
 import { mountProductTape } from './product-tape.js';
-import { getPricePresets } from './quote.js';
+import { getPricePresets, normalizeDigits } from './quote.js';
 import {
   about, categoryChip, escapeHtml, footer, header, home, label, localeId, number,
   pageHeading, productDetail, productGrid, route,
@@ -13,6 +13,7 @@ const app = document.querySelector('#app');
 const notice = document.querySelector('#notice');
 const skipLink = document.querySelector('.skip-link');
 const setTapeLanguage = mountProductTape(document.querySelector('#product-tape'));
+history.scrollRestoration = 'manual';
 let language = 'en';
 try {
   if (localStorage.getItem('qaryatin-language') === 'ar') language = 'ar';
@@ -96,14 +97,18 @@ function render({ focusPage = false } = {}) {
   app.innerHTML = header(currentPage, t, language) +
     `<main id="main"${enterPage ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
     footer(t, language) + briefDialog(t);
+  if (currentPage === 'catalogue') revealCatalogueCategory();
   if (focusPage) {
-    window.scrollTo(0, 0);
-    document.querySelector('#page-title')?.focus({ preventScroll: true });
+    const restore = currentPage === 'catalogue' && history.state?.catalogueReturn;
+    const card = restore && Array.from(document.querySelectorAll('.product-link'))
+      .find(link => link.hash === restore.productHash);
+    window.scrollTo(0, restore ? restore.top : 0);
+    (card || document.querySelector('#page-title'))?.focus({ preventScroll: true });
   }
 }
 
 function normalized(value) {
-  return value.toLocaleLowerCase().normalize('NFKC')
+  return normalizeDigits(value.toLocaleLowerCase().normalize('NFKC'))
     .replace(/[ًٌٍَُِّْـ]/g, '').replace(/[إأآ]/g, 'ا').replace(/ى/g, 'ي').trim();
 }
 
@@ -129,9 +134,13 @@ function cataloguePage(t) {
   const list = catalogueResults(t);
   return `${pageHeading(t.catalogTitle, t.catalogText)}
     <div class="wrap catalogue-content">
-      <div class="catalogue-toolbar">
-        <label class="search-field"><span class="sr-only">${t.search}</span>${icon('search')}<input id="catalogue-search" type="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off"></label>
-      </div>
+      <form class="catalogue-toolbar" id="catalogue-search-form" role="search">
+        <div class="search-field">
+          <label class="sr-only" for="catalogue-search">${t.search}</label>${icon('search')}
+          <input id="catalogue-search" type="search" enterkeyhint="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off">
+          <button type="button" class="icon-button clear-search" data-action="clear-search" aria-label="${t.clearSearch}"${catalogue.query ? '' : ' hidden'}>${icon('close')}</button>
+        </div>
+      </form>
       <ul class="filters m3-chip-set" role="list" aria-label="${t.category}">
         <li>${categoryChip('all', t.all, catalogue.category)}</li>
         ${categories.map(category => `<li>${categoryChip(category.id, label(category, 'label', language), catalogue.category)}</li>`).join('')}
@@ -139,6 +148,15 @@ function cataloguePage(t) {
       <div class="catalogue-meta"><p id="result-count" role="status">${list.count}</p><label><span>${t.sort}</span><select id="catalogue-order"><option value="">${t.catalogOrder}</option><option value="name" ${catalogue.order === 'name' ? 'selected' : ''}>${t.nameOrder}</option></select></label></div>
       <div id="catalogue-results">${list.html}</div>
     </div>`;
+}
+
+function revealCatalogueCategory() {
+  const filters = document.querySelector('.filters');
+  if (filters.scrollWidth <= filters.clientWidth) return;
+  const active = filters.querySelector('[aria-pressed="true"]').getBoundingClientRect();
+  const bounds = filters.getBoundingClientRect();
+  if (active.left < bounds.left) filters.scrollLeft += active.left - bounds.left;
+  if (active.right > bounds.right) filters.scrollLeft += active.right - bounds.right;
 }
 
 function updateCatalogue({ animateCards = false } = {}) {
@@ -150,6 +168,8 @@ function updateCatalogue({ animateCards = false } = {}) {
   history.replaceState(null, '', route('catalogue', params));
   document.querySelectorAll('[data-category]').forEach(button =>
     button.setAttribute('aria-pressed', String(button.dataset.category === catalogue.category)));
+  document.querySelector('.clear-search').hidden = catalogue.query === '';
+  revealCatalogueCategory();
   const { count, html } = catalogueResults(t);
   document.querySelector('#result-count').textContent = count;
   const results = document.querySelector('#catalogue-results');
@@ -172,6 +192,7 @@ function briefDialog(t) {
   return `<dialog class="brief-dialog" id="brief-dialog" aria-labelledby="brief-title"><div class="dialog-content">
     <div class="dialog-heading"><h2 id="brief-title">${t.brief}</h2><form method="dialog"><button class="icon-button" aria-label="${language === 'ar' ? 'إغلاق' : 'Close'}">${icon('close')}</button></form></div>
     <textarea class="brief-text" id="brief-text" aria-label="${t.brief}" readonly rows="8"></textarea>
+    <p class="brief-copy-status" id="brief-copy-status" role="status"></p>
     <div class="dialog-actions"><a class="button button-tonal" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a><button type="button" class="button button-primary" data-action="copy">${icon('copy')}${t.prepBrief}</button></div>
   </div></dialog>`;
 }
@@ -184,27 +205,41 @@ function showNotice(message) {
 }
 
 async function copyBrief() {
-  const text = document.querySelector('#brief-text');
+  const dialog = document.querySelector('#brief-dialog');
+  const text = dialog.querySelector('#brief-text');
   const t = copy[language];
   try {
     await navigator.clipboard.writeText(text.value);
-    document.querySelector('#brief-dialog').close();
+    dialog.close();
     showNotice(t.copied);
   } catch {
-    text.focus();
-    text.select();
-    showNotice(t.copyFailed);
+    if (dialog.open && dialog.isConnected) {
+      dialog.querySelector('#brief-copy-status').textContent = t.copyFailed;
+      text.focus();
+      text.setSelectionRange(0, text.value.length);
+    }
   }
 }
 
+function setMenuExpanded(button, expanded) {
+  button.setAttribute('aria-expanded', String(expanded));
+  document.querySelector('#main-navigation').classList.toggle('is-open', expanded);
+  if (expanded) document.querySelector('#main-navigation a')?.focus({ preventScroll: true });
+}
+
 app.addEventListener('click', event => {
+  const isPlainClick = event.button === 0 && !event.defaultPrevented &&
+    !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+  const catalogueProduct = currentPage === 'catalogue' && event.target.closest('.product-link');
+  if (catalogueProduct && isPlainClick) {
+    history.replaceState({ catalogueReturn: { top: window.scrollY, productHash: catalogueProduct.hash } }, '');
+  }
   const navigationLink = event.target.closest('.navigation a');
-  if (navigationLink?.hash === location.hash && !event.defaultPrevented &&
-      !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+  if (navigationLink?.hash === location.hash && isPlainClick) {
     const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
     if (expanded) {
       event.preventDefault();
-      expanded.click();
+      setMenuExpanded(expanded, false);
       expanded.focus({ preventScroll: true });
       return;
     }
@@ -229,22 +264,26 @@ app.addEventListener('click', event => {
     }
     case 'menu': {
       const expanded = button.getAttribute('aria-expanded') === 'true';
-      button.setAttribute('aria-expanded', String(!expanded));
-      document.querySelector('.navigation')?.classList.toggle('is-open', !expanded);
+      setMenuExpanded(button, !expanded);
       break;
     }
-    case 'clear-filters':
-      catalogue.category = 'all';
+    case 'clear-search':
+    case 'clear-filters': {
+      const resetCategory = button.dataset.action === 'clear-filters';
+      if (resetCategory) catalogue.category = 'all';
       catalogue.query = '';
-      document.querySelector('#catalogue-search').value = '';
+      const field = document.querySelector('#catalogue-search');
+      field.value = '';
       updateCatalogue({ animateCards: true });
-      document.querySelector('#catalogue-search').focus();
+      (resetCategory ? document.querySelector('[data-category="all"]') : field).focus();
       break;
+    }
     case 'brief': {
       const dialog = document.querySelector('#brief-dialog');
       const text = makeBrief(getProduct(quote.productId), quote, copy[language], language);
       if (text) {
         document.querySelector('#brief-text').value = text;
+        dialog.querySelector('#brief-copy-status').textContent = '';
         dialog.showModal();
       }
       break;
@@ -302,6 +341,10 @@ app.addEventListener('change', event => {
 
 app.addEventListener('submit', event => {
   if (event.target.id === 'quote-form') event.preventDefault();
+  if (event.target.id === 'catalogue-search-form') {
+    event.preventDefault();
+    document.querySelector('#catalogue-search').blur();
+  }
 });
 
 skipLink.addEventListener('click', event => {
@@ -311,9 +354,17 @@ skipLink.addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
   if (event.key === 'Escape' && expanded) {
-    expanded.click();
+    setMenuExpanded(expanded, false);
     expanded.focus();
   }
+});
+document.addEventListener('pointerdown', event => {
+  const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
+  if (expanded && !event.target.closest('#main-navigation, .menu-toggle')) setMenuExpanded(expanded, false);
+});
+matchMedia('(max-width: 800px)').addEventListener('change', () => {
+  const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
+  if (expanded) setMenuExpanded(expanded, false);
 });
 window.addEventListener('hashchange', () => render({ focusPage: true }));
 render();

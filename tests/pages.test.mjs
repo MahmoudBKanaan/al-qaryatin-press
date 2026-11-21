@@ -92,6 +92,16 @@ test('the calculator rounds the order total and keeps custom quotes separate', (
   assert.equal(customBoxes.subtotal, null);
 });
 
+test('the calculator accepts grouped quantities from Arabic and English keyboards', () => {
+  const product = getProduct('business-cards');
+  const expected = calculateQuote(product, { quantity: 1250 });
+  assert.equal(expected.status, 'estimate');
+  for (const quantity of ['1,250', '١٬٢٥٠', '۱٬۲۵۰']) {
+    assert.deepEqual(calculateQuote(product, { quantity }), expected);
+  }
+  assert.equal(calculateQuote(product, { quantity: '12,50' }).status, 'invalid');
+});
+
 test('card collections and option lists preserve native list and selection semantics', () => {
   const product = getProduct('paper-boxes');
   const state = { productId: product.id, preset: 0, quantity: product.minimum, options: [], extraEnabled: true, extra: '' };

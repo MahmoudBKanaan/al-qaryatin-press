@@ -17,16 +17,19 @@ const messages = {
   customRequirements: ['Confirm the custom size or requirements and associated charges with the press.', 'أكّد المقاس المخصص أو المتطلبات الخاصة وتكاليفها مع المطبعة.'],
 };
 
+export function normalizeDigits(value) {
+  return value.replace(/[٠-٩]/g, digit => String(digit.charCodeAt(0) - 0x660))
+    .replace(/[۰-۹]/g, digit => String(digit.charCodeAt(0) - 0x6f0));
+}
+
 function numericInput(value) {
   if (typeof value === 'number') return value;
   if (typeof value !== 'string') return Number.NaN;
 
-  const normalized = value.trim()
-    .replace(/[٠-٩]/g, digit => String(digit.charCodeAt(0) - 0x660))
-    .replace(/[۰-۹]/g, digit => String(digit.charCodeAt(0) - 0x6f0))
+  const normalized = normalizeDigits(value.trim())
     .replaceAll('٫', '.')
     .replaceAll('٬', ',')
-    .replace(/(?<=\d),(?=\d{3}(?:\D|$))/g, '');
+    .replace(/(\d),(?=\d{3}(?:\D|$))/g, '$1');
 
   return /^\d+(?:\.\d+)?$/.test(normalized) ? Number(normalized) : Number.NaN;
 }
