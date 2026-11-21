@@ -1294,7 +1294,7 @@ export const products = [
       "Quantity",
       "High or low wood thickness"
     ],
-    "image": "./media/product-40-v2.webp",
+    "image": "./media/product-40-v3.webp",
     "options": [
       {
         "id": "high-thickness",
