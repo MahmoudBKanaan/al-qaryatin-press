@@ -22,9 +22,23 @@ export function mountProductTape(root) {
 
   root.classList.toggle('is-paused', paused);
   root.innerHTML = `<div class="product-tape-window" aria-hidden="true" dir="ltr">
-      <div class="product-tape-track">${run}${run}</div>
+      <div class="product-tape-track" style="--tape-category-count:${categories.length}">${run}${run}</div>
     </div>
     <button type="button" class="product-tape-toggle">${icon(paused ? 'play' : 'pause')}</button>`;
+
+  if (typeof ResizeObserver === 'function') {
+    const viewport = root.querySelector('.product-tape-window');
+    const track = root.querySelector('.product-tape-track');
+    const observer = new ResizeObserver(() => {
+      const runHeight = track.firstElementChild.getBoundingClientRect().height;
+      if (!runHeight) return;
+      const viewportHeight = viewport.getBoundingClientRect().height;
+      // A complete extra run covers the top-to-bottom shift of one cycle.
+      const runs = Math.max(2, Math.ceil(viewportHeight / runHeight) + 1);
+      if (runs !== track.childElementCount) track.innerHTML = run.repeat(runs);
+    });
+    observer.observe(viewport);
+  }
 
   const button = root.querySelector('.product-tape-toggle');
   function updateLabel() {

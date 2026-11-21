@@ -273,6 +273,81 @@ test('the side tape uses two matching category runs and a persistent localized p
   const index = await readFile(new URL('index.html', site), 'utf8');
   const css = await readFile(new URL('styles.css', site), 'utf8');
   assert.match(index, /id="product-tape" class="product-tape"><\/div>\s*<div id="app"/);
-  assert.match(css, /@keyframes product-waterfall\s*\{\s*from\s*\{\s*transform: translateY\(-50%\)[\s\S]*to\s*\{\s*transform: translateY\(0\)/);
+  const rail = css.match(/^\.product-tape\s*\{([^}]+)\}/m)?.[1] ?? '';
+  assert.match(rail, /position:\s*fixed\s*;/);
+  assert.match(rail, /inset-block-start:\s*[^;]+;/);
+  assert.match(rail, /inset-block-end:\s*[^;]+;/);
+  assert.match(rail, /grid-template-rows:\s*minmax\(0,\s*1fr\) auto;/);
+  assert.doesNotMatch(css, /\.product-tape-window\s*\{[^}]*block-size:\s*min\(/);
+  assert.match(css, /@keyframes product-waterfall\s*\{\s*from\s*\{\s*transform:\s*translateY\(calc\(-1\s*\*\s*var\(--tape-category-count\)\s*\*\s*var\(--tape-pitch\)\)\)[\s\S]*to\s*\{\s*transform:\s*translateY\(0\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.product-tape-track \{ animation: none;/);
+});
+
+test('the tape adds complete icon cycles to cover a taller canvas without gaps', (t) => {
+  const previousObserver = Object.getOwnPropertyDescriptor(globalThis, 'ResizeObserver');
+  let onResize;
+  const observed = [];
+  Object.defineProperty(globalThis, 'ResizeObserver', {
+    configurable: true,
+    value: class {
+      constructor(callback) { onResize = callback; }
+      observe(element) { observed.push(element); }
+    },
+  });
+  t.after(() => {
+    if (previousObserver) Object.defineProperty(globalThis, 'ResizeObserver', previousObserver);
+    else delete globalThis.ResizeObserver;
+  });
+
+  let windowHeight = 1361;
+  let runHeight = 340;
+  let trackMarkup = '';
+  let trackWrites = 0;
+  const viewport = { getBoundingClientRect: () => ({ height: windowHeight }) };
+  const track = {
+    firstElementChild: { getBoundingClientRect: () => ({ height: runHeight }) },
+    get childElementCount() { return [...trackMarkup.matchAll(/class="product-tape-run"/g)].length; },
+    set innerHTML(value) {
+      trackMarkup = value;
+      trackWrites++;
+    },
+  };
+  const selectors = {
+    '.product-tape-toggle': { setAttribute() {}, addEventListener() {} },
+    '.product-tape-window': viewport,
+    '.product-tape-track': track,
+  };
+  const root = {
+    classList: { toggle() {} },
+    set innerHTML(markup) {
+      assert.match(markup, new RegExp(`style="--tape-category-count:\\s*${categories.length};?"`));
+      trackMarkup = markup;
+    },
+    querySelector(selector) { return selectors[selector]; },
+  };
+  const categoryIds = categories.map(category => category.id);
+  function assertRuns(count) {
+    assert.equal(track.childElementCount, count);
+    assert.deepEqual([...trackMarkup.matchAll(/data-tape-category="([^"]+)"/g)].map(match => match[1]),
+      Array.from({ length: count }, () => categoryIds).flat());
+    assert.ok((count - 1) * runHeight >= windowHeight,
+      'The tape covers its window even when translated up by one full cycle.');
+  }
+
+  mountProductTape(root);
+  assert.deepEqual(observed, [viewport]);
+  onResize();
+  assertRuns(6);
+  const writes = trackWrites;
+  onResize();
+  assert.equal(trackWrites, writes);
+
+  windowHeight = 540;
+  runHeight = 270;
+  onResize();
+  assertRuns(3);
+
+  windowHeight = 200;
+  onResize();
+  assertRuns(2);
 });
