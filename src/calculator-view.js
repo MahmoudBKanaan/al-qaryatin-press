@@ -1,10 +1,10 @@
-import { categories, products } from './catalog.js';
+import { categories, isAvailable, products } from './catalog.js';
 import { calculateQuote } from './quote.js';
 import { icon } from './icons.js';
-import { availableOptions, channelControl, escapeHtml, isAvailable, label, localeId, money, number, pageHeading, priceUnit, productRoute, quantityUnit } from './views.js';
+import { availableOptions, escapeHtml, label, localeId, money, number, pageHeading, priceUnit, productRoute, quantityUnit } from './views.js';
 
 export function calculatorPage(state, t, lang) {
-  const eligible = products.filter(item => isAvailable(item, state.channel));
+  const eligible = products.filter(isAvailable);
   const product = eligible.find(item => item.id === state.productId);
   const groups = categories.map(category => {
     const options = eligible.filter(item => item.category === category.id).sort((a, b) =>
@@ -19,7 +19,6 @@ export function calculatorPage(state, t, lang) {
       <section class="surface form-card">
         <div class="form-heading"><span class="category-icon">${icon('calculator')}</span><h2>${t.configure}</h2></div>
         <form id="quote-form" autocomplete="off">
-          <div class="form-channel"><p class="field-label">${t.channel}</p>${channelControl(state.channel, t)}</div>
           <label class="field"><span>${t.product}</span><select id="quote-product" name="product"><option value="">${t.select}</option>${groups}</select></label>
           ${product ? orderFields(product, state, t, lang) : ''}
         </form>
@@ -29,7 +28,7 @@ export function calculatorPage(state, t, lang) {
 }
 
 function orderFields(product, state, t, lang) {
-  const options = availableOptions(product, state.channel).filter(option => option.id !== 'number-of-folds');
+  const options = availableOptions(product);
   const optionGroups = new Map();
   const standalone = [];
   for (const option of options) {
@@ -73,7 +72,7 @@ export function quoteSummary(product, state, t, lang) {
 
   return `<section class="surface estimate-card">
     <p class="eyebrow">${t.summary}</p>
-    <div class="estimate-product"><img src="${product.image}" alt="" width="92" height="70"><div><a href="${productRoute(product.id, state.channel)}">${escapeHtml(label(product, 'name', lang))}</a><small><bdi>${product.code}</bdi> · ${t[state.channel]}</small></div></div>
+    <div class="estimate-product"><img src="${product.image}" alt="" width="92" height="70"><div><a href="${productRoute(product.id)}">${escapeHtml(label(product, 'name', lang))}</a><small><bdi>${product.code}</bdi></small></div></div>
     <div class="estimate-live">
       <dl class="estimate-lines">
         <div><dt>${t.rate}</dt><dd><bdi>${money(product.rate, lang)}</bdi> / ${priceUnit(product.unit, t)}</dd></div>
@@ -100,7 +99,6 @@ export function makeBrief(product, state, t, lang) {
   const items = [
     t.brief + ' · ' + t.copyright,
     t.product + ': ' + label(product, 'name', lang) + ' (' + product.code + ')',
-    t.channel + ': ' + t[state.channel],
     t.quantity + ': ' + number(result.quantity, lang),
     ...dimensionLines,
   ];
@@ -113,5 +111,3 @@ export function makeBrief(product, state, t, lang) {
   else items.push(t.review + '.', ...(lang === 'ar' ? result.issuesAr : result.issues));
   return items.join('\n');
 }
-
-

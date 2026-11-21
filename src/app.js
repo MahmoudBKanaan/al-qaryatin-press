@@ -1,9 +1,9 @@
-import { business, categories, getProduct, products } from './catalog.js';
+import { business, categories, getProduct, isAvailable, products } from './catalog.js';
 import { calculatorPage, makeBrief, quoteSummary } from './calculator-view.js';
 import { copy } from './copy.js';
 import { icon } from './icons.js';
 import {
-  about, categoryChip, channelControl, escapeHtml, footer, header, home, isAvailable, label, localeId, number,
+  about, categoryChip, escapeHtml, footer, header, home, label, localeId, number,
   pageHeading, productCard, productDetail, route,
 } from './views.js';
 
@@ -16,15 +16,14 @@ try {
 } catch { /* Local storage may be unavailable. */ }
 
 let currentPage = 'home';
-let catalogue = { channel: 'retail', category: 'all', query: '', order: '' };
-let quote = emptyQuote('retail', '');
+let catalogue = { category: 'all', query: '', order: '' };
+let quote = emptyQuote('');
 let noticeTimer;
 
-function emptyQuote(channel, productId) {
+function emptyQuote(productId) {
   const found = getProduct(productId);
-  const product = isAvailable(found, channel) ? found : null;
+  const product = isAvailable(found) ? found : null;
   return {
-    channel,
     productId: product?.id || '',
     quantity: product?.minimum || '',
     dimensions: { unit: 'cm' },
@@ -36,15 +35,12 @@ function emptyQuote(channel, productId) {
 
 function readRoute() {
   const [path, query = ''] = location.hash.startsWith('#/') ? location.hash.slice(2).split('?') : ['', ''];
-  const params = new URLSearchParams(query);
-  const requestedChannel = params.get('channel') === 'agency' ? 'agency' : 'retail';
-  return { path, params, requestedChannel };
+  return { path, params: new URLSearchParams(query) };
 }
 
-function readCatalogue(params, channel) {
+function readCatalogue(params) {
   const id = params.get('category');
   return {
-    channel,
     category: categories.some(item => item.id === id) ? id : 'all',
     query: (params.get('q') || '').slice(0, 100),
     order: params.get('sort') === 'name' ? 'name' : '',
@@ -52,7 +48,7 @@ function readCatalogue(params, channel) {
 }
 
 function render({ focusPage = false } = {}) {
-  const { path, params, requestedChannel } = readRoute();
+  const { path, params } = readRoute();
   const t = copy[language];
   document.documentElement.lang = language;
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
@@ -62,20 +58,20 @@ function render({ focusPage = false } = {}) {
   let pageTitle;
   if (path === 'catalogue') {
     currentPage = 'catalogue';
-    catalogue = readCatalogue(params, requestedChannel);
+    catalogue = readCatalogue(params);
     pageTitle = t.catalogTitle;
     content = cataloguePage(t);
   } else if (path.startsWith('product/')) {
     currentPage = 'product';
     const found = getProduct(path.slice('product/'.length));
-    const product = isAvailable(found, requestedChannel) ? found : null;
-    const related = product ? products.filter(item => item.id !== product.id && item.category === product.category && isAvailable(item, requestedChannel)).slice(0, 3) : [];
+    const product = isAvailable(found) ? found : null;
+    const related = product ? products.filter(item => item.id !== product.id && item.category === product.category && isAvailable(item)).slice(0, 3) : [];
     pageTitle = product ? label(product, 'name', language) : t.notFound;
-    content = productDetail(product, t, language, requestedChannel, related);
+    content = productDetail(product, t, language, related);
   } else if (path === 'calculator') {
     const id = params.get('product') || '';
-    if (currentPage !== 'calculator' || requestedChannel !== quote.channel || quote.productId !== id) {
-      quote = emptyQuote(requestedChannel, id);
+    if (currentPage !== 'calculator' || quote.productId !== id) {
+      quote = emptyQuote(id);
     }
     currentPage = 'calculator';
     pageTitle = t.calculator;
@@ -106,7 +102,7 @@ function normalized(value) {
 function catalogueResults(t) {
   const tokens = normalized(catalogue.query).split(/\s+/).filter(Boolean);
   const items = products.filter(product => {
-    if (!isAvailable(product, catalogue.channel) || (catalogue.category !== 'all' && catalogue.category !== product.category)) return false;
+    if (!isAvailable(product) || (catalogue.category !== 'all' && catalogue.category !== product.category)) return false;
     const searchable = normalized([product.name, product.nameAr, product.code, product.catalogCategory].join(' '));
     return tokens.every(token => searchable.includes(token));
   });
@@ -117,7 +113,7 @@ function catalogueResults(t) {
   return {
     count: number(items.length, language) + count.slice(String(items.length).length),
     html: items.length ? `<div class="product-grid">${items.map(item =>
-      productCard(item, t, language, catalogue.channel)).join('')}</div>`
+      productCard(item, t, language)).join('')}</div>`
       : `<div class="empty-state"><span class="category-icon">${icon('search')}</span><h2>${t.noProducts}</h2><p>${t.noProductsText}</p><button class="button button-outline" type="button" data-action="clear-filters">${t.clearFilters}</button></div>`,
   };
 }
@@ -128,7 +124,6 @@ function cataloguePage(t) {
     <div class="wrap catalogue-content">
       <div class="catalogue-toolbar">
         <label class="search-field"><span class="sr-only">${t.search}</span>${icon('search')}<input id="catalogue-search" type="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off"></label>
-        <div id="catalogue-channel">${channelControl(catalogue.channel, t)}</div>
       </div>
       <div class="filters" role="group" aria-label="${t.category}">
         ${categoryChip('all', t.all, catalogue.category)}
@@ -143,40 +138,19 @@ function updateCatalogue() {
   const t = copy[language];
   const params = new URLSearchParams();
   if (catalogue.category !== 'all') params.set('category', catalogue.category);
-  if (catalogue.channel === 'agency') params.set('channel', 'agency');
   if (catalogue.query) params.set('q', catalogue.query);
   if (catalogue.order) params.set('sort', catalogue.order);
   history.replaceState(null, '', route('catalogue', params));
   document.querySelectorAll('[data-category]').forEach(button =>
     button.setAttribute('aria-pressed', String(button.dataset.category === catalogue.category)));
-  const group = document.querySelector('#catalogue-channel');
-  if (!group.querySelector('[data-channel="' + catalogue.channel + '"][aria-pressed="true"]')) {
-    group.innerHTML = channelControl(catalogue.channel, t);
-    group.querySelector('[aria-pressed="true"]').focus();
-  }
   const { count, html } = catalogueResults(t);
   document.querySelector('#result-count').textContent = count;
   document.querySelector('#catalogue-results').innerHTML = html;
 }
 
-function setQuoteChannel(channel) {
-  if (quote.channel === channel) return;
-  const previous = quote;
-  quote = isAvailable(getProduct(previous.productId), channel)
-    ? { ...previous, channel, options: previous.options.filter(id => {
-      const option = getProduct(previous.productId).options.find(item => item.id === id);
-      return !option?.productId || isAvailable(getProduct(option.productId), channel);
-    }) }
-    : emptyQuote(channel, '');
-  updateQuoteRoute();
-  render();
-  document.querySelector('#quote-form [data-channel="' + channel + '"]')?.focus();
-}
-
 function updateQuoteRoute() {
   const params = new URLSearchParams();
   if (quote.productId) params.set('product', quote.productId);
-  if (quote.channel === 'agency') params.set('channel', 'agency');
   history.replaceState(null, '', route('calculator', params));
 }
 
@@ -223,14 +197,6 @@ app.addEventListener('click', event => {
   if (button.dataset.category) {
     catalogue.category = button.dataset.category;
     updateCatalogue();
-    return;
-  }
-  if (button.dataset.channel) {
-    if (currentPage === 'calculator') setQuoteChannel(button.dataset.channel);
-    if (currentPage === 'catalogue') {
-      catalogue.channel = button.dataset.channel;
-      updateCatalogue();
-    }
     return;
   }
   switch (button.dataset.action) {
@@ -293,7 +259,7 @@ app.addEventListener('change', event => {
     updateCatalogue();
   }
   if (field.id === 'quote-product') {
-    quote = emptyQuote(quote.channel, field.value);
+    quote = emptyQuote(field.value);
     updateQuoteRoute();
     render();
     document.querySelector('#quote-product')?.focus({ preventScroll: true });
@@ -330,5 +296,3 @@ document.addEventListener('keydown', event => {
 });
 window.addEventListener('hashchange', () => render({ focusPage: true }));
 render();
-
-

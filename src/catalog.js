@@ -45,6 +45,14 @@ export function getProduct(id) {
   return productsById.get(id);
 }
 
+export function isAvailable(product) {
+  return product?.available === true;
+}
+
+export function isOptionAvailable(option) {
+  return option.available !== false && (!option.productId || isAvailable(getProduct(option.productId)));
+}
+
 export const featuredProducts = [
   'business-cards',
   'paper-boxes',
@@ -53,4 +61,3 @@ export const featuredProducts = [
   'acrylic-award',
   'ceramic-mugs',
 ].map(getProduct);
-

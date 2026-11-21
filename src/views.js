@@ -1,4 +1,4 @@
-import { business, categories, featuredProducts, getProduct } from './catalog.js';
+import { business, categories, featuredProducts, isOptionAvailable } from './catalog.js';
 import { formatSAR } from './quote.js';
 import { icon } from './icons.js';
 
@@ -10,19 +10,15 @@ export function escapeHtml(value = '') {
 
 export const route = (path, params) => '#/' + path + (params?.size ? '?' + params : '');
 export const categoryRoute = id => route('catalogue', new URLSearchParams({ category: id }));
-export const quoteRoute = (id, channel = 'retail') => route('calculator', new URLSearchParams({
-  product: id, ...(channel === 'agency' ? { channel } : {})
-}));
-export const productRoute = (id, channel = 'retail') => route('product/' + id,
-  channel === 'agency' ? new URLSearchParams({ channel }) : undefined);
+export const quoteRoute = id => route('calculator', new URLSearchParams({ product: id }));
+export const productRoute = id => route('product/' + id);
 
 export function label(record, key, lang) {
   return (lang === 'ar' && record[key + 'Ar']) || record[key];
 }
 
-export const isAvailable = (product, channel) => product?.available && (channel !== 'agency' || product.agencyAvailable);
-export const availableOptions = (product, channel) => product.options.filter(option =>
-  option.available !== false && (!option.productId || isAvailable(getProduct(option.productId), channel)));
+export const availableOptions = product => product.options.filter(option =>
+  option.id !== 'number-of-folds' && isOptionAvailable(option));
 
 export const quantityUnit = (quantity, t, lang) => lang === 'en' && quantity !== 1 ? 'pieces' : t.each;
 export const localeId = lang => lang === 'ar' ? 'ar-SA' : 'en-SA';
@@ -67,11 +63,11 @@ export function footer(t, lang) {
   </footer>`;
 }
 
-export function productCard(product, t, lang, channel = 'retail') {
+export function productCard(product, t, lang) {
   const name = escapeHtml(label(product, 'name', lang));
   const category = categories.find(item => item.id === product.category);
   return `<article class="product-card">
-    <a href="${productRoute(product.id, channel)}" class="product-link" aria-label="${name}">
+    <a href="${productRoute(product.id)}" class="product-link" aria-label="${name}">
       <div class="card-image"><img src="${product.image}" alt="" loading="lazy" width="960" height="720"></div>
       <div class="card-info">
         <p class="card-category">${escapeHtml(label(category, 'label', lang))}</p>
@@ -84,12 +80,6 @@ export function productCard(product, t, lang, channel = 'retail') {
 
 export function categoryChip(id, title, current) {
   return `<button type="button" class="filter-chip" data-category="${id}" aria-pressed="${id === current}">${icon(id === 'all' ? 'grid' : id)}${escapeHtml(title)}</button>`;
-}
-
-export function channelControl(current, t) {
-  return `<div class="segmented" role="group" aria-label="${t.channel}">
-    ${['retail', 'agency'].map(channel => `<button type="button" data-channel="${channel}" aria-pressed="${channel === current}">${channel === current ? icon('check') : ''}${t[channel]}</button>`).join('')}
-  </div>`;
 }
 
 export function pageHeading(title, text, eyebrow = '') {
@@ -143,15 +133,15 @@ export function home(t, lang) {
   </div>`;
 }
 
-export function productDetail(product, t, lang, channel, related) {
+export function productDetail(product, t, lang, related) {
   if (!product) return `${pageHeading(t.notFound, t.notFoundText)}<div class="wrap simple-section"><a class="button button-primary" href="#/catalogue">${t.explore}</a></div>`;
   const name = escapeHtml(label(product, 'name', lang));
   const category = categories.find(item => item.id === product.category);
-  const options = availableOptions(product, channel).filter(option => option.id !== 'number-of-folds');
-  const catalogueBack = route('catalogue', new URLSearchParams({ category: product.category, ...(channel === 'agency' ? { channel } : {}) }));
+  const options = availableOptions(product);
+  const catalogueBack = categoryRoute(product.category);
   const specLang = lang === 'ar' ? ' lang="en" dir="ltr"' : '';
   return `<div class="wrap product-page">
-    <nav class="breadcrumb" aria-label="${t.catalog}"><a href="${route('catalogue', channel === 'agency' ? new URLSearchParams({ channel }) : undefined)}">${t.catalog}</a>${icon('chevron')}<a href="${catalogueBack}">${escapeHtml(label(category, 'label', lang))}</a>${icon('chevron')}<bdi>${product.code}</bdi></nav>
+    <nav class="breadcrumb" aria-label="${t.catalog}"><a href="${route('catalogue')}">${t.catalog}</a>${icon('chevron')}<a href="${catalogueBack}">${escapeHtml(label(category, 'label', lang))}</a>${icon('chevron')}<bdi>${product.code}</bdi></nav>
     <div class="product-hero">
       <figure class="product-figure"><img src="${product.image}" alt="${name}" width="960" height="720"><figcaption>${t.referenceImage}</figcaption></figure>
       <section class="product-overview">
@@ -164,7 +154,7 @@ export function productDetail(product, t, lang, channel, related) {
           <div>${icon('layers')}<div><dt>${t.min}</dt><dd>${number(product.minimum, lang)} ${quantityUnit(product.minimum, t, lang)}</dd></div></div>
           <div>${icon('clock')}<div><dt>${t.lead}</dt><dd>${escapeHtml(label(product, 'turnaround', lang).replace(/^(Approximately |حوالي )/, ''))}</dd></div></div>
         </dl>
-        <a class="button button-primary product-calculate" href="${quoteRoute(product.id, channel)}">${icon('calculator')}${t.estimate}</a>
+        <a class="button button-primary product-calculate" href="${quoteRoute(product.id)}">${icon('calculator')}${t.estimate}</a>
       </section>
     </div>
     <section class="spec-section">
@@ -178,7 +168,7 @@ export function productDetail(product, t, lang, channel, related) {
       ${options.length ? `<div class="surface spec-card finishes"><h2>${t.finishes}</h2><ul>${options.map(option =>
         `<li><span>${escapeHtml(label(option, 'label', lang))}${option.dimensions ? ` <bdi class="detail-note">(${escapeHtml(option.dimensions)})</bdi>` : ''}</span><bdi>${escapeHtml(option.value)}</bdi></li>`).join('')}</ul></div>` : ''}
     </section>
-    ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-outline" href="${catalogueBack}">${t.back}</a></div><div class="product-grid">${related.map(item => productCard(item, t, lang, channel)).join('')}</div></section>` : ''}
+    ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-outline" href="${catalogueBack}">${t.back}</a></div><div class="product-grid">${related.map(item => productCard(item, t, lang)).join('')}</div></section>` : ''}
   </div>`;
 }
 
@@ -193,5 +183,3 @@ export function about(t, lang) {
       ${contact(t, lang)}
     </div>`;
 }
-
-

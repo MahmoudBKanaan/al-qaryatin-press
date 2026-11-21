@@ -1,11 +1,9 @@
-import { getProduct } from './catalog.js';
+import { isAvailable, isOptionAvailable } from './catalog.js';
 
 const dimensionUnits = new Set(['mm', 'cm', 'm']);
 const messages = {
   product: ['Choose a product from the catalogue.', 'اختر منتجًا من القائمة.'],
-  channel: ['Choose a customer type to check availability.', 'اختر نوع العميل للتحقق من التوفر.'],
   unavailable: ['This product is currently unavailable.', 'هذا المنتج غير متاح حاليًا.'],
-  agency: ['This product is unavailable for agency orders.', 'هذا المنتج غير متاح لطلبات الوكالات.'],
   quantity: ['Enter a positive whole-number quantity.', 'أدخل كمية صحيحة أكبر من صفر.'],
   aboveMaximum: ['Reduce the quantity to the catalogue maximum.', 'خفّض الكمية إلى الحد الأقصى المدوّن في الكتالوج.'],
   belowMinimum: ['Ask the press to confirm whether this quantity can be supplied and at what price.', 'تواصل مع المطبعة لتأكيد إمكانية تنفيذ هذه الكمية وسعرها.'],
@@ -13,7 +11,7 @@ const messages = {
   optionConflict: ['Select one alternative per finish or size.', 'اختر بديلًا واحدًا لكل مقاس أو تشطيب.'],
   combinedOptions: ['Ask the press how the selected options are priced together.', 'تواصل مع المطبعة لمعرفة سعر الخيارات المحددة عند جمعها.'],
   separateProduct: ['The selected add-on is priced separately.', 'تُسعَّر الإضافة المحددة بشكل منفصل.'],
-  unavailableOption: ['The selected add-on is currently unavailable for this customer type.', 'الإضافة المحددة غير متاحة حاليًا لنوع العميل هذا.'],
+  unavailableOption: ['The selected add-on is currently unavailable.', 'الإضافة المحددة غير متاحة حاليًا.'],
   unpricedOption: ['The catalogue leaves the price of this option open for confirmation.', 'يتطلب سعر هذا الخيار تأكيد المطبعة.'],
   customRequirements: ['Confirm the special requirements and associated charges with the press.', 'أكّد المتطلبات الخاصة وتكاليفها مع المطبعة.'],
   missingDimensions: ['Enter the applicable measurements and counts for the press to review.', 'أدخل الأبعاد والأعداد المطلوبة لتراجعها المطبعة.'],
@@ -47,18 +45,14 @@ function subtotalInRiyals(rate, quantity, multiplier = 1) {
   return Math.round(rate * quantity * multiplier * 100) / 100;
 }
 
-function optionIssue(option, channel) {
+function optionIssue(option) {
+  if (!isOptionAvailable(option)) return 'unavailableOption';
   if (option.multiplier !== null) return null;
-  if (!option.productId) return 'unpricedOption';
-
-  const extra = getProduct(option.productId);
-  const available = extra?.available && (channel === 'retail' || extra.agencyAvailable);
-  return available ? 'separateProduct' : 'unavailableOption';
+  return option.productId ? 'separateProduct' : 'unpricedOption';
 }
 
 export function calculateQuote(product, {
   quantity,
-  channel = 'retail',
   options = [],
   dimensions = {},
   customRequirements = false,
@@ -85,9 +79,7 @@ export function calculateQuote(product, {
   }
 
   if (!product) return result('invalid', ['product']);
-  if (channel !== 'retail' && channel !== 'agency') return result('invalid', ['channel']);
-  if (!product.available) return result('unavailable', ['unavailable']);
-  if (channel === 'agency' && !product.agencyAvailable) return result('unavailable', ['agency']);
+  if (!isAvailable(product)) return result('unavailable', ['unavailable']);
   if (!Number.isSafeInteger(count) || count < 1) return result('invalid', ['quantity']);
   if (count > product.maximum) return result('invalid', ['aboveMaximum']);
 
@@ -103,7 +95,7 @@ export function calculateQuote(product, {
     issueKeys.push('customRequirements');
   }
   for (const option of selectedOptions) {
-    const issue = optionIssue(option, channel);
+    const issue = optionIssue(option);
     if (issue) issueKeys.push(issue);
   }
 
@@ -134,4 +126,3 @@ export function formatSAR(value, locale = 'en-SA') {
     maximumFractionDigits: 2,
   }).format(value);
 }
-
