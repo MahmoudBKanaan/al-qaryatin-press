@@ -1087,7 +1087,7 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "image": "./media/product-33-v2.webp",
+    "image": "./media/product-33-v3.webp",
     "options": []
   },
   {
