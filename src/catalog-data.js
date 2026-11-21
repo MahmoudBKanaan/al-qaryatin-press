@@ -26,7 +26,7 @@ export const products = [
       "Single-sided or double-sided printing",
       "Custom contour cutting or straight cutting"
     ],
-    "image": "./media/product-2.webp",
+    "image": "./media/product-2-v2.webp",
     "options": [
       {
         "id": "double-sided-printing",
@@ -78,7 +78,7 @@ export const products = [
       "Gloss or matte lamination",
       "Rounded or sharp corners"
     ],
-    "image": "./media/product-3.webp",
+    "image": "./media/product-3-v2.webp",
     "options": []
   },
   {
@@ -308,7 +308,7 @@ export const products = [
       "Gloss or matte cover lamination",
       "Deluxe binding or magazine binding"
     ],
-    "image": "./media/product-8.webp",
+    "image": "./media/product-8-v2.webp",
     "options": []
   },
   {
@@ -336,7 +336,7 @@ export const products = [
       "Number of copies",
       "Stapling or metal wire binding"
     ],
-    "image": "./media/product-9.webp",
+    "image": "./media/product-9-v2.webp",
     "options": [
       {
         "id": "metal-wire-binding",
@@ -516,7 +516,7 @@ export const products = [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
     ],
-    "image": "./media/product-15.webp",
+    "image": "./media/product-15-v2.webp",
     "options": [
       {
         "id": "original-plus-two-copies",
@@ -556,7 +556,7 @@ export const products = [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
     ],
-    "image": "./media/product-16.webp",
+    "image": "./media/product-16-v2.webp",
     "options": [
       {
         "id": "original-plus-two-copies",
@@ -596,7 +596,7 @@ export const products = [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
     ],
-    "image": "./media/product-17.webp",
+    "image": "./media/product-17-v2.webp",
     "options": [
       {
         "id": "original-plus-two-copies",
@@ -636,7 +636,7 @@ export const products = [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
     ],
-    "image": "./media/product-18.webp",
+    "image": "./media/product-18-v2.webp",
     "options": [
       {
         "id": "original-plus-two-copies",
@@ -674,7 +674,7 @@ export const products = [
       "Pad length",
       "Pad width"
     ],
-    "image": "./media/product-19.webp",
+    "image": "./media/product-19-v2.webp",
     "options": []
   },
   {
@@ -890,7 +890,7 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "image": "./media/product-26.webp",
+    "image": "./media/product-26-v2.webp",
     "options": []
   },
   {
@@ -916,7 +916,7 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "image": "./media/product-27.webp",
+    "image": "./media/product-27-v2.webp",
     "options": []
   },
   {
@@ -940,7 +940,7 @@ export const products = [
     "intake": [
       "Size: small 50 x 150 cm, medium 85 x 200 cm, or large 100 x 200 cm"
     ],
-    "image": "./media/product-28.webp",
+    "image": "./media/product-28-v2.webp",
     "options": [
       {
         "id": "medium-size",
@@ -1009,7 +1009,7 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "image": "./media/product-30.webp",
+    "image": "./media/product-30-v2.webp",
     "options": []
   },
   {
@@ -1087,7 +1087,7 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "image": "./media/product-33.webp",
+    "image": "./media/product-33-v2.webp",
     "options": []
   },
   {
@@ -1173,7 +1173,7 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "image": "./media/product-36.webp",
+    "image": "./media/product-36-v2.webp",
     "options": []
   },
   {
@@ -1199,7 +1199,7 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "image": "./media/product-37.webp",
+    "image": "./media/product-37-v2.webp",
     "options": []
   },
   {
@@ -1226,7 +1226,7 @@ export const products = [
       "Quantity",
       "High or low Forex thickness"
     ],
-    "image": "./media/product-38.webp",
+    "image": "./media/product-38-v2.webp",
     "options": [
       {
         "id": "high-thickness",
@@ -1260,7 +1260,7 @@ export const products = [
       "Quantity",
       "High or low acrylic thickness"
     ],
-    "image": "./media/product-39.webp",
+    "image": "./media/product-39-v2.webp",
     "options": [
       {
         "id": "high-thickness",
@@ -1294,7 +1294,7 @@ export const products = [
       "Quantity",
       "High or low wood thickness"
     ],
-    "image": "./media/product-40.webp",
+    "image": "./media/product-40-v2.webp",
     "options": [
       {
         "id": "high-thickness",
@@ -1353,7 +1353,7 @@ export const products = [
       "Business name",
       "Business unified number"
     ],
-    "image": "./media/product-42.webp",
+    "image": "./media/product-42-v2.webp",
     "options": []
   },
   {
@@ -1403,7 +1403,7 @@ export const products = [
     "intake": [
       "Business name and unified number, or the stamp details"
     ],
-    "image": "./media/product-44.webp",
+    "image": "./media/product-44-v2.webp",
     "options": []
   },
   {
@@ -1427,7 +1427,7 @@ export const products = [
     "intake": [
       "Stamp details"
     ],
-    "image": "./media/product-45.webp",
+    "image": "./media/product-45-v2.webp",
     "options": []
   },
   {
@@ -1497,7 +1497,7 @@ export const products = [
     "intake": [
       "Cup size: medium 7, large 9, or extra-large 12"
     ],
-    "image": "./media/product-47.webp",
+    "image": "./media/product-47-v2.webp",
     "options": [
       {
         "id": "cup-size-7",
@@ -1569,7 +1569,7 @@ export const products = [
       "Folder details",
       "Selected design"
     ],
-    "image": "./media/product-49.webp",
+    "image": "./media/product-49-v2.webp",
     "options": []
   },
   {
@@ -1619,7 +1619,7 @@ export const products = [
       "Single-sided or double-sided printing",
       "Page count"
     ],
-    "image": "./media/product-51.webp",
+    "image": "./media/product-51-v2.webp",
     "options": []
   },
   {
@@ -1645,7 +1645,7 @@ export const products = [
       "Single-sided or double-sided printing",
       "Page count"
     ],
-    "image": "./media/product-52.webp",
+    "image": "./media/product-52-v2.webp",
     "options": []
   },
   {
@@ -1697,7 +1697,7 @@ export const products = [
       "Single-sided or double-sided printing",
       "Page count"
     ],
-    "image": "./media/product-54.webp",
+    "image": "./media/product-54-v2.webp",
     "options": []
   },
   {
@@ -1823,7 +1823,7 @@ export const products = [
     "intake": [
       "Printing details"
     ],
-    "image": "./media/product-59.webp",
+    "image": "./media/product-59-v2.webp",
     "options": []
   },
   {
@@ -1941,7 +1941,7 @@ export const products = [
       "Printing details",
       "Award shape"
     ],
-    "image": "./media/product-67.webp",
+    "image": "./media/product-67-v2.webp",
     "options": []
   },
   {
@@ -1966,7 +1966,7 @@ export const products = [
       "Printing details",
       "Award shape"
     ],
-    "image": "./media/product-69.webp",
+    "image": "./media/product-69-v2.webp",
     "options": []
   },
   {
@@ -2076,7 +2076,7 @@ export const products = [
       "Single-sided or double-sided printing",
       "Custom-shaped or straight cutting"
     ],
-    "image": "./media/product-73.webp",
+    "image": "./media/product-73-v2.webp",
     "options": [
       {
         "id": "double-sided-printing",
