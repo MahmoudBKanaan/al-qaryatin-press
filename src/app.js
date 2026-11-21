@@ -2,6 +2,7 @@ import { business, categories, getProduct, isAvailable, products } from './catal
 import { calculatorPage, makeBrief, quoteSummary } from './calculator-view.js';
 import { copy } from './copy.js';
 import { icon } from './icons.js';
+import { getPricePresets } from './quote.js';
 import {
   about, categoryChip, escapeHtml, footer, header, home, label, localeId, number,
   pageHeading, productCard, productDetail, route,
@@ -23,10 +24,11 @@ let noticeTimer;
 function emptyQuote(productId) {
   const found = getProduct(productId);
   const product = isAvailable(found) ? found : null;
+  const preset = product ? getPricePresets(product)[0] : null;
   return {
     productId: product?.id || '',
-    quantity: product?.minimum || '',
-    dimensions: { unit: 'cm' },
+    quantity: preset?.quantity ?? '',
+    preset: 0,
     options: [],
     extraEnabled: false,
     extra: '',
@@ -156,10 +158,7 @@ function updateQuoteRoute() {
 
 function updateSummary() {
   const summary = document.querySelector('#quote-summary');
-  const formulaOpen = summary.querySelector('.formula')?.open;
   summary.innerHTML = quoteSummary(getProduct(quote.productId), quote, copy[language], language);
-  const formula = summary.querySelector('.formula');
-  if (formula) formula.open = Boolean(formulaOpen);
 }
 
 function briefDialog(t) {
@@ -245,10 +244,6 @@ app.addEventListener('input', event => {
     quote.quantity = field.value;
     updateSummary();
   }
-  if (field.name?.startsWith('dimension-') && field.name !== 'dimension-unit') {
-    quote.dimensions[field.name.slice('dimension-'.length)] = field.value;
-    updateSummary();
-  }
   if (field.name === 'extra') quote.extra = field.value;
 });
 
@@ -264,8 +259,13 @@ app.addEventListener('change', event => {
     render();
     document.querySelector('#quote-product')?.focus({ preventScroll: true });
   }
-  if (field.name === 'dimension-unit') {
-    quote.dimensions.unit = field.value;
+  if (field.name === 'preset' && field.checked) {
+    const index = Number(field.value);
+    const preset = getPricePresets(getProduct(quote.productId))[index];
+    if (!preset) return;
+    quote.preset = index;
+    quote.quantity = preset.quantity;
+    document.querySelector('#quote-quantity').value = quote.quantity;
     updateSummary();
   }
   if (field.name === 'option' || field.name?.startsWith('group-')) {

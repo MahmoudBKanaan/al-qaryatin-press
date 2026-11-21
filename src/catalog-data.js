@@ -1,18 +1,14 @@
 export const products = [
   {
     "id": "custom-paper-cards",
-    "code": "A0001",
     "row": 2,
+    "code": "A0001",
     "name": "Custom paper cards",
     "nameAr": "كروت مخصصة",
     "category": "print",
     "catalogCategory": "Paper cards",
     "type": "Paper sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "square metre",
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -30,19 +26,18 @@ export const products = [
       "Single-sided or double-sided printing",
       "Custom contour cutting or straight cutting"
     ],
+    "image": "./media/product-2.webp",
     "options": [
       {
         "id": "double-sided-printing",
         "label": "Double-sided printing",
         "labelAr": "طباعة على وجهين",
-        "value": "2x",
         "multiplier": 2
       },
       {
         "id": "gloss-lamination",
         "label": "Gloss lamination",
         "labelAr": "سلفان لامع",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -50,7 +45,6 @@ export const products = [
         "id": "matte-lamination",
         "label": "Matte lamination",
         "labelAr": "سلفان مطفي",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -58,41 +52,20 @@ export const products = [
         "id": "custom-contour-cutting",
         "label": "Custom contour cutting",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-2.webp"
+    ]
   },
   {
     "id": "business-cards",
-    "code": "A0002",
     "row": 3,
+    "code": "A0002",
     "name": "Business cards",
     "nameAr": "كرت شخصي",
     "category": "print",
     "catalogCategory": "Paper cards",
     "type": "Paper sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 0.2,
-    "unit": "piece",
     "minimum": 500,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -105,25 +78,19 @@ export const products = [
       "Gloss or matte lamination",
       "Rounded or sharp corners"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-3.webp"
+    "image": "./media/product-3.webp",
+    "options": []
   },
   {
     "id": "paper-boxes",
-    "code": "A0003",
     "row": 4,
+    "code": "A0003",
     "name": "Paper boxes",
     "nameAr": "علب ورقية",
     "category": "packaging",
     "catalogCategory": "Paper packaging",
     "type": "Box",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 5000,
-    "unit": "cubic metre",
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "3 to 5 days",
@@ -140,12 +107,12 @@ export const products = [
       "Lamination choice: none, gloss or matte",
       "Outside-only printing or printing on both outside and inside"
     ],
+    "image": "./media/product-4.webp",
     "options": [
       {
         "id": "gloss-lamination",
         "label": "Gloss lamination",
         "labelAr": "سلفان لامع",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -153,48 +120,21 @@ export const products = [
         "id": "matte-lamination",
         "label": "Matte lamination",
         "labelAr": "سلفان مطفي",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       }
-    ],
-    "formula": "L × W × H × Q ÷ 10,000,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "height",
-        "label": "Height or thickness",
-        "labelAr": "الارتفاع أو السماكة",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-4.webp"
+    ]
   },
   {
     "id": "paper-bags",
-    "code": "A0004",
     "row": 5,
+    "code": "A0004",
     "name": "Paper bags",
     "nameAr": "أكياس ورقية",
     "category": "packaging",
     "catalogCategory": "Paper packaging",
     "type": "Bag",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 300,
-    "unit": "cubic metre",
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "3 to 5 days",
@@ -211,59 +151,32 @@ export const products = [
       "Silver or gold foil stamping",
       "Lamination choice: none, gloss or matte"
     ],
+    "image": "./media/product-5.webp",
     "options": [
       {
         "id": "inside-printing",
         "label": "Inside printing",
         "labelAr": "طباعة داخلية",
-        "value": "1.2x",
         "multiplier": 1.2
       },
       {
         "id": "foil-stamping",
         "label": "Foil stamping",
         "labelAr": "طباعة بالفويل",
-        "value": "1.2x",
         "multiplier": 1.2
       }
-    ],
-    "formula": "L × W × H × Q ÷ 10,000,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "height",
-        "label": "Height or thickness",
-        "labelAr": "الارتفاع أو السماكة",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-5.webp"
+    ]
   },
   {
     "id": "folded-leaflets",
-    "code": "A0005",
     "row": 6,
+    "code": "A0005",
     "name": "Folded leaflets",
     "nameAr": "مطويات",
     "category": "print",
     "catalogCategory": "Marketing print",
     "type": "Paper sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "square metre",
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -279,19 +192,18 @@ export const products = [
       "Quantity",
       "Lamination choice: none, gloss or matte"
     ],
+    "image": "./media/product-6.webp",
     "options": [
       {
         "id": "double-sided-printing",
         "label": "Double-sided printing",
         "labelAr": "طباعة على وجهين",
-        "value": "2x",
         "multiplier": 2
       },
       {
         "id": "gloss-lamination",
         "label": "Gloss lamination",
         "labelAr": "سلفان لامع",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -299,7 +211,6 @@ export const products = [
         "id": "matte-lamination",
         "label": "Matte lamination",
         "labelAr": "سلفان مطفي",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -307,54 +218,26 @@ export const products = [
         "id": "custom-contour-cutting",
         "label": "Custom contour cutting",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       },
       {
         "id": "number-of-folds",
         "label": "Number of folds",
         "labelAr": "عدد الطيات",
-        "value": "-",
         "multiplier": null
       }
-    ],
-    "formula": "L × W × F × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "folds",
-        "label": "Fold count",
-        "labelAr": "عدد الطيات",
-        "kind": "count"
-      }
-    ],
-    "image": "./media/product-6.webp"
+    ]
   },
   {
     "id": "brochures-and-flyers",
-    "code": "A0006",
     "row": 7,
+    "code": "A0006",
     "name": "Brochures and flyers",
     "nameAr": "بروشورات",
     "category": "print",
     "catalogCategory": "Marketing print",
     "type": "Paper sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "square metre",
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -369,19 +252,18 @@ export const products = [
       "Quantity",
       "Lamination choice: none, gloss or matte"
     ],
+    "image": "./media/product-7.webp",
     "options": [
       {
         "id": "double-sided-printing",
         "label": "Double-sided printing",
         "labelAr": "طباعة على وجهين",
-        "value": "2x",
         "multiplier": 2
       },
       {
         "id": "gloss-lamination",
         "label": "Gloss lamination",
         "labelAr": "سلفان لامع",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -389,7 +271,6 @@ export const products = [
         "id": "matte-lamination",
         "label": "Matte lamination",
         "labelAr": "سلفان مطفي",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -397,41 +278,20 @@ export const products = [
         "id": "custom-contour-cutting",
         "label": "Custom contour cutting",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-7.webp"
+    ]
   },
   {
     "id": "magazines",
-    "code": "A0007",
     "row": 8,
+    "code": "A0007",
     "name": "Magazines",
     "nameAr": "مجلات",
     "category": "print",
     "catalogCategory": "Books and magazines",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "square metre",
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -448,44 +308,19 @@ export const products = [
       "Gloss or matte cover lamination",
       "Deluxe binding or magazine binding"
     ],
-    "options": [],
-    "formula": "L × W × P × Q × 2 ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "pages",
-        "label": "Page count",
-        "labelAr": "عدد الصفحات",
-        "kind": "count"
-      }
-    ],
-    "image": "./media/product-8.webp"
+    "image": "./media/product-8.webp",
+    "options": []
   },
   {
     "id": "black-and-white-books",
-    "code": "A0008",
     "row": 9,
+    "code": "A0008",
     "name": "Black and white books",
     "nameAr": "كتب أسود",
     "category": "print",
     "catalogCategory": "Books and magazines",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 2,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -501,53 +336,27 @@ export const products = [
       "Number of copies",
       "Stapling or metal wire binding"
     ],
+    "image": "./media/product-9.webp",
     "options": [
       {
         "id": "metal-wire-binding",
         "label": "Metal wire binding",
         "labelAr": "تسليك معدني",
-        "value": "Additional product",
         "multiplier": null,
         "productId": "metal-wire-binding"
       }
-    ],
-    "formula": "L × W × P ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "pages",
-        "label": "Page count",
-        "labelAr": "عدد الصفحات",
-        "kind": "count"
-      }
-    ],
-    "image": "./media/product-9.webp"
+    ]
   },
   {
     "id": "colour-books",
-    "code": "A0009",
     "row": 10,
+    "code": "A0009",
     "name": "Colour books",
     "nameAr": "كتب ملون",
     "category": "print",
     "catalogCategory": "Books and magazines",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 10,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -563,53 +372,27 @@ export const products = [
       "Number of copies",
       "Stapling or metal wire binding"
     ],
+    "image": "./media/product-10.webp",
     "options": [
       {
         "id": "metal-wire-binding",
         "label": "Metal wire binding",
         "labelAr": "تسليك معدني",
-        "value": "Additional product",
         "multiplier": null,
         "productId": "metal-wire-binding"
       }
-    ],
-    "formula": "L × W × P ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "pages",
-        "label": "Page count",
-        "labelAr": "عدد الصفحات",
-        "kind": "count"
-      }
-    ],
-    "image": "./media/product-10.webp"
+    ]
   },
   {
     "id": "metal-wire-binding",
-    "code": "A0010",
     "row": 11,
+    "code": "A0010",
     "name": "Metal wire binding",
     "nameAr": "تسليك معدني",
     "category": "services",
     "catalogCategory": "Binding and finishing",
     "type": "Service",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 5,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -621,33 +404,26 @@ export const products = [
     "intake": [
       "Number of sheets in the book"
     ],
+    "image": "./media/product-11.webp",
     "options": [
       {
         "id": "more-than-100-sheets",
         "label": "More than 100 sheets",
         "labelAr": "أكثر من ١٠٠ ورقة",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-11.webp"
+    ]
   },
   {
     "id": "round-badges",
-    "code": "A0011",
     "row": 12,
+    "code": "A0011",
     "name": "Round badges",
     "nameAr": "بروش دائري",
     "category": "gifts",
     "catalogCategory": "Badges and pins",
     "type": "Badge",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 20,
-    "unit": "piece",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -657,25 +433,19 @@ export const products = [
     "specifications": "Print the circular face and assemble it with the base and pin.",
     "requirements": "Design content",
     "intake": [],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-12.webp"
+    "image": "./media/product-12.webp",
+    "options": []
   },
   {
     "id": "metal-badges",
-    "code": "A0012",
     "row": 13,
+    "code": "A0012",
     "name": "Metal badges",
     "nameAr": "بروش معدني",
     "category": "gifts",
     "catalogCategory": "Badges and pins",
     "type": "Badge",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "piece",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -688,25 +458,19 @@ export const products = [
       "Gold or silver colour",
       "Pin or magnetic rear fastener"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-13.webp"
+    "image": "./media/product-13.webp",
+    "options": []
   },
   {
     "id": "acrylic-badges",
-    "code": "A0013",
     "row": 14,
+    "code": "A0013",
     "name": "Acrylic badges",
     "nameAr": "بروش كريليك",
     "category": "gifts",
     "catalogCategory": "Badges and pins",
     "type": "Badge",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 15,
-    "unit": "piece",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -719,25 +483,19 @@ export const products = [
       "Front or rear printing",
       "Black or white acrylic"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-14.webp"
+    "image": "./media/product-14.webp",
+    "options": []
   },
   {
     "id": "payment-voucher-books",
-    "code": "A0014",
     "row": 15,
+    "code": "A0014",
     "name": "Payment voucher books",
     "nameAr": "دفتر سند صرف",
     "category": "stationery",
     "catalogCategory": "Business books and forms",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 4.5,
-    "unit": "square metre",
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -758,46 +516,26 @@ export const products = [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
     ],
+    "image": "./media/product-15.webp",
     "options": [
       {
         "id": "original-plus-two-copies",
         "label": "Original plus two copies",
         "labelAr": "أصل وصورتان",
-        "value": "1.2x",
         "multiplier": 1.2
       }
-    ],
-    "formula": "L × W × 100 ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-15.webp"
+    ]
   },
   {
     "id": "receipt-voucher-books",
-    "code": "A0015",
     "row": 16,
+    "code": "A0015",
     "name": "Receipt voucher books",
     "nameAr": "دفتر  سند قبض",
     "category": "stationery",
     "catalogCategory": "Business books and forms",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 4.5,
-    "unit": "square metre",
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -818,46 +556,26 @@ export const products = [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
     ],
+    "image": "./media/product-16.webp",
     "options": [
       {
         "id": "original-plus-two-copies",
         "label": "Original plus two copies",
         "labelAr": "أصل وصورتان",
-        "value": "1.2x",
         "multiplier": 1.2
       }
-    ],
-    "formula": "L × W × 100 ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-16.webp"
+    ]
   },
   {
     "id": "invoice-books",
-    "code": "A0016",
     "row": 17,
+    "code": "A0016",
     "name": "Invoice books",
     "nameAr": "دفتر  فاتورة",
     "category": "stationery",
     "catalogCategory": "Business books and forms",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 4.5,
-    "unit": "square metre",
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -878,46 +596,26 @@ export const products = [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
     ],
+    "image": "./media/product-17.webp",
     "options": [
       {
         "id": "original-plus-two-copies",
         "label": "Original plus two copies",
         "labelAr": "أصل وصورتان",
-        "value": "1.2x",
         "multiplier": 1.2
       }
-    ],
-    "formula": "L × W × 100 ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-17.webp"
+    ]
   },
   {
     "id": "commercial-contract-books",
-    "code": "A0017",
     "row": 18,
+    "code": "A0017",
     "name": "Commercial contract books",
     "nameAr": "دفتر  عقد تجاري",
     "category": "stationery",
     "catalogCategory": "Business books and forms",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 4.5,
-    "unit": "square metre",
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -938,46 +636,26 @@ export const products = [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
     ],
+    "image": "./media/product-18.webp",
     "options": [
       {
         "id": "original-plus-two-copies",
         "label": "Original plus two copies",
         "labelAr": "أصل وصورتان",
-        "value": "1.2x",
         "multiplier": 1.2
       }
-    ],
-    "formula": "L × W × 100 ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-18.webp"
+    ]
   },
   {
     "id": "company-letterhead-pads",
-    "code": "A0018",
     "row": 19,
+    "code": "A0018",
     "name": "Company letterhead pads",
     "nameAr": "دفتر ورق مؤسسة",
     "category": "stationery",
     "catalogCategory": "Office stationery",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 16,
-    "unit": "square metre",
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -996,38 +674,19 @@ export const products = [
       "Pad length",
       "Pad width"
     ],
-    "options": [],
-    "formula": "L × W × 100 ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-19.webp"
+    "image": "./media/product-19.webp",
+    "options": []
   },
   {
     "id": "paper-coupon-books",
-    "code": "A0019",
     "row": 20,
+    "code": "A0019",
     "name": "Paper coupon books",
     "nameAr": "دفتر كوبون ورقي",
     "category": "stationery",
     "catalogCategory": "Coupons",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 8,
-    "unit": "square metre",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -1042,38 +701,19 @@ export const products = [
       "Book length",
       "Book width"
     ],
-    "options": [],
-    "formula": "L × W × 100 ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-20.webp"
+    "image": "./media/product-20.webp",
+    "options": []
   },
   {
     "id": "premium-coupon-books",
-    "code": "A0020",
     "row": 21,
+    "code": "A0020",
     "name": "Premium coupon books",
     "nameAr": "دفتر كوبون فاخر",
     "category": "stationery",
     "catalogCategory": "Coupons",
     "type": "Book or pad",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "square metre",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -1088,38 +728,19 @@ export const products = [
       "Book width",
       "Thick or thin premium paper"
     ],
-    "options": [],
-    "formula": "L × W × 100 ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-21.webp"
+    "image": "./media/product-21.webp",
+    "options": []
   },
   {
     "id": "paper-stickers",
-    "code": "A0021",
     "row": 22,
+    "code": "A0021",
     "name": "Paper stickers",
     "nameAr": "ملصق (ستكر ورقي)",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 30,
-    "unit": "square metre",
     "minimum": 500,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -1134,46 +755,26 @@ export const products = [
       "Quantity",
       "Custom contour cutting or straight cutting"
     ],
+    "image": "./media/product-22.webp",
     "options": [
       {
         "id": "custom-contour-cutting",
         "label": "Custom contour cutting",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-22.webp"
+    ]
   },
   {
     "id": "small-nylon-stickers",
-    "code": "A0022",
     "row": 23,
+    "code": "A0022",
     "name": "Small nylon stickers",
     "nameAr": "ستكر نايلون (ملصقات صغيرة)",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 50,
-    "unit": "square metre",
     "minimum": 500,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -1188,46 +789,26 @@ export const products = [
       "Quantity",
       "Custom contour cutting or straight cutting"
     ],
+    "image": "./media/product-23.webp",
     "options": [
       {
         "id": "custom-contour-cutting",
         "label": "Custom contour cutting",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-23.webp"
+    ]
   },
   {
     "id": "large-a4-nylon-stickers",
-    "code": "A0022",
     "row": 24,
+    "code": "A0022",
     "name": "Large A4 nylon stickers",
     "nameAr": "ستكر نايلون (ملصقات كبيرة A4)",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 50,
-    "unit": "square metre",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -1242,46 +823,26 @@ export const products = [
       "Quantity",
       "Custom contour cutting or straight cutting"
     ],
+    "image": "./media/product-24.webp",
     "options": [
       {
         "id": "custom-contour-cutting",
         "label": "Custom contour cutting",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-24.webp"
+    ]
   },
   {
     "id": "large-a4-german-vinyl-stickers",
-    "code": "A0023",
     "row": 25,
+    "code": "A0023",
     "name": "Large A4 German vinyl stickers",
     "nameAr": "ستكر ألماني (ملصقات كبيرة A4)",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 70,
-    "unit": "square metre",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -1296,46 +857,26 @@ export const products = [
       "Quantity",
       "Custom contour cutting or straight cutting"
     ],
+    "image": "./media/product-25.webp",
     "options": [
       {
         "id": "custom-contour-cutting",
         "label": "Custom contour cutting",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-25.webp"
+    ]
   },
   {
     "id": "chinese-banner-printing",
-    "code": "A0024",
     "row": 26,
+    "code": "A0024",
     "name": "Chinese banner printing",
     "nameAr": "بنر صيني",
     "category": "signage",
     "catalogCategory": "Advertising banners",
     "type": "Banner",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 50,
-    "unit": "square metre",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -1349,38 +890,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-26.webp"
+    "image": "./media/product-26.webp",
+    "options": []
   },
   {
     "id": "korean-banner-printing",
-    "code": "A0025",
     "row": 27,
+    "code": "A0025",
     "name": "Korean banner printing",
     "nameAr": "بنر كوري",
     "category": "signage",
     "catalogCategory": "Advertising banners",
     "type": "Banner",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 70,
-    "unit": "square metre",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -1394,38 +916,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-27.webp"
+    "image": "./media/product-27.webp",
+    "options": []
   },
   {
     "id": "roll-up-display-stands",
-    "code": "A0026",
     "row": 28,
+    "code": "A0026",
     "name": "Roll up display stands",
     "nameAr": "رول أب",
     "category": "signage",
     "catalogCategory": "Display stands",
     "type": "Stand",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 140,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -1437,12 +940,12 @@ export const products = [
     "intake": [
       "Size: small 50 x 150 cm, medium 85 x 200 cm, or large 100 x 200 cm"
     ],
+    "image": "./media/product-28.webp",
     "options": [
       {
         "id": "medium-size",
         "label": "Medium size",
         "labelAr": "مقاس متوسط",
-        "value": "1.3x",
         "multiplier": 1.3,
         "group": "size",
         "dimensions": "85 × 200 cm"
@@ -1451,30 +954,22 @@ export const products = [
         "id": "large-size",
         "label": "Large size",
         "labelAr": "مقاس كبير",
-        "value": "1.8x",
         "multiplier": 1.8,
         "group": "size",
         "dimensions": "100 × 200 cm"
       }
-    ],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-28.webp"
+    ]
   },
   {
     "id": "canvas-prints",
-    "code": "A0027",
     "row": 29,
+    "code": "A0027",
     "name": "Canvas prints",
     "nameAr": "كانفس",
     "category": "signage",
     "catalogCategory": "Art prints",
     "type": "Canvas sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 70,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -1488,38 +983,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-29.webp"
+    "image": "./media/product-29.webp",
+    "options": []
   },
   {
     "id": "perforated-vinyl-stickers",
-    "code": "A0028",
     "row": 30,
+    "code": "A0028",
     "name": "Perforated vinyl stickers",
     "nameAr": "ستكر مثقب",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 70,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -1533,38 +1009,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-30.webp"
+    "image": "./media/product-30.webp",
+    "options": []
   },
   {
     "id": "cut-out-vinyl-graphics",
-    "code": "A0029",
     "row": 31,
+    "code": "A0029",
     "name": "Cut out vinyl graphics",
     "nameAr": "ستكر مفرغ",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 100,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -1578,38 +1035,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-31.webp"
+    "image": "./media/product-31.webp",
+    "options": []
   },
   {
     "id": "foam-wall-panels",
-    "code": "A0030",
     "row": 32,
+    "code": "A0030",
     "name": "Foam wall panels",
     "nameAr": "لوحة فلين جدارية",
     "category": "signage",
     "catalogCategory": "Wall panels",
     "type": "Panel",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 110,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -1623,38 +1061,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-32.webp"
+    "image": "./media/product-32.webp",
+    "options": []
   },
   {
     "id": "forex-wall-panels",
-    "code": "A0031",
     "row": 33,
+    "code": "A0031",
     "name": "Forex wall panels",
     "nameAr": "لوحة فوركس جدارية",
     "category": "signage",
     "catalogCategory": "Wall panels",
     "type": "Panel",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 140,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -1668,38 +1087,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-33.webp"
+    "image": "./media/product-33.webp",
+    "options": []
   },
   {
     "id": "stretched-canvas-wall-art",
-    "code": "A0032",
     "row": 34,
+    "code": "A0032",
     "name": "Stretched canvas wall art",
     "nameAr": "لوحة كانفس جدارية",
     "category": "signage",
     "catalogCategory": "Wall panels",
     "type": "Panel",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 180,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -1713,38 +1113,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-34.webp"
+    "image": "./media/product-34.webp",
+    "options": []
   },
   {
     "id": "acrylic-wall-panels",
-    "code": "A0033",
     "row": 35,
+    "code": "A0033",
     "name": "Acrylic wall panels",
     "nameAr": "لوحة كريليك جدارية",
     "category": "signage",
     "catalogCategory": "Wall panels",
     "type": "Panel",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 400,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -1759,46 +1140,26 @@ export const products = [
       "Quantity",
       "High or low acrylic thickness"
     ],
+    "image": "./media/product-35.webp",
     "options": [
       {
         "id": "high-thickness",
         "label": "High thickness",
         "labelAr": "سماكة عالية",
-        "value": "1.5x",
         "multiplier": 1.5
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-35.webp"
+    ]
   },
   {
     "id": "wall-mounted-banner-panels",
-    "code": "A0034",
     "row": 36,
+    "code": "A0034",
     "name": "Wall mounted banner panels",
     "nameAr": "لوحة بنر جدارية",
     "category": "signage",
     "catalogCategory": "Wall panels",
     "type": "Panel",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 140,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -1812,38 +1173,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-36.webp"
+    "image": "./media/product-36.webp",
+    "options": []
   },
   {
     "id": "foam-floor-display-stands",
-    "code": "A0035",
     "row": 37,
+    "code": "A0035",
     "name": "Foam floor display stands",
     "nameAr": "ستاند أرضي فلين",
     "category": "signage",
     "catalogCategory": "Display stands",
     "type": "Stand",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 140,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -1857,38 +1199,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-37.webp"
+    "image": "./media/product-37.webp",
+    "options": []
   },
   {
     "id": "forex-floor-display-stands",
-    "code": "A0036",
     "row": 38,
+    "code": "A0036",
     "name": "Forex floor display stands",
     "nameAr": "ستاند أرضي فوركس",
     "category": "signage",
     "catalogCategory": "Display stands",
     "type": "Stand",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 160,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -1903,46 +1226,26 @@ export const products = [
       "Quantity",
       "High or low Forex thickness"
     ],
+    "image": "./media/product-38.webp",
     "options": [
       {
         "id": "high-thickness",
         "label": "High thickness",
         "labelAr": "سماكة عالية",
-        "value": "1.5x",
         "multiplier": 1.5
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-38.webp"
+    ]
   },
   {
     "id": "acrylic-floor-stand",
-    "code": "A0037",
     "row": 39,
+    "code": "A0037",
     "name": "Acrylic floor stand",
     "nameAr": "ستاند أرضي أكريليك",
     "category": "signage",
     "catalogCategory": "Display stands",
     "type": "Stand",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 500,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 36 to 70 hours",
@@ -1957,46 +1260,26 @@ export const products = [
       "Quantity",
       "High or low acrylic thickness"
     ],
+    "image": "./media/product-39.webp",
     "options": [
       {
         "id": "high-thickness",
         "label": "High thickness",
         "labelAr": "سماكة عالية",
-        "value": "1.5x",
         "multiplier": 1.5
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-39.webp"
+    ]
   },
   {
     "id": "wooden-floor-stand",
-    "code": "A0038",
     "row": 40,
+    "code": "A0038",
     "name": "Wooden floor stand",
     "nameAr": "ستاند أرضي خشبي",
     "category": "signage",
     "catalogCategory": "Display stands",
     "type": "Stand",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 500,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 36 to 70 hours",
@@ -2011,46 +1294,26 @@ export const products = [
       "Quantity",
       "High or low wood thickness"
     ],
+    "image": "./media/product-40.webp",
     "options": [
       {
         "id": "high-thickness",
         "label": "High thickness",
         "labelAr": "سماكة عالية",
-        "value": "1.5x",
         "multiplier": 1.5
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-40.webp"
+    ]
   },
   {
     "id": "acrylic-desk-nameplate",
-    "code": "A0039",
     "row": 41,
+    "code": "A0039",
     "name": "Acrylic desk nameplate",
     "nameAr": "لوحة إسمية مكتبية كريليك",
     "category": "stationery",
     "catalogCategory": "Desk nameplates",
     "type": "Panel",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 200000,
-    "unit": "cubic metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -2065,44 +1328,19 @@ export const products = [
       "Item height",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × H × Q ÷ 10,000,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "height",
-        "label": "Height or thickness",
-        "labelAr": "الارتفاع أو السماكة",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-41.webp"
+    "image": "./media/product-41.webp",
+    "options": []
   },
   {
     "id": "self-inking-stamp",
-    "code": "A0040",
     "row": 42,
+    "code": "A0040",
     "name": "Self inking stamp",
     "nameAr": "ختم أوتامتيك",
     "category": "stationery",
     "catalogCategory": "Stamps",
     "type": "Stamp",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 100,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2115,25 +1353,19 @@ export const products = [
       "Business name",
       "Business unified number"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-42.webp"
+    "image": "./media/product-42.webp",
+    "options": []
   },
   {
     "id": "paper-table-stand",
-    "code": "A0041",
     "row": 43,
+    "code": "A0041",
     "name": "Paper table stand",
     "nameAr": "ستاند طاولة ورقي",
     "category": "signage",
     "catalogCategory": "Display stands",
     "type": "Sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 75,
-    "unit": "square metre",
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2147,38 +1379,19 @@ export const products = [
       "Item width",
       "Quantity"
     ],
-    "options": [],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-43.webp"
+    "image": "./media/product-43.webp",
+    "options": []
   },
   {
     "id": "manual-stamp",
-    "code": "A0042",
     "row": 44,
+    "code": "A0042",
     "name": "Manual stamp",
     "nameAr": "ختم يدوي",
     "category": "stationery",
     "catalogCategory": "Stamps",
     "type": "Stamp",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 60,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2190,25 +1403,19 @@ export const products = [
     "intake": [
       "Business name and unified number, or the stamp details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-44.webp"
+    "image": "./media/product-44.webp",
+    "options": []
   },
   {
     "id": "personal-stamp",
-    "code": "A0043",
     "row": 45,
+    "code": "A0043",
     "name": "Personal stamp",
     "nameAr": "ختم شخصي",
     "category": "stationery",
     "catalogCategory": "Stamps",
     "type": "Stamp",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 60,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2220,25 +1427,19 @@ export const products = [
     "intake": [
       "Stamp details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-45.webp"
+    "image": "./media/product-45.webp",
+    "options": []
   },
   {
     "id": "paper-cups",
-    "code": "A0044",
     "row": 46,
+    "code": "A0044",
     "name": "Paper cups",
     "nameAr": "أكواب ورقية",
     "category": "packaging",
     "catalogCategory": "Paper packaging",
     "type": "Cup",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 0.6,
-    "unit": "piece",
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "3 to 5 days",
@@ -2250,12 +1451,12 @@ export const products = [
     "intake": [
       "Cup size: medium 7, large 9, or extra-large 12"
     ],
+    "image": "./media/product-46.webp",
     "options": [
       {
         "id": "cup-size-7",
         "label": "Cup size 7",
         "labelAr": "مقاس كوب ٧",
-        "value": "1x",
         "multiplier": 1,
         "group": "size"
       },
@@ -2263,7 +1464,6 @@ export const products = [
         "id": "cup-size-9",
         "label": "Cup size 9",
         "labelAr": "مقاس كوب ٩",
-        "value": "1.2x",
         "multiplier": 1.2,
         "group": "size"
       },
@@ -2271,29 +1471,21 @@ export const products = [
         "id": "cup-size-12",
         "label": "Cup size 12",
         "labelAr": "مقاس كوب ١٢",
-        "value": "1.4x",
         "multiplier": 1.4,
         "group": "size"
       }
-    ],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-46.webp"
+    ]
   },
   {
     "id": "paper-cup-stickers",
-    "code": "A0045",
     "row": 47,
+    "code": "A0045",
     "name": "Paper cup stickers",
     "nameAr": "ستكر أكواب ورقية",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 0.4,
-    "unit": "piece",
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2305,12 +1497,12 @@ export const products = [
     "intake": [
       "Cup size: medium 7, large 9, or extra-large 12"
     ],
+    "image": "./media/product-47.webp",
     "options": [
       {
         "id": "cup-size-7",
         "label": "Cup size 7",
         "labelAr": "مقاس كوب ٧",
-        "value": "1x",
         "multiplier": 1,
         "group": "size"
       },
@@ -2318,7 +1510,6 @@ export const products = [
         "id": "cup-size-9",
         "label": "Cup size 9",
         "labelAr": "مقاس كوب ٩",
-        "value": "1.2x",
         "multiplier": 1.2,
         "group": "size"
       },
@@ -2326,29 +1517,21 @@ export const products = [
         "id": "cup-size-12",
         "label": "Cup size 12",
         "labelAr": "مقاس كوب ١٢",
-        "value": "1.4x",
         "multiplier": 1.4,
         "group": "size"
       }
-    ],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-47.webp"
+    ]
   },
   {
     "id": "paper-presentation-folder",
-    "code": "A0046",
     "row": 48,
+    "code": "A0046",
     "name": "Paper presentation folder",
     "nameAr": "ملف ورقي",
     "category": "stationery",
     "catalogCategory": "Office stationery",
     "type": "Sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 2,
-    "unit": "piece",
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -2361,25 +1544,19 @@ export const products = [
       "Folder details",
       "Gloss or matte lamination"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-48.webp"
+    "image": "./media/product-48.webp",
+    "options": []
   },
   {
     "id": "school-binder",
-    "code": "A0047",
     "row": 49,
+    "code": "A0047",
     "name": "School binder",
     "nameAr": "مجلد مدرسي",
     "category": "stationery",
     "catalogCategory": "Office stationery",
     "type": "Binder",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 60,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -2392,25 +1569,19 @@ export const products = [
       "Folder details",
       "Selected design"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-49.webp"
+    "image": "./media/product-49.webp",
+    "options": []
   },
   {
     "id": "ceramic-mugs",
-    "code": "A0048",
     "row": 50,
+    "code": "A0048",
     "name": "Ceramic mugs",
     "nameAr": "اكواب سيراميك",
     "category": "gifts",
     "catalogCategory": "Promotional gifts",
     "type": "Cup",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 15,
-    "unit": "piece",
     "minimum": 20,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2422,25 +1593,19 @@ export const products = [
     "intake": [
       "Mug details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-50.webp"
+    "image": "./media/product-50.webp",
+    "options": []
   },
   {
     "id": "black-and-white-document-printing",
-    "code": "A0049",
     "row": 51,
+    "code": "A0049",
     "name": "Black and white document printing",
     "nameAr": "طباعة أوراق (أسود)",
     "category": "services",
     "catalogCategory": "Document printing",
     "type": "Sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 2,
-    "unit": "square metre",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2454,44 +1619,19 @@ export const products = [
       "Single-sided or double-sided printing",
       "Page count"
     ],
-    "options": [],
-    "formula": "L × W × P ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "pages",
-        "label": "Page count",
-        "labelAr": "عدد الصفحات",
-        "kind": "count"
-      }
-    ],
-    "image": "./media/product-51.webp"
+    "image": "./media/product-51.webp",
+    "options": []
   },
   {
     "id": "colour-document-printing",
-    "code": "A0050",
     "row": 52,
+    "code": "A0050",
     "name": "Colour document printing",
     "nameAr": "طباعة أوراق (ملون)",
     "category": "services",
     "catalogCategory": "Document printing",
     "type": "Sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 10,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2505,44 +1645,19 @@ export const products = [
       "Single-sided or double-sided printing",
       "Page count"
     ],
-    "options": [],
-    "formula": "L × W × P ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "pages",
-        "label": "Page count",
-        "labelAr": "عدد الصفحات",
-        "kind": "count"
-      }
-    ],
-    "image": "./media/product-52.webp"
+    "image": "./media/product-52.webp",
+    "options": []
   },
   {
     "id": "colour-printing-on-black-paper",
-    "code": "A0051",
     "row": 53,
+    "code": "A0051",
     "name": "Colour printing on black paper",
     "nameAr": "طباعة ورق أسود (ملون)",
     "category": "print",
     "catalogCategory": "Specialty printing",
     "type": "Sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 15,
-    "unit": "square metre",
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -2556,44 +1671,19 @@ export const products = [
       "Single-sided or double-sided printing",
       "Page count"
     ],
-    "options": [],
-    "formula": "L × W × P ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "pages",
-        "label": "Page count",
-        "labelAr": "عدد الصفحات",
-        "kind": "count"
-      }
-    ],
-    "image": "./media/product-53.webp"
+    "image": "./media/product-53.webp",
+    "options": []
   },
   {
     "id": "premium-paper-printing",
-    "code": "A0052",
     "row": 54,
+    "code": "A0052",
     "name": "Premium paper printing",
     "nameAr": "طباعة ورق فاخر",
     "category": "print",
     "catalogCategory": "Specialty printing",
     "type": "Sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 20,
-    "unit": "square metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -2607,44 +1697,19 @@ export const products = [
       "Single-sided or double-sided printing",
       "Page count"
     ],
-    "options": [],
-    "formula": "L × W × P ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "pages",
-        "label": "Page count",
-        "labelAr": "عدد الصفحات",
-        "kind": "count"
-      }
-    ],
-    "image": "./media/product-54.webp"
+    "image": "./media/product-54.webp",
+    "options": []
   },
   {
     "id": "garment-printing",
-    "code": "A0053",
     "row": 55,
+    "code": "A0053",
     "name": "Garment printing",
     "nameAr": "طباعة ملابس",
     "category": "gifts",
     "catalogCategory": "Textile printing",
     "type": "Service",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2659,25 +1724,19 @@ export const products = [
       "Front print dimensions",
       "Back print dimensions, if applicable"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-55.webp"
+    "image": "./media/product-55.webp",
+    "options": []
   },
   {
     "id": "dtf-garment-printing",
-    "code": "A0054",
     "row": 56,
+    "code": "A0054",
     "name": "DTF garment printing",
     "nameAr": "طباعة ملابس DTF",
     "category": "gifts",
     "catalogCategory": "Textile printing",
     "type": "Service",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 40,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -2692,25 +1751,19 @@ export const products = [
       "Front print dimensions",
       "Back print dimensions, if applicable"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-56.webp"
+    "image": "./media/product-56.webp",
+    "options": []
   },
   {
     "id": "cap-printing",
-    "code": "A0055",
     "row": 57,
+    "code": "A0055",
     "name": "Cap printing",
     "nameAr": "طباعة طاقية",
     "category": "gifts",
     "catalogCategory": "Textile printing",
     "type": "Service",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 15,
-    "unit": "piece",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2722,25 +1775,19 @@ export const products = [
     "intake": [
       "Printing details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-57.webp"
+    "image": "./media/product-57.webp",
+    "options": []
   },
   {
     "id": "metal-keychain",
-    "code": "A0056",
     "row": 58,
+    "code": "A0056",
     "name": "Metal keychain",
     "nameAr": "ميدالية معدينة",
     "category": "gifts",
     "catalogCategory": "Promotional gifts",
     "type": "Keychain",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 35,
-    "unit": "piece",
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2752,25 +1799,19 @@ export const products = [
     "intake": [
       "Printing details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-58.webp"
+    "image": "./media/product-58.webp",
+    "options": []
   },
   {
     "id": "sash-printing",
-    "code": "A0057",
     "row": 59,
+    "code": "A0057",
     "name": "Sash printing",
     "nameAr": "طباعة وشاح",
     "category": "gifts",
     "catalogCategory": "Textile printing",
     "type": "Service",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 30,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -2782,25 +1823,19 @@ export const products = [
     "intake": [
       "Printing details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-59.webp"
+    "image": "./media/product-59.webp",
+    "options": []
   },
   {
     "id": "dtf-sash-printing",
-    "code": "A0058",
     "row": 60,
+    "code": "A0058",
     "name": "DTF sash printing",
     "nameAr": "طباعة وشاح DTF",
     "category": "gifts",
     "catalogCategory": "Textile printing",
     "type": "Service",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 40,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -2812,25 +1847,19 @@ export const products = [
     "intake": [
       "Printing details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-60.webp"
+    "image": "./media/product-60.webp",
+    "options": []
   },
   {
     "id": "acrylic-award",
-    "code": "A0061",
     "row": 63,
+    "code": "A0061",
     "name": "Acrylic award",
     "nameAr": "درع اكريليك",
     "category": "awards",
     "catalogCategory": "Presentation awards",
     "type": "Award",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 240,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -2843,25 +1872,19 @@ export const products = [
       "Award shape",
       "Printing details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-63.webp"
+    "image": "./media/product-63.webp",
+    "options": []
   },
   {
     "id": "glass-award",
-    "code": "A0062",
     "row": 64,
+    "code": "A0062",
     "name": "Glass award",
     "nameAr": "درع زجاج",
     "category": "awards",
     "catalogCategory": "Presentation awards",
     "type": "Award",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 140,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -2871,25 +1894,19 @@ export const products = [
     "specifications": "Apply the customization by printing or engraving on the selected model.",
     "requirements": "Design details",
     "intake": [],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-64.webp"
+    "image": "./media/product-64.webp",
+    "options": []
   },
   {
     "id": "custom-acrylic-award",
-    "code": "A0063",
     "row": 65,
+    "code": "A0063",
     "name": "Custom acrylic award",
     "nameAr": "درع اكريليك تفصيل",
     "category": "awards",
     "catalogCategory": "Presentation awards",
     "type": "Award",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 100000,
-    "unit": "cubic metre",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 36 to 70 hours",
@@ -2899,44 +1916,19 @@ export const products = [
     "specifications": "Cut the award outline according to the drawing and customize the text and logo.",
     "requirements": "Design details",
     "intake": [],
-    "options": [],
-    "formula": "L × W × H × Q ÷ 10,000,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      },
-      {
-        "id": "height",
-        "label": "Height or thickness",
-        "labelAr": "الارتفاع أو السماكة",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-65.webp"
+    "image": "./media/product-65.webp",
+    "options": []
   },
   {
     "id": "wooden-award",
-    "code": "A0065",
     "row": 67,
+    "code": "A0065",
     "name": "Wooden award",
     "nameAr": "درع خشبي",
     "category": "awards",
     "catalogCategory": "Presentation awards",
     "type": "Award",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 140,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -2949,25 +1941,19 @@ export const products = [
       "Printing details",
       "Award shape"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-67.webp"
+    "image": "./media/product-67.webp",
+    "options": []
   },
   {
     "id": "crystal-award",
-    "code": "A0067",
     "row": 69,
+    "code": "A0067",
     "name": "Crystal award",
     "nameAr": "درع كريستال",
     "category": "awards",
     "catalogCategory": "Presentation awards",
     "type": "Award",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 140,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
@@ -2980,25 +1966,19 @@ export const products = [
       "Printing details",
       "Award shape"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-69.webp"
+    "image": "./media/product-69.webp",
+    "options": []
   },
   {
     "id": "graphic-design",
-    "code": "A0069",
     "row": 71,
+    "code": "A0069",
     "name": "Graphic design",
     "nameAr": "تصميم جرافيك",
     "category": "services",
     "catalogCategory": "Design services",
     "type": "Service",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 50,
-    "unit": "piece",
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -3010,25 +1990,19 @@ export const products = [
     "intake": [
       "Printing details"
     ],
-    "options": [],
-    "formula": null,
-    "dimensions": [],
-    "image": "./media/product-71.webp"
+    "image": "./media/product-71.webp",
+    "options": []
   },
   {
     "id": "menu-printing",
-    "code": "A0070",
     "row": 72,
+    "code": "A0070",
     "name": "Menu printing",
     "nameAr": "طباعة منيو",
     "category": "print",
     "catalogCategory": "Restaurant printing",
     "type": "Sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "square metre",
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
@@ -3045,19 +2019,18 @@ export const products = [
       "Single-sided or double-sided printing",
       "Custom-shaped or straight cutting"
     ],
+    "image": "./media/product-72.webp",
     "options": [
       {
         "id": "double-sided-printing",
         "label": "Double-sided printing",
         "labelAr": "طباعة على وجهين",
-        "value": "2x",
         "multiplier": 2
       },
       {
         "id": "gloss-lamination",
         "label": "Gloss lamination",
         "labelAr": "سلفان لامع",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -3065,7 +2038,6 @@ export const products = [
         "id": "matte-lamination",
         "label": "Matte lamination",
         "labelAr": "سلفان مطفي",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -3073,41 +2045,20 @@ export const products = [
         "id": "custom-cutting-not-straight",
         "label": "Custom cutting (not straight)",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-72.webp"
+    ]
   },
   {
     "id": "paper-event-favours",
-    "code": "A0071",
     "row": 73,
+    "code": "A0071",
     "name": "Paper event favours",
     "nameAr": "توزيعات ورقية",
     "category": "print",
     "catalogCategory": "Event printing",
     "type": "Sheet",
     "available": true,
-    "currency": "SAR",
-    "sellingUnit": "piece",
-    "rate": 25,
-    "unit": "square metre",
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
@@ -3125,19 +2076,18 @@ export const products = [
       "Single-sided or double-sided printing",
       "Custom-shaped or straight cutting"
     ],
+    "image": "./media/product-73.webp",
     "options": [
       {
         "id": "double-sided-printing",
         "label": "Double-sided printing",
         "labelAr": "طباعة على وجهين",
-        "value": "2x",
         "multiplier": 2
       },
       {
         "id": "gloss-lamination",
         "label": "Gloss lamination",
         "labelAr": "سلفان لامع",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -3145,7 +2095,6 @@ export const products = [
         "id": "matte-lamination",
         "label": "Matte lamination",
         "labelAr": "سلفان مطفي",
-        "value": "1.5x",
         "multiplier": 1.5,
         "group": "lamination"
       },
@@ -3153,25 +2102,8 @@ export const products = [
         "id": "custom-cutting-not-straight",
         "label": "Custom cutting (not straight)",
         "labelAr": "قص حسب الشكل",
-        "value": "2x",
         "multiplier": 2
       }
-    ],
-    "formula": "L × W × Q ÷ 10,000",
-    "dimensions": [
-      {
-        "id": "length",
-        "label": "Length",
-        "labelAr": "الطول",
-        "kind": "measurement"
-      },
-      {
-        "id": "width",
-        "label": "Width",
-        "labelAr": "العرض",
-        "kind": "measurement"
-      }
-    ],
-    "image": "./media/product-73.webp"
+    ]
   }
 ];

@@ -1,7 +1,7 @@
 import { categories, isAvailable, products } from './catalog.js';
-import { calculateQuote } from './quote.js';
+import { calculateQuote, getPricePresets } from './quote.js';
 import { icon } from './icons.js';
-import { availableOptions, escapeHtml, label, localeId, money, number, pageHeading, priceUnit, productRoute, quantityUnit } from './views.js';
+import { availableOptions, escapeHtml, label, localeId, money, number, pageHeading, productRoute, quantityUnit } from './views.js';
 
 export function calculatorPage(state, t, lang) {
   const eligible = products.filter(isAvailable);
@@ -28,6 +28,8 @@ export function calculatorPage(state, t, lang) {
 }
 
 function orderFields(product, state, t, lang) {
+  const presets = getPricePresets(product);
+  const presetLabels = [t.smallOrder, t.standardOrder, t.largeOrder];
   const options = availableOptions(product);
   const optionGroups = new Map();
   const standalone = [];
@@ -38,18 +40,21 @@ function orderFields(product, state, t, lang) {
       optionGroups.get(option.group).push(option);
     }
   }
-  const measurements = product.dimensions.some(item => item.kind === 'measurement');
-  const dimensions = product.dimensions;
   const optionText = option => escapeHtml(label(option, 'label', lang)) +
-    (option.dimensions ? ' · ' + escapeHtml(option.dimensions) : '') + ' · ' + escapeHtml(option.value);
+    (option.dimensions ? ' · ' + escapeHtml(option.dimensions) : '');
   const isSelected = option => state.options.includes(option.id);
   const groupLabel = group => group === 'size' ? (lang === 'ar' ? 'المقاس' : 'Size') : (lang === 'ar' ? 'السلفان' : 'Lamination');
 
-  return `<label class="field"><span>${t.quantity}</span><input id="quote-quantity" name="quantity" inputmode="numeric" value="${escapeHtml(state.quantity)}" aria-describedby="qty-note"><small id="qty-note">${t.range} <bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}. ${t.qtyHint}</small></label>
-    ${dimensions.length ? `<fieldset class="field-block"><legend>${t.dim}</legend>
-      ${measurements ? `<label class="field"><span>${t.unit}</span><select name="dimension-unit">${['cm', 'mm', 'm'].map(unit => `<option value="${unit}" ${state.dimensions.unit === unit ? 'selected' : ''}>${t[unit]}</option>`).join('')}</select></label>` : ''}
-      <div class="dimension-grid">${dimensions.map(item => `<label class="field"><span>${escapeHtml(label(item, 'label', lang))}</span><input type="text" inputmode="${item.kind === 'measurement' ? 'decimal' : 'numeric'}" name="dimension-${item.id}" value="${escapeHtml(state.dimensions[item.id] || '')}" placeholder="${item.kind === 'measurement' ? '0.0' : '0'}"></label>`).join('')}</div>
-    </fieldset>` : ''}
+  return `<fieldset class="preset-field" aria-describedby="preset-note">
+      <legend>${t.preset}</legend>
+      <p class="preset-note" id="preset-note">${t.presetHint}</p>
+      <div class="preset-options">${presets.map((preset, index) => `<label class="preset-choice">
+        <input type="radio" name="preset" value="${index}" ${state.preset === index ? 'checked' : ''}>
+        <span class="preset-description"><strong>${presetLabels[index]}</strong><small>${escapeHtml(label(preset, 'size', lang))}</small></span>
+        <span class="preset-quantity"><bdi>${number(preset.quantity, lang)}</bdi> ${quantityUnit(preset.quantity, t, lang)}</span>
+      </label>`).join('')}</div>
+    </fieldset>
+    <label class="field"><span>${t.quantity}</span><input id="quote-quantity" name="quantity" inputmode="numeric" value="${escapeHtml(state.quantity)}" aria-describedby="qty-note"><small id="qty-note">${t.range} <bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}. ${t.qtyHint}</small></label>
     ${options.length ? `<fieldset class="field-block"><legend>${t.finishes}</legend>
       ${[...optionGroups].map(([group, items]) => `<label class="field"><span>${groupLabel(group)}</span><select name="group-${group}"><option value="">${t.noOptions}</option>
         ${items.map(option => `<option value="${option.id}" ${isSelected(option) ? 'selected' : ''}>${optionText(option)}</option>`).join('')}</select></label>`).join('')}
@@ -75,9 +80,8 @@ export function quoteSummary(product, state, t, lang) {
     <div class="estimate-product"><img src="${product.image}" alt="" width="92" height="70"><div><a href="${productRoute(product.id)}">${escapeHtml(label(product, 'name', lang))}</a><small><bdi>${product.code}</bdi></small></div></div>
     <div class="estimate-live">
       <dl class="estimate-lines">
-        <div><dt>${t.rate}</dt><dd><bdi>${money(product.rate, lang)}</bdi> / ${priceUnit(product.unit, t)}</dd></div>
+        ${result.preset ? `<div><dt>${t.preset}</dt><dd>${escapeHtml(label(result.preset, 'size', lang))}</dd></div>` : ''}
         ${result.quantity !== null ? `<div><dt>${t.quantity}</dt><dd>${number(result.quantity, lang)}</dd></div>` : ''}
-        ${result.multiplier && result.multiplier !== 1 ? `<div><dt>${t.multiplier}</dt><dd><bdi>×${number(result.multiplier, lang)}</bdi></dd></div>` : ''}
         ${knownBase ? `<div><dt>${t.baseSubtotal}</dt><dd><bdi>${money(result.baseSubtotal, lang)}</bdi></dd></div>` : ''}
       </dl>
       <div class="estimate-result ${hasSubtotal ? 'has-subtotal' : ''}"><h2>${hasSubtotal ? '' : icon('info')}${title}</h2>
@@ -85,7 +89,6 @@ export function quoteSummary(product, state, t, lang) {
         ${issues.length ? `<ul>${issues.map(issue => `<li>${escapeHtml(issue)}</li>`).join('')}</ul>` : ''}
       </div>
     </div>
-    ${product.formula ? `<details class="formula"><summary>${t.formula}</summary><bdi>${escapeHtml(product.formula)}</bdi></details>` : ''}
     <p class="estimate-note">${t.estimateNote}</p>
     ${canCopy ? `<button type="button" class="button button-primary copy-brief" data-action="brief">${icon('file')}${t.showBrief}</button>` : ''}
   </section>`;
@@ -94,20 +97,21 @@ export function quoteSummary(product, state, t, lang) {
 export function makeBrief(product, state, t, lang) {
   const result = calculateQuote(product, { ...state, customRequirements: state.extraEnabled });
   if (result.status !== 'estimate' && result.status !== 'review') return '';
-  const dimensionLines = product.dimensions.filter(item => state.dimensions[item.id]).map(item =>
-    label(item, 'label', lang) + ': ' + state.dimensions[item.id] + (item.kind === 'measurement' ? ' ' + state.dimensions.unit : ''));
   const items = [
     t.brief + ' · ' + t.copyright,
-    t.product + ': ' + label(product, 'name', lang) + ' (' + product.code + ')',
-    t.quantity + ': ' + number(result.quantity, lang),
-    ...dimensionLines,
+    t.product + ' — ' + label(product, 'name', lang) + ' (' + product.code + ')',
+    t.quantity + ' — ' + number(result.quantity, lang),
   ];
+  if (result.preset) {
+    const presetName = [t.smallOrder, t.standardOrder, t.largeOrder][state.preset];
+    items.push(t.preset + ' — ' + presetName + ' · ' + label(result.preset, 'size', lang));
+  }
   if (state.options.length) {
     const options = product.options.filter(option => state.options.includes(option.id));
-    items.push(t.finishes + ': ' + options.map(option => label(option, 'label', lang)).join(', '));
+    items.push(t.finishes + ' — ' + options.map(option => label(option, 'label', lang)).join(lang === 'ar' ? '، ' : ', '));
   }
-  if (state.extraEnabled) items.push(t.extra + ': ' + (state.extra.trim() || t.reviewExtra));
-  if (result.status === 'estimate') items.push(t.ready + ': ' + money(result.subtotal, lang));
+  if (state.extraEnabled) items.push(t.extra + ' — ' + (state.extra.trim() || t.reviewExtra));
+  if (result.status === 'estimate') items.push(t.ready + ' — ' + money(result.subtotal, lang));
   else items.push(t.review + '.', ...(lang === 'ar' ? result.issuesAr : result.issues));
   return items.join('\n');
 }

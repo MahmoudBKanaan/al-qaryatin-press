@@ -1,9 +1,10 @@
 import { isAvailable, isOptionAvailable } from './catalog.js';
+import { pricePresets } from './price-presets.js';
 
-const dimensionUnits = new Set(['mm', 'cm', 'm']);
 const messages = {
   product: ['Choose a product from the catalogue.', 'اختر منتجًا من القائمة.'],
   unavailable: ['This product is currently unavailable.', 'هذا المنتج غير متاح حاليًا.'],
+  preset: ['Choose one of the example order sizes.', 'اختر أحد مقاسات الطلب المقترحة.'],
   quantity: ['Enter a positive whole-number quantity.', 'أدخل كمية صحيحة أكبر من صفر.'],
   aboveMaximum: ['Reduce the quantity to the catalogue maximum.', 'خفّض الكمية إلى الحد الأقصى المدوّن في الكتالوج.'],
   belowMinimum: ['Ask the press to confirm whether this quantity can be supplied and at what price.', 'تواصل مع المطبعة لتأكيد إمكانية تنفيذ هذه الكمية وسعرها.'],
@@ -13,9 +14,7 @@ const messages = {
   separateProduct: ['The selected add-on is priced separately.', 'تُسعَّر الإضافة المحددة بشكل منفصل.'],
   unavailableOption: ['The selected add-on is currently unavailable.', 'الإضافة المحددة غير متاحة حاليًا.'],
   unpricedOption: ['The catalogue leaves the price of this option open for confirmation.', 'يتطلب سعر هذا الخيار تأكيد المطبعة.'],
-  customRequirements: ['Confirm the special requirements and associated charges with the press.', 'أكّد المتطلبات الخاصة وتكاليفها مع المطبعة.'],
-  missingDimensions: ['Enter the applicable measurements and counts for the press to review.', 'أدخل الأبعاد والأعداد المطلوبة لتراجعها المطبعة.'],
-  dimensionalPricing: ['The press needs to confirm the measurement and count basis before pricing this product.', 'تحتاج المطبعة إلى تأكيد طريقة القياس والعد قبل تسعير هذا المنتج.'],
+  customRequirements: ['Confirm the custom size or requirements and associated charges with the press.', 'أكّد المقاس المخصص أو المتطلبات الخاصة وتكاليفها مع المطبعة.'],
 };
 
 function numericInput(value) {
@@ -32,46 +31,58 @@ function numericInput(value) {
   return /^\d+(?:\.\d+)?$/.test(normalized) ? Number(normalized) : Number.NaN;
 }
 
-function completeDimensions(product, dimensions) {
-  return product.dimensions.every(({ id, kind }) => {
-    const value = numericInput(dimensions[id]);
-    if (!Number.isFinite(value) || value <= 0) return false;
-
-    return kind === 'count' ? Number.isSafeInteger(value) : dimensionUnits.has(dimensions[id + 'Unit'] ?? dimensions.unit);
-  });
+function subtotalInRiyals(unitPrice, quantity, multiplier = 1) {
+  const total = unitPrice * quantity * multiplier;
+  return Math.round((total + Number.EPSILON * total) * 100) / 100;
 }
 
-function subtotalInRiyals(rate, quantity, multiplier = 1) {
-  return Math.round(rate * quantity * multiplier * 100) / 100;
+export function getPricePresets(product) {
+  return isAvailable(product) ? pricePresets[product.row] ?? [] : [];
+}
+
+export function getPriceRange(product) {
+  const presets = getPricePresets(product);
+  if (!presets.length) return null;
+
+  const totals = presets.map(item => subtotalInRiyals(item.unitPrice, item.quantity));
+  return {
+    minimum: Math.min(...totals),
+    maximum: Math.max(...totals),
+    small: presets[0],
+    large: presets.at(-1),
+  };
 }
 
 function optionIssue(option) {
   if (!isOptionAvailable(option)) return 'unavailableOption';
-  if (option.multiplier !== null) return null;
+  if (Number.isFinite(option.multiplier)) return null;
   return option.productId ? 'separateProduct' : 'unpricedOption';
 }
 
 export function calculateQuote(product, {
   quantity,
+  preset,
   options = [],
-  dimensions = {},
   customRequirements = false,
 } = {}) {
-  const count = numericInput(quantity);
-  const displayedRate = product?.rate ?? null;
+  const presets = getPricePresets(product);
+  const distinctIds = [...new Set(options)];
+  const sizeSelections = presets.filter(item => item.optionId && distinctIds.includes(item.optionId));
+  const selected = preset === undefined
+    ? sizeSelections[0] ?? presets[0]
+    : Number.isInteger(preset) ? presets[preset] : undefined;
+  const count = numericInput(quantity ?? selected?.quantity);
   let baseSubtotal = null;
   let multiplier = null;
 
   function result(status, issueKeys = [], subtotal = null) {
     const uniqueIssues = [...new Set(issueKeys)];
-
     return {
       status,
       subtotal,
       baseSubtotal,
       quantity: Number.isFinite(count) ? count : null,
-      rate: displayedRate,
-      unit: product?.unit ?? null,
+      preset: selected ?? null,
       multiplier,
       issues: uniqueIssues.map(key => messages[key][0]),
       issuesAr: uniqueIssues.map(key => messages[key][1]),
@@ -80,17 +91,21 @@ export function calculateQuote(product, {
 
   if (!product) return result('invalid', ['product']);
   if (!isAvailable(product)) return result('unavailable', ['unavailable']);
+  if (!selected) return result('invalid', ['preset']);
   if (!Number.isSafeInteger(count) || count < 1) return result('invalid', ['quantity']);
   if (count > product.maximum) return result('invalid', ['aboveMaximum']);
+  if (sizeSelections.length > 1 || (sizeSelections[0] && sizeSelections[0] !== selected)) {
+    return result('invalid', ['optionConflict']);
+  }
 
-  const distinctIds = [...new Set(options)];
-  const selectedOptions = product.options.filter(option => distinctIds.includes(option.id));
+  const extraIds = distinctIds.filter(id => id !== selected.optionId);
+  const selectedOptions = product.options.filter(option => extraIds.includes(option.id));
   const selectedGroups = selectedOptions.map(option => option.group).filter(Boolean);
   if (new Set(selectedGroups).size !== selectedGroups.length) return result('invalid', ['optionConflict']);
 
   const issueKeys = [];
   if (count < product.minimum) issueKeys.push('belowMinimum');
-  if (selectedOptions.length !== distinctIds.length) issueKeys.push('unknownOption');
+  if (selectedOptions.length !== extraIds.length) issueKeys.push('unknownOption');
   if (typeof customRequirements === 'string' ? customRequirements.trim() : customRequirements) {
     issueKeys.push('customRequirements');
   }
@@ -99,21 +114,13 @@ export function calculateQuote(product, {
     if (issue) issueKeys.push(issue);
   }
 
-  const pricedOptions = selectedOptions.filter(option => option.multiplier !== null);
+  const pricedOptions = selectedOptions.filter(option => Number.isFinite(option.multiplier));
   if (pricedOptions.length > 1) issueKeys.push('combinedOptions');
-
-  if (product.unit !== 'piece') {
-    if (!completeDimensions(product, dimensions)) issueKeys.push('missingDimensions');
-    issueKeys.push('dimensionalPricing');
-    return result('review', issueKeys);
-  }
-
-  if (count >= product.minimum) baseSubtotal = subtotalInRiyals(product.rate, count);
+  if (count >= product.minimum) baseSubtotal = subtotalInRiyals(selected.unitPrice, count);
   if (issueKeys.length) return result('review', issueKeys);
 
   multiplier = pricedOptions[0]?.multiplier ?? 1;
-  const subtotal = subtotalInRiyals(product.rate, count, multiplier);
-  return result('estimate', [], subtotal);
+  return result('estimate', [], subtotalInRiyals(selected.unitPrice, count, multiplier));
 }
 
 export function formatSAR(value, locale = 'en-SA') {

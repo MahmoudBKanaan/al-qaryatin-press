@@ -1,5 +1,5 @@
 import { business, categories, featuredProducts, isOptionAvailable } from './catalog.js';
-import { formatSAR } from './quote.js';
+import { formatSAR, getPricePresets, getPriceRange } from './quote.js';
 import { icon } from './icons.js';
 
 export function escapeHtml(value = '') {
@@ -17,15 +17,23 @@ export function label(record, key, lang) {
   return (lang === 'ar' && record[key + 'Ar']) || record[key];
 }
 
-export const availableOptions = product => product.options.filter(option =>
-  option.id !== 'number-of-folds' && isOptionAvailable(option));
+export function availableOptions(product) {
+  const presetOptions = new Set(getPricePresets(product).map(preset => preset.optionId).filter(Boolean));
+  return product.options.filter(option =>
+    option.id !== 'number-of-folds' && isOptionAvailable(option) && !presetOptions.has(option.id));
+}
 
 export const quantityUnit = (quantity, t, lang) => lang === 'en' && quantity !== 1 ? 'pieces' : t.each;
 export const localeId = lang => lang === 'ar' ? 'ar-SA' : 'en-SA';
 export const number = (value, lang) => new Intl.NumberFormat(localeId(lang)).format(value);
 export const money = (value, lang) => formatSAR(value, localeId(lang));
-export function priceUnit(unit, t) {
-  return { piece: t.each, 'square metre': t.sqm, 'cubic metre': t.cbm }[unit] || unit;
+function priceRange(range, lang) {
+  if (range.minimum === range.maximum) return money(range.minimum, lang);
+  const formatter = new Intl.NumberFormat(localeId(lang), {
+    style: 'currency', currency: 'SAR', minimumFractionDigits: 0, maximumFractionDigits: 2,
+  });
+  return formatter.formatRange?.(range.minimum, range.maximum) ??
+    [money(range.minimum, lang), money(range.maximum, lang)].join(' – ');
 }
 
 function brand(lang, light = false) {
@@ -66,13 +74,14 @@ export function footer(t, lang) {
 export function productCard(product, t, lang) {
   const name = escapeHtml(label(product, 'name', lang));
   const category = categories.find(item => item.id === product.category);
+  const range = getPriceRange(product);
   return `<article class="product-card">
-    <a href="${productRoute(product.id)}" class="product-link" aria-label="${name}">
+    <a href="${productRoute(product.id)}" class="product-link" aria-labelledby="name-${product.id}" aria-describedby="price-${product.id}">
       <div class="card-image"><img src="${product.image}" alt="" loading="lazy" width="960" height="720"></div>
       <div class="card-info">
         <p class="card-category">${escapeHtml(label(category, 'label', lang))}</p>
-        <h3>${name}</h3>
-        <div class="card-bottom"><span><bdi class="card-rate">${money(product.rate, lang)}</bdi> <span class="rate-unit">/ ${priceUnit(product.unit, t)}</span></span><span class="card-more">${icon('diagonal')}</span></div>
+        <h3 id="name-${product.id}">${name}</h3>
+        <div class="card-bottom"><span class="card-pricing" id="price-${product.id}"><span>${t.priceRange}</span><bdi>${priceRange(range, lang)}</bdi></span><span class="card-more">${icon('diagonal')}</span></div>
       </div>
     </a>
   </article>`;
@@ -137,7 +146,8 @@ export function productDetail(product, t, lang, related) {
   if (!product) return `${pageHeading(t.notFound, t.notFoundText)}<div class="wrap simple-section"><a class="button button-primary" href="#/catalogue">${t.explore}</a></div>`;
   const name = escapeHtml(label(product, 'name', lang));
   const category = categories.find(item => item.id === product.category);
-  const options = availableOptions(product);
+  const options = product.options.filter(option => option.id !== 'number-of-folds' && isOptionAvailable(option));
+  const range = getPriceRange(product);
   const catalogueBack = categoryRoute(product.category);
   const specLang = lang === 'ar' ? ' lang="en" dir="ltr"' : '';
   return `<div class="wrap product-page">
@@ -149,7 +159,13 @@ export function productDetail(product, t, lang, related) {
         <h1 id="page-title" tabindex="-1">${name}</h1>
         <p class="product-alias" lang="${lang === 'ar' ? 'en' : 'ar'}">${escapeHtml(lang === 'ar' ? product.name : product.nameAr)}</p>
         <p class="product-description"${specLang}>${escapeHtml(product.description)}</p>
-        <div class="product-rate"><span>${t.rate}</span><div><bdi>${money(product.rate, lang)}</bdi><small> / ${priceUnit(product.unit, t)}</small></div></div>
+        <div class="product-pricing">
+          <p class="price-caption">${t.priceRange}</p>
+          <bdi class="product-price">${priceRange(range, lang)}</bdi>
+          <p class="range-note">${t.rangeNote}</p>
+          <dl class="order-examples">${[[t.smallOrder, range.small], [t.largeOrder, range.large]].map(([name, order]) =>
+            `<div><dt>${name}</dt><dd>${escapeHtml(label(order, 'size', lang))}<small>${number(order.quantity, lang)} ${quantityUnit(order.quantity, t, lang)}</small></dd></div>`).join('')}</dl>
+        </div>
         <dl class="product-stats">
           <div>${icon('layers')}<div><dt>${t.min}</dt><dd>${number(product.minimum, lang)} ${quantityUnit(product.minimum, t, lang)}</dd></div></div>
           <div>${icon('clock')}<div><dt>${t.lead}</dt><dd>${escapeHtml(label(product, 'turnaround', lang).replace(/^(Approximately |حوالي )/, ''))}</dd></div></div>
@@ -166,7 +182,7 @@ export function productDetail(product, t, lang, related) {
         <ul${specLang}>${[product.requirements, ...product.intake].filter(Boolean).map(text => `<li>${escapeHtml(text)}</li>`).join('')}</ul>
       </div>
       ${options.length ? `<div class="surface spec-card finishes"><h2>${t.finishes}</h2><ul>${options.map(option =>
-        `<li><span>${escapeHtml(label(option, 'label', lang))}${option.dimensions ? ` <bdi class="detail-note">(${escapeHtml(option.dimensions)})</bdi>` : ''}</span><bdi>${escapeHtml(option.value)}</bdi></li>`).join('')}</ul></div>` : ''}
+        `<li><span>${escapeHtml(label(option, 'label', lang))}${option.dimensions ? ` <bdi class="detail-note">(${escapeHtml(option.dimensions)})</bdi>` : ''}</span></li>`).join('')}</ul></div>` : ''}
     </section>
     ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-outline" href="${catalogueBack}">${t.back}</a></div><div class="product-grid">${related.map(item => productCard(item, t, lang)).join('')}</div></section>` : ''}
   </div>`;

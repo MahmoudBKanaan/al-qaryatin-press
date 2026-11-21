@@ -4,7 +4,7 @@ import { access, readFile, readdir } from 'node:fs/promises';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { getProduct, products } from '../dist/src/catalog.js';
-import { calculateQuote } from '../dist/src/quote.js';
+import { calculateQuote, getPricePresets, getPriceRange } from '../dist/src/quote.js';
 import { productRoute, quoteRoute } from '../dist/src/views.js';
 
 const site = new URL('../dist/', import.meta.url);
@@ -48,20 +48,43 @@ test('published source and navigation use a single public catalogue', async () =
   const filenames = ['index.html', 'styles.css', ...(await readdir(new URL('src/', site))).map(name => 'src/' + name)];
   for (const filename of filenames) {
     const source = await readFile(new URL(filename, site), 'utf8');
-    assert.doesNotMatch(source, /agency|agencies|الوكالات|قناة البيع|data-channel/i, filename);
+    assert.doesNotMatch(source, /agency|agencies|الوكالات|قناة البيع|data-channel|m[²³]|م[²³]|square metr|cubic metr|متر مربع|متر مكعب|catalogue pricing basis/i, filename);
   }
   assert.equal(productRoute('business-cards'), '#/product/business-cards');
   assert.equal(quoteRoute('business-cards'), '#/calculator?product=business-cards');
 });
 
-test('the calculator preserves documented estimates and reviews dimensional orders', () => {
+test('every published product has three priced examples and a matching order range', () => {
+  const excluded = ['rate', 'unit', 'sellingUnit', 'formula', 'conversionValue', 'dimensions'];
+  for (const product of products) {
+    assert.ok(excluded.every(key => !Object.hasOwn(product, key)), product.id);
+    const presets = getPricePresets(product);
+    assert.equal(presets.length, 3, product.id);
+    const amounts = presets.map((preset, index) => {
+      assert.ok(preset.size && preset.sizeAr, product.id);
+      assert.ok(preset.quantity >= product.minimum && preset.quantity <= product.maximum, product.id);
+      const quote = calculateQuote(product, { preset: index });
+      assert.equal(quote.status, 'estimate', product.id);
+      assert.ok(quote.subtotal > 0, product.id);
+      return quote.subtotal;
+    });
+    const range = getPriceRange(product);
+    assert.equal(range.minimum, amounts[0], product.id);
+    assert.equal(range.maximum, amounts.at(-1), product.id);
+    assert.ok(amounts[0] <= amounts[1] && amounts[1] <= amounts[2], product.id);
+  }
+});
+
+test('the calculator rounds the order total and keeps custom quotes separate', () => {
   const businessCards = calculateQuote(getProduct('business-cards'), { quantity: 500 });
-  const rollUp = calculateQuote(getProduct('roll-up-display-stands'), { quantity: 1, options: ['medium-size'] });
-  const paperBoxes = calculateQuote(getProduct('paper-boxes'), { quantity: 1000, dimensions: { length: 20, width: 15, height: 10, unit: 'cm' } });
-  assert.equal(businessCards.status, 'estimate');
+  const rollUp = calculateQuote(getProduct('roll-up-display-stands'), { quantity: 1, preset: 1, options: ['medium-size'] });
+  const cards = calculateQuote(getProduct('custom-paper-cards'), { preset: 0, quantity: 100 });
+  const paperBoxes = calculateQuote(getProduct('paper-boxes'), { quantity: 1000, preset: 0 });
+  const customBoxes = calculateQuote(getProduct('paper-boxes'), { quantity: 1000, preset: 0, customRequirements: true });
   assert.equal(businessCards.subtotal, 100);
-  assert.equal(rollUp.status, 'estimate');
   assert.equal(rollUp.subtotal, 182);
-  assert.equal(paperBoxes.status, 'review');
-  assert.equal(paperBoxes.subtotal, null);
+  assert.equal(cards.subtotal, 11.25);
+  assert.equal(paperBoxes.subtotal, 2500);
+  assert.equal(customBoxes.status, 'review');
+  assert.equal(customBoxes.subtotal, null);
 });
