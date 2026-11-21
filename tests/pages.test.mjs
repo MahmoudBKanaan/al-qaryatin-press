@@ -34,6 +34,16 @@ test('the site ships valid scripts, mockups, and both Arabic font subsets', asyn
   assert.notEqual(productRoute(variants[0].id), productRoute(variants[1].id));
 });
 
+test('the public entry points to a single version of the module graph', async () => {
+  const index = await readFile(new URL('index.html', site), 'utf8');
+  const entry = index.match(/src="(\.\/app\/[a-f0-9]{16}\/app\.js)"/)?.[1];
+  assert.ok(entry);
+  assert.match(index, /href="\.\/styles\.css\?v=[a-f0-9]{16}"/);
+  const directory = new URL('./', new URL(entry, site));
+  for (const module of await readdir(new URL('src/', site))) {
+    assert.deepEqual(await readFile(new URL(module, directory)), await readFile(new URL('src/' + module, site)));
+  }
+});
 test('published source and navigation use a single public catalogue', async () => {
   const filenames = ['index.html', 'styles.css', ...(await readdir(new URL('src/', site))).map(name => 'src/' + name)];
   for (const filename of filenames) {
