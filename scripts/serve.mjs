@@ -12,6 +12,7 @@ const types = {
   '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.webp': 'image/webp',
+  '.woff2': 'font/woff2',
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
@@ -21,7 +22,7 @@ http.createServer((request, response) => {
   try {
     const url = new URL(request.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);
-    const allowed = pathname === '/' || /^\/(?:index\.html|styles\.css|src\/[^/]+\.js|media\/[^/]+)$/.test(pathname);
+    const allowed = pathname === '/' || /^\/(?:index\.html|styles\.css|src\/[^/]+\.js|(?:media|fonts)\/[^/]+)$/.test(pathname);
     if (!allowed) {
       response.writeHead(404).end('Not found');
       return;
