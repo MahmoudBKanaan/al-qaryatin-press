@@ -1,0 +1,6 @@
+{
+  "name": "al-qaryatin-press",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "node scripts/serve.mjs" }
+}
