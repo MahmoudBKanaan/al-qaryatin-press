@@ -1427,7 +1427,7 @@ export const products = [
     "intake": [
       "Stamp details"
     ],
-    "image": "./media/product-45-v2.webp",
+    "image": "./media/product-45-v3.webp",
     "options": []
   },
   {
