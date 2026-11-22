@@ -11,7 +11,7 @@ export function calculatorPage(state, t, lang) {
       label(a, 'name', lang).localeCompare(label(b, 'name', lang), localeId(lang)));
     if (!options.length) return '';
     return `<optgroup label="${escapeHtml(label(category, 'label', lang))}">${options.map(item =>
-      `<option value="${item.id}" ${product?.id === item.id ? 'selected' : ''}>${escapeHtml(label(item, 'name', lang))} · ${item.code}</option>`).join('')}</optgroup>`;
+      `<option value="${item.id}" ${product?.id === item.id ? 'selected' : ''}>${escapeHtml(label(item, 'name', lang))}</option>`).join('')}</optgroup>`;
   }).join('');
 
   return `${pageHeading(t.calculatorTitle, t.calculatorText)}
