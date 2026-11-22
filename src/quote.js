@@ -4,7 +4,7 @@ import { pricePresets } from './price-presets.js';
 const messages = {
   product: ['Choose a product from the catalogue.', 'اختر منتجًا من القائمة.'],
   unavailable: ['This product is currently unavailable.', 'هذا المنتج غير متاح حاليًا.'],
-  preset: ['Choose one of the example order sizes.', 'اختر أحد مقاسات الطلب المقترحة.'],
+  preset: ['Choose a size or specification.', 'اختر مقاسًا أو مواصفة.'],
   quantity: ['Enter a positive whole-number quantity.', 'أدخل كمية صحيحة أكبر من صفر.'],
   aboveMaximum: ['Reduce the quantity to the catalogue maximum.', 'خفّض الكمية إلى الحد الأقصى المدوّن في الكتالوج.'],
   belowMinimum: ['Ask the press to confirm whether this quantity can be supplied and at what price.', 'تواصل مع المطبعة لتأكيد إمكانية تنفيذ هذه الكمية وسعرها.'],
@@ -47,7 +47,7 @@ export function getPriceRange(product) {
   const presets = getPricePresets(product);
   if (!presets.length) return null;
 
-  const totals = presets.map(item => subtotalInRiyals(item.unitPrice, item.quantity));
+  const totals = presets.map(item => subtotalInRiyals(item.unitPrice, product.minimum));
   return {
     minimum: Math.min(...totals),
     maximum: Math.max(...totals),
@@ -74,7 +74,7 @@ export function calculateQuote(product, {
   const selected = preset === undefined
     ? sizeSelections[0] ?? presets[0]
     : Number.isInteger(preset) ? presets[preset] : undefined;
-  const count = numericInput(quantity ?? selected?.quantity);
+  const count = numericInput(quantity ?? product?.minimum);
   let baseSubtotal = null;
   let multiplier = null;
 

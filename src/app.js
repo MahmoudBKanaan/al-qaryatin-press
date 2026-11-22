@@ -30,10 +30,9 @@ let noticeTimer;
 function emptyQuote(productId) {
   const found = getProduct(productId);
   const product = isAvailable(found) ? found : null;
-  const preset = product ? getPricePresets(product)[0] : null;
   return {
     productId: product?.id || '',
-    quantity: preset?.quantity ?? '',
+    quantity: product?.minimum ?? '',
     preset: 0,
     options: [],
     extraEnabled: false,
@@ -404,11 +403,8 @@ app.addEventListener('change', event => {
   }
   if (field.name === 'preset' && field.checked) {
     const index = Number(field.value);
-    const preset = getPricePresets(getProduct(quote.productId))[index];
-    if (!preset) return;
+    if (!getPricePresets(getProduct(quote.productId))[index]) return;
     quote.preset = index;
-    quote.quantity = preset.quantity;
-    document.querySelector('#quote-quantity').value = quote.quantity;
     updateSummary();
   }
   if (field.name === 'option' || field.name?.startsWith('group-')) {

@@ -29,7 +29,14 @@ export function calculatorPage(state, t, lang) {
 
 function orderFields(product, state, t, lang) {
   const presets = getPricePresets(product);
-  const presetLabels = [t.smallOrder, t.standardOrder, t.largeOrder];
+  const selectedSize = presets[state.preset]?.size;
+  const sizes = presets.map((preset, index) => {
+    if (presets.findIndex(item => item.size === preset.size) !== index) return '';
+    return `<li class="m3-list-item"><label class="preset-choice">
+      <input type="radio" name="preset" value="${index}" ${selectedSize === preset.size ? 'checked' : ''}>
+      <strong class="preset-description">${escapeHtml(label(preset, 'size', lang))}</strong>
+    </label></li>`;
+  }).join('');
   const options = availableOptions(product);
   const optionGroups = new Map();
   const standalone = [];
@@ -48,11 +55,7 @@ function orderFields(product, state, t, lang) {
   return `<fieldset class="preset-field" aria-describedby="preset-note">
       <legend>${t.preset}</legend>
       <p class="preset-note" id="preset-note">${t.presetHint}</p>
-      <ul class="preset-options m3-list" role="list">${presets.map((preset, index) => `<li class="m3-list-item"><label class="preset-choice">
-        <input type="radio" name="preset" value="${index}" ${state.preset === index ? 'checked' : ''}>
-        <span class="preset-description"><strong>${presetLabels[index]}</strong><small>${escapeHtml(label(preset, 'size', lang))}</small></span>
-        <span class="preset-quantity"><bdi>${number(preset.quantity, lang)}</bdi> ${quantityUnit(preset.quantity, t, lang)}</span>
-      </label></li>`).join('')}</ul>
+      <ul class="preset-options m3-list" role="list">${sizes}</ul>
     </fieldset>
     <label class="field"><span>${t.quantity}</span><input id="quote-quantity" name="quantity" inputmode="numeric" value="${escapeHtml(state.quantity)}" aria-describedby="qty-note"><small id="qty-note">${t.range} <bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}. ${t.qtyHint}</small></label>
     ${options.length ? `<fieldset class="field-block"><legend>${t.finishes}</legend>
@@ -105,10 +108,7 @@ export function makeBrief(product, state, t, lang) {
     t.product + ' — ' + label(product, 'name', lang) + ' (' + product.code + ')',
     t.quantity + ' — ' + number(result.quantity, lang),
   ];
-  if (result.preset) {
-    const presetName = [t.smallOrder, t.standardOrder, t.largeOrder][state.preset];
-    items.push(t.preset + ' — ' + presetName + ' · ' + label(result.preset, 'size', lang));
-  }
+  if (result.preset) items.push(t.preset + ' — ' + label(result.preset, 'size', lang));
   if (state.options.length) {
     const options = product.options.filter(option => state.options.includes(option.id));
     items.push(t.finishes + ' — ' + options.map(option => label(option, 'label', lang)).join(lang === 'ar' ? '، ' : ', '));

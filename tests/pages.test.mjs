@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { categories, getProduct, products } from '../dist/src/catalog.js';
 import { calculateQuote, getPricePresets, getPriceRange } from '../dist/src/quote.js';
 import { about, categoryChip, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
-import { calculatorPage } from '../dist/src/calculator-view.js';
+import { calculatorPage, makeBrief } from '../dist/src/calculator-view.js';
 import { copy } from '../dist/src/copy.js';
 import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, removeCartItem, summarizeCart, updateCartQuantity, whatsappOrderUrl } from '../dist/src/cart.js';
 import { mountProductTape } from '../dist/src/product-tape.js';
@@ -69,7 +69,7 @@ test('published source and navigation use a single public catalogue', async () =
   assert.equal(quoteRoute('business-cards'), '#/calculator?product=business-cards');
 });
 
-test('every published product has three priced examples and a matching order range', () => {
+test('every published size uses the catalogue minimum and matches the advertised price range', () => {
   const excluded = ['rate', 'unit', 'sellingUnit', 'formula', 'conversionValue', 'dimensions'];
   for (const product of products) {
     assert.ok(excluded.every(key => !Object.hasOwn(product, key)), product.id);
@@ -77,16 +77,28 @@ test('every published product has three priced examples and a matching order ran
     assert.equal(presets.length, 3, product.id);
     const amounts = presets.map((preset, index) => {
       assert.ok(preset.size && preset.sizeAr, product.id);
-      assert.ok(preset.quantity >= product.minimum && preset.quantity <= product.maximum, product.id);
+      assert.ok(!Object.hasOwn(preset, 'quantity'), product.id);
       const quote = calculateQuote(product, { preset: index });
       assert.equal(quote.status, 'estimate', product.id);
+      assert.equal(quote.quantity, product.minimum, product.id);
       assert.ok(quote.subtotal > 0, product.id);
       return quote.subtotal;
     });
     const range = getPriceRange(product);
-    assert.equal(range.minimum, amounts[0], product.id);
-    assert.equal(range.maximum, amounts.at(-1), product.id);
-    assert.ok(amounts[0] <= amounts[1] && amounts[1] <= amounts[2], product.id);
+    assert.equal(range.minimum, Math.min(...amounts), product.id);
+    assert.equal(range.maximum, Math.max(...amounts), product.id);
+  }
+});
+
+test('every size preserves a supplied quantity', () => {
+  for (const product of products) {
+    const quantity = Math.min(product.minimum + 7, product.maximum);
+    for (const [preset, specification] of getPricePresets(product).entries()) {
+      const quote = calculateQuote(product, { preset, quantity });
+      assert.equal(quote.status, 'estimate', product.id);
+      assert.equal(quote.quantity, quantity, product.id);
+      assert.deepEqual(quote.preset, specification, product.id);
+    }
   }
 });
 
@@ -149,6 +161,9 @@ test('the cart persists selections and recovers from invalid or blocked storage'
   assert.deepEqual(readCart(storage), []);
   persistCart(storage, cart);
   assert.deepEqual(readCart(storage), cart);
+  const legacy = { productId: 'business-cards', preset: 2, quantity: 2000, options: [], extraEnabled: false, extra: '' };
+  stored = JSON.stringify([...cart, legacy]);
+  assert.deepEqual(readCart(storage), [...cart, legacy]);
   stored = JSON.stringify([...cart, { productId: 'paper-boxes' }, null, { productId: 'not-a-product', quantity: 1 }]);
   assert.deepEqual(readCart(storage), cart);
   stored = '{';
@@ -181,8 +196,15 @@ test('WhatsApp checkout encodes every item in the current language', () => {
     assert.ok(message.includes(localized ? primary.nameAr : primary.name));
     assert.ok(message.includes(localized ? secondary.nameAr : secondary.name));
     assert.ok(message.includes(primary.code) && message.includes(secondary.code));
-    assert.ok(message.includes(t.quantity + (localized ? ' — ٢٥٠' : ' — 250')));
-    assert.ok(message.includes(localized ? '١٠ × ٧ سم' : '10 × 7 cm'));
+    const quantityLine = t.quantity + (localized ? ' — ٢٥٠' : ' — 250');
+    const specification = localized ? '١٠ × ٧ سم' : '10 × 7 cm';
+    const specificationLine = `${t.preset} — ${specification}`;
+    assert.ok(message.split('\n').includes(quantityLine));
+    assert.ok(message.split('\n').includes(specificationLine));
+    assert.equal(describeCartItem(cart[0], t, lang).presetLabel, specification);
+    const brief = makeBrief(primary, cart[0], t, lang).split('\n');
+    assert.ok(brief.includes(quantityLine));
+    assert.ok(brief.includes(specificationLine));
     assert.ok(message.includes(describeCartItem(cart[0], t, lang).optionLabels[0]));
     assert.ok(message.includes(describeCartItem(cart[1], t, lang).optionLabels[0]));
     assert.ok(message.includes(note.replace('\uD800', '\uFFFD')));
@@ -193,6 +215,7 @@ test('WhatsApp checkout encodes every item in the current language', () => {
 
 test('card collections and option lists preserve native list and selection semantics', () => {
   const product = getProduct('paper-boxes');
+  const fixedSize = getProduct('business-cards');
   const state = { productId: product.id, preset: 0, quantity: product.minimum, options: [], extraEnabled: true, extra: '' };
   for (const lang of ['en', 'ar']) {
     const t = copy[lang];
@@ -216,6 +239,10 @@ test('card collections and option lists preserve native list and selection seman
     assert.match(categoryChip('all', t.all, 'all'), /aria-pressed="true".*class="icon chip-check"/);
     const calculator = calculatorPage(state, t, lang);
     assert.equal((calculator.match(/type="radio" name="preset"/g) ?? []).length, 3);
+    assert.ok(calculator.includes(lang === 'ar' ? 'المقاس أو المواصفة' : 'Size or specification'));
+    assert.doesNotMatch(calculator, /preset-quantity/);
+    const fixedSizeCalculator = calculatorPage({ ...state, productId: fixedSize.id, quantity: fixedSize.minimum }, t, lang);
+    assert.equal((fixedSizeCalculator.match(/type="radio" name="preset"/g) ?? []).length, 1);
     assert.match(calculator, /<select id="quote-product"/);
     assert.match(about(t, lang), /<li class="m3-list-item"><details><summary>/);
   }

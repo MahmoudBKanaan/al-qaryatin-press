@@ -162,6 +162,9 @@ export function productDetail(product, t, lang, related) {
   const category = categories.find(item => item.id === product.category);
   const options = product.options.filter(option => option.id !== 'number-of-folds' && isOptionAvailable(option));
   const range = getPriceRange(product);
+  const sizeExamples = range.small.size === range.large.size
+    ? [[t.preset, range.small]]
+    : [[t.smallSize, range.small], [t.largeSize, range.large]];
   const catalogueBack = categoryRoute(product.category);
   const specLang = lang === 'ar' ? ' lang="en" dir="ltr"' : '';
   return `<div class="wrap product-page">
@@ -183,15 +186,15 @@ export function productDetail(product, t, lang, related) {
           <p class="price-caption">${t.priceRange}</p>
           <bdi class="product-price">${priceRange(range, lang)}</bdi>
           <p class="range-note">${t.rangeNote}</p>
-          <dl class="order-examples m3-list">${[[t.smallOrder, range.small], [t.largeOrder, range.large]].map(([name, order]) =>
-            `<div class="m3-list-item"><dt>${name}</dt><dd>${escapeHtml(label(order, 'size', lang))}<small>${number(order.quantity, lang)} ${quantityUnit(order.quantity, t, lang)}</small></dd></div>`).join('')}</dl>
+          <dl class="order-examples m3-list">${sizeExamples.map(([title, size]) =>
+            `<div class="m3-list-item"><dt>${title}</dt><dd>${escapeHtml(label(size, 'size', lang))}</dd></div>`).join('')}</dl>
         </div>
         <dl class="product-stats m3-list">
           <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.min}</dt><dd>${number(product.minimum, lang)} ${quantityUnit(product.minimum, t, lang)}</dd></div>
           <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.lead}</dt><dd>${escapeHtml(label(product, 'turnaround', lang).replace(/^(Approximately |حوالي )/, ''))}</dd></div>
         </dl>
         <div class="product-order-actions">
-          <button type="button" class="button button-primary" data-action="add-product-to-cart" data-product-id="${product.id}">${icon('cart')}${t.addSmallOrder}</button>
+          <button type="button" class="button button-primary" data-action="add-product-to-cart" data-product-id="${product.id}">${icon('cart')}${t.addMinimumOrder}</button>
           <a class="button button-tonal" href="${quoteRoute(product.id)}">${icon('calculator')}${t.estimate}</a>
         </div>
       </section>

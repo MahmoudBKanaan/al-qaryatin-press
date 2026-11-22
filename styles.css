@@ -408,10 +408,10 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: #59708d; }
 .product-price { display: inline-block; font-size: clamp(1.65rem, 4vw, 2.2rem); font-weight: 700; line-height: 1.25; margin-block: .3rem; overflow-wrap: anywhere; }
 .range-note { color: var(--on-surface-variant); font-size: .86rem; }
 .order-examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; margin-block-start: .85rem; }
-.order-examples > .m3-list-item { min-height: 72px; padding: .68rem .78rem; border-radius: 14px; background: var(--list-tonal); }
+.order-examples > .m3-list-item { min-height: 60px; padding: .68rem .78rem; border-radius: 14px; background: var(--list-tonal); }
+.order-examples > .m3-list-item:only-child { grid-column: 1 / -1; }
 .order-examples dt { color: #455a75; font-size: .8rem; font-weight: 700; margin-block-end: .2rem; }
 .order-examples dd { font-size: .91rem; font-weight: 700; }
-.order-examples small { display: block; color: var(--on-surface-variant); font-size: .8rem; font-weight: 500; }
 .product-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
 .product-stats > .m3-list-item { position: relative; min-height: 60px; padding: .55rem .32rem; padding-inline-start: 2.9rem; border-radius: 14px; background: var(--list-tonal); }
 .product-stats .m3-list-leading { position: absolute; inset-inline-start: .46rem; inset-block-start: .66rem; width: 2rem; height: 2rem; padding: .42rem; border-radius: 10px; background: var(--list-leading); }
@@ -560,7 +560,7 @@ input:focus-visible::placeholder, textarea:focus-visible::placeholder { color: v
   cursor: pointer;
   transition: background-color var(--motion-fast), box-shadow var(--motion-standard);
 }
-.preset-choice { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; min-height: 64px; }
+.preset-choice { display: grid; grid-template-columns: auto minmax(0, 1fr); min-height: 56px; }
 .check-row { display: flex; min-height: 52px; font-size: .9rem; line-height: 1.45; }
 :is(.preset-choice, .check-row):hover { box-shadow: var(--elevation-1); background: color-mix(in srgb, var(--primary) 7%, var(--list-tonal)); }
 :is(.preset-choice, .check-row):active { background: var(--list-pressed); box-shadow: none; }
@@ -599,13 +599,7 @@ input:focus-visible::placeholder, textarea:focus-visible::placeholder { color: v
 :is(.preset-choice, .check-row) input:focus-visible::before { background: var(--on-gold); }
 .preset-choice input::before { width: .51rem; height: .51rem; border-radius: 50%; }
 .check-row input::before { mask: var(--check-fill) center / contain no-repeat; }
-.preset-description { min-inline-size: 0; }
-.preset-description strong { display: block; font-size: .94rem; font-weight: 700; }
-.preset-description small, .preset-quantity { color: var(--on-surface-variant); font-size: .81rem; line-height: 1.5; }
-.preset-description small { display: block; overflow-wrap: anywhere; }
-.preset-quantity { text-align: end; white-space: nowrap; }
-.preset-choice:has(input:checked) .preset-quantity { color: var(--on-primary-container); }
-.preset-choice:has(input:focus-visible) :is(.preset-quantity, small) { color: #e4ecf7; }
+.preset-description { min-inline-size: 0; overflow-wrap: anywhere; font-size: .94rem; font-weight: 700; }
 .option-groups + .finish-options { margin-block-start: .65rem; }
 .option-groups { gap: .65rem; }
 .extra-choice { margin-block: 1rem .75rem; }
@@ -916,7 +910,6 @@ input:focus-visible::placeholder, textarea:focus-visible::placeholder { color: v
   .language-label { display: none; }
   .card-more { display: none; }
   .preset-choice { gap: .45rem; padding-inline: .55rem; }
-  .preset-quantity { font-size: .73rem; }
   .category-links a { gap: .42rem; padding-inline: .48rem; }
   .catalogue-meta { display: grid; grid-template-columns: minmax(0, 1fr); }
 }

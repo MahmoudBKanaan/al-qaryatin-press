@@ -72,8 +72,7 @@ export function describeCartItem(item, t, lang) {
   const result = calculateQuote(product, { ...item, customRequirements: item.extraEnabled });
   const optionLabels = product.options.filter(option => item.options.includes(option.id))
     .map(option => label(option, 'label', lang));
-  const presetName = [t.smallOrder, t.standardOrder, t.largeOrder][item.preset];
-  const presetLabel = result.preset ? [presetName, label(result.preset, 'size', lang)].filter(Boolean).join(' · ') : '';
+  const presetLabel = result.preset ? label(result.preset, 'size', lang) : '';
   const note = item.extraEnabled ? item.extra || t.reviewExtra : '';
   return { product, result, presetLabel, optionLabels, note };
 }
