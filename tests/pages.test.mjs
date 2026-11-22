@@ -47,9 +47,16 @@ test('the site ships valid scripts, mockups, and bundled Arabic fonts', async ()
   ]) {
     await access(new URL(filename, site));
   }
+  for (const filename of ['fustat-arabic.woff2', 'fustat-latin.woff2']) {
+    const file = await readFile(new URL('fonts/' + filename, site));
+    assert.equal(file.toString('ascii', 0, 4), 'wOF2', filename);
+  }
+  await access(new URL('fonts/Fustat-OFL.txt', site));
   const arabicFont = await readFile(new URL('fonts/rubik-arabic.woff2', site));
   assert.equal(arabicFont.toString('ascii', 0, 4), 'wOF2');
   const styles = await readFile(new URL('styles.css', site), 'utf8');
+  assert.match(styles, /font-family: "Fustat";[^}]*font-weight: 200 800;[^}]*url\("\.\/fonts\/fustat-arabic\.woff2"\)/);
+  assert.match(styles, /:root\[lang="ar"\]\s*\{\s*--arabic:\s*"Fustat"/);
   assert.match(styles, /font-family: "Rubik";[^}]*font-weight: 500 700;[^}]*url\("\.\/fonts\/rubik-arabic\.woff2"\)/);
 
   assert.ok(products.length > 0);
