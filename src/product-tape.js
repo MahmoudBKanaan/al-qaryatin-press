@@ -24,7 +24,7 @@ export function mountProductTape(root) {
   root.classList.toggle('is-paused', paused);
   root.innerHTML = `<div class="product-tape-window product-tape-left" aria-hidden="true">${trackMarkup}</div>
     <div class="product-tape-window product-tape-right" aria-hidden="true">${trackMarkup}</div>
-    <button type="button" class="button button-light product-tape-toggle"></button>`;
+    <button type="button" class="button button-tonal product-tape-toggle"></button>`;
 
   if (typeof ResizeObserver === 'function') {
     const observer = new ResizeObserver(entries => {

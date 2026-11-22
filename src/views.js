@@ -36,8 +36,8 @@ function priceRange(range, lang) {
     [money(range.minimum, lang), money(range.maximum, lang)].join(' – ');
 }
 
-function brand(lang, light = false) {
-  return `<a class="brand${light ? ' brand-light' : ''}" href="#/" aria-label="${label(business, 'name', lang)}">
+function brand(lang) {
+  return `<a class="brand" href="#/" aria-label="${label(business, 'name', lang)}">
     <img src="./media/brand-mark.webp" width="47" height="47" alt="">
     <span><strong lang="ar" dir="rtl">${business.nameAr}</strong><small lang="en" dir="ltr">AL QARYATIN PRESS</small></span>
   </a>`;
@@ -66,7 +66,7 @@ export function header(page, t, lang, cartCount = 0) {
 export function footer(t, lang) {
   return `<footer class="site-footer">
     <div class="wrap footer-inner">
-      <div class="footer-brand">${brand(lang, true)}<p>${t.brandPromise}</p></div>
+      <div class="footer-brand">${brand(lang)}<p>${t.brandPromise}</p></div>
       <nav class="footer-nav" aria-label="${t.footerNav}">
         <ul class="footer-nav-list m3-card-list" role="list">
           <li><a href="#/catalogue">${t.catalog}</a></li>
@@ -131,14 +131,14 @@ export function contact(t, lang) {
 
 export function home(t, lang) {
   return `<section class="hero">
-    <div class="hero-media"><img src="./media/hero.webp" alt="" width="1480" height="987" fetchpriority="high"></div>
-    <div class="hero-copy wrap">
-      <div>
+    <div class="hero-inner wrap">
+      <div class="hero-copy">
         <p class="eyebrow">${t.area}</p>
         <h1 id="page-title" tabindex="-1"><span>${t.heroOne}</span><em>${t.heroTwo}</em></h1>
         <p class="hero-description">${t.heroDescription}</p>
-        <div class="hero-actions"><a class="button button-gold" href="#/catalogue">${icon('grid')}${t.explore}</a><a class="button button-light" href="#/calculator">${icon('calculator')}${t.estimate}</a></div>
+        <div class="hero-actions"><a class="button button-gold" href="#/catalogue">${icon('grid')}${t.explore}</a><a class="button button-tonal" href="#/calculator">${icon('calculator')}${t.estimate}</a></div>
       </div>
+      <div class="hero-media"><img src="./media/hero.webp" alt="" width="1480" height="987" fetchpriority="high"></div>
     </div>
   </section>
   <div class="wrap home-content">
