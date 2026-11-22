@@ -1,3 +1,30 @@
+/* Prefer installed Ara Etab faces for the Arabic pages. */
+@font-face {
+  font-family: "Ara Etab AlMonie'ee";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("AraEtabAlMonie'ee-Regular"), local("Ara Etab AlMonie'ee");
+}
+
+@font-face {
+  font-family: "Ara Etab AlMonie'ee";
+  font-style: normal;
+  font-weight: 500 600;
+  font-display: swap;
+  src: local("AraEtabAlMonie_ee Medium"), local("AraEtabAlMonie_ee-Medium"),
+    local("AraEtabAlMonie'ee-Regular"), local("Ara Etab AlMonie'ee");
+}
+
+@font-face {
+  font-family: "Ara Etab AlMonie'ee";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local("AraEtabAlMonie_ee Bold"), local("AraEtabAlMonie_ee-Bold"),
+    local("AraEtabAlMonie'ee-Regular"), local("Ara Etab AlMonie'ee");
+}
+
 @font-face {
   font-family: "Rubik";
   font-style: normal;
@@ -81,6 +108,7 @@
 
 :root[dir="rtl"] { --sans: var(--arabic); --serif: var(--arabic); }
 :root[lang="ar"] {
+  --arabic: "Ara Etab AlMonie'ee", "Rubik", "Alexandria", Tahoma, sans-serif;
   --label-weight: 500;
   font-weight: 500;
 }
