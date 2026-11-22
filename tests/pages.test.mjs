@@ -13,15 +13,26 @@ import { mountProductTape } from '../dist/src/product-tape.js';
 
 const site = new URL('../dist/', import.meta.url);
 
-test('the site ships valid scripts, mockups, and both Arabic font subsets', async () => {
+test('the site ships valid scripts, mockups, and bundled Arabic fonts', async () => {
   const modules = await readdir(new URL('src/', site));
   for (const module of modules) {
     const path = fileURLToPath(new URL('src/' + module, site));
     execFileSync(process.execPath, ['--check', path]);
   }
-  for (const filename of ['index.html', 'styles.css', 'fonts/alexandria-arabic.woff2', 'fonts/alexandria-latin.woff2']) {
+  for (const filename of [
+    'index.html',
+    'styles.css',
+    'fonts/alexandria-arabic.woff2',
+    'fonts/alexandria-latin.woff2',
+    'fonts/rubik-arabic.woff2',
+    'fonts/Rubik-OFL.txt',
+  ]) {
     await access(new URL(filename, site));
   }
+  const arabicFont = await readFile(new URL('fonts/rubik-arabic.woff2', site));
+  assert.equal(arabicFont.toString('ascii', 0, 4), 'wOF2');
+  const styles = await readFile(new URL('styles.css', site), 'utf8');
+  assert.match(styles, /font-family: "Rubik";[^}]*font-weight: 500 700;[^}]*url\("\.\/fonts\/rubik-arabic\.woff2"\)/);
 
   assert.ok(products.length > 0);
   assert.equal(new Set(products.map(product => product.id)).size, products.length);

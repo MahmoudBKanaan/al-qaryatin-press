@@ -1,17 +1,11 @@
 @font-face {
-  font-family: "GE SS Two";
+  font-family: "Rubik";
   font-style: normal;
-  font-weight: 500;
-  src: local("GESSTwoMedium-Medium"), local("GE SS Two Medium");
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFC;
-}
-
-@font-face {
-  font-family: "GE SS Two";
-  font-style: normal;
-  font-weight: 700;
-  src: local("GESSTwoBold-Bold"), local("GE SS Two Bold");
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFC;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url("./fonts/rubik-arabic.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+2010-2011, U+204F,
+    U+2E41, U+FB50-FDFF, U+FE70-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EFF, U+1EE00-1EEF1;
 }
 
 @font-face {
@@ -76,8 +70,8 @@
   --radius: 24px;
   --wrap: 1280px;
   --site-header-height: 79px;
-  --arabic: "Alexandria", Tahoma, sans-serif;
-  --sans: "DM Sans", "Alexandria", system-ui, sans-serif;
+  --arabic: "Rubik", "Alexandria", Tahoma, sans-serif;
+  --sans: "DM Sans", "Rubik", "Alexandria", system-ui, sans-serif;
   --serif: "Instrument Serif", Georgia, serif;
   --label-weight: 600;
   font-family: var(--sans);
@@ -90,7 +84,6 @@
 
 :root[dir="rtl"] { --sans: var(--arabic); --serif: var(--arabic); }
 :root[lang="ar"] {
-  --arabic: "GE SS Two", "Alexandria", Tahoma, sans-serif;
   --label-weight: 500;
   font-weight: 500;
 }
@@ -171,8 +164,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: #59708d; }
 .brand { display: inline-flex; align-items: center; gap: .65rem; justify-self: start; width: fit-content; white-space: nowrap; border-radius: 10px; }
 .brand img { width: 43px; height: 43px; object-fit: contain; }
 .brand span { display: grid; gap: .17rem; }
-.brand strong { font: 750 1.26rem/1.18 var(--arabic); text-align: start; color: #0d2849; }
-:root[lang="ar"] .brand strong { font-weight: 700; }
+.brand strong { font: 700 1.26rem/1.18 var(--arabic); text-align: start; color: #0d2849; }
 .brand small { font: 700 .59rem/1.2 "DM Sans", var(--sans); letter-spacing: .17em; color: #1e3d62; }
 .brand-light strong, .brand-light small { color: #fff; }
 .navigation-list { display: flex; gap: .2rem; align-items: center; justify-content: center; }
