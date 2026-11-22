@@ -5,13 +5,31 @@ import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { categories, getProduct, products } from '../dist/src/catalog.js';
 import { calculateQuote, getPricePresets, getPriceRange } from '../dist/src/quote.js';
-import { about, categoryChip, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
+import { about, categoryChip, escapeHtml, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage, makeBrief } from '../dist/src/calculator-view.js';
 import { copy } from '../dist/src/copy.js';
 import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, removeCartItem, summarizeCart, updateCartQuantity, whatsappOrderUrl } from '../dist/src/cart.js';
 import { mountProductTape } from '../dist/src/product-tape.js';
 
 const site = new URL('../dist/', import.meta.url);
+const publishedSite = 'https://mahmoudbkanaan.github.io/al-qaryatin-press/';
+
+function documentMarkup(path) {
+  return readFile(new URL(`${path}index.html`, site), 'utf8');
+}
+
+function alternateLinks(markup) {
+  const links = [...markup.matchAll(/<(?:xhtml:)?link\b[^>]*\brel="alternate"[^>]*>/g)];
+  return links.map(([tag]) => [tag.match(/\bhreflang="([^"]+)"/)[1], tag.match(/\bhref="([^"]+)"/)[1]]);
+}
+
+function schemaGraph(markup) {
+  const json = markup.match(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(json, 'The document includes structured data');
+  const schema = JSON.parse(json);
+  assert.equal(schema['@context'], 'https://schema.org');
+  return schema['@graph'];
+}
 
 test('the site ships valid scripts, mockups, and bundled Arabic fonts', async () => {
   const modules = await readdir(new URL('src/', site));
@@ -65,8 +83,80 @@ test('published source and navigation use a single public catalogue', async () =
     const source = await readFile(new URL(filename, site), 'utf8');
     assert.doesNotMatch(source, /agency|agencies|الوكالات|قناة البيع|data-channel|m[²³]|م[²³]|square metr|cubic metr|متر مربع|متر مكعب|catalogue pricing basis/i, filename);
   }
-  assert.equal(productRoute('business-cards'), '#/product/business-cards');
-  assert.equal(quoteRoute('business-cards'), '#/calculator?product=business-cards');
+  assert.equal(productRoute('business-cards'), './product/business-cards/');
+  assert.equal(quoteRoute('business-cards'), './calculator/?product=business-cards');
+});
+
+test('the bilingual sitemap lists every public page with reciprocal language links and self-canonicals', async () => {
+  const sitemap = await readFile(new URL('sitemap.xml', site), 'utf8');
+  assert.match(sitemap, /xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9"/);
+  const blocks = [...sitemap.matchAll(/<url>([\s\S]*?)<\/url>/g)];
+  const byUrl = new Map(blocks.map(([, block]) => [block.match(/<loc>([^<]+)<\/loc>/)[1], block]));
+  const paths = ['', 'catalogue/', 'calculator/', 'about/', ...products.map(product => `product/${product.id}/`)];
+  assert.equal(blocks.length, paths.length * 2);
+  assert.equal(byUrl.size, blocks.length, 'The sitemap has no duplicate URLs');
+
+  await Promise.all(paths.map(async path => {
+    const en = publishedSite + path;
+    const ar = publishedSite + 'ar/' + path;
+    const alternates = { en, ar, 'x-default': en };
+    for (const [route, canonical] of [[path, en], ['ar/' + path, ar]]) {
+      const entry = byUrl.get(canonical);
+      assert.ok(entry, canonical);
+      assert.deepEqual(Object.fromEntries(alternateLinks(entry)), alternates, canonical);
+
+      const doc = await documentMarkup(route);
+      assert.equal(doc.match(/<link\b[^>]*\brel="canonical"[^>]*\bhref="([^"]+)"/)[1], canonical);
+      assert.deepEqual(Object.fromEntries(alternateLinks(doc)), alternates, route);
+      assert.match(doc, /\bname="robots" content="index,follow,max-image-preview:large"/);
+      assert.equal(new URL(doc.match(/<base href="([^"]+)"/)[1], canonical).href, publishedSite, route);
+    }
+  }));
+
+  for (const route of ['cart/', 'ar/cart/']) {
+    const cart = await documentMarkup(route);
+    assert.ok(!byUrl.has(publishedSite + route), route);
+    assert.match(cart, /\bname="robots" content="noindex,follow"/);
+    assert.doesNotMatch(cart, /\brel="canonical"/);
+  }
+});
+
+test('localized home, catalogue and product content is crawlable without running scripts', async () => {
+  const product = getProduct('business-cards');
+  for (const lang of ['en', 'ar']) {
+    const arabic = lang === 'ar';
+    const prefix = arabic ? 'ar/' : '';
+    const [homepage, catalogue, item] = await Promise.all([
+      documentMarkup(prefix),
+      documentMarkup(`${prefix}catalogue/`),
+      documentMarkup(`${prefix}product/${product.id}/`),
+    ]);
+    assert.ok(homepage.includes(`<html lang="${lang}" dir="${arabic ? 'rtl' : 'ltr'}">`));
+    assert.match(homepage, /<main\b[^>]*>[\s\S]*<h1\b/);
+    assert.ok(homepage.includes(`href="./${prefix}catalogue/"`));
+    assert.ok(homepage.includes(`href="./${prefix}product/${product.id}/"`));
+    assert.ok(catalogue.includes(escapeHtml(copy[lang].catalogTitle)));
+    assert.equal((catalogue.match(/class="product-link"/g) ?? []).length, products.length);
+    assert.doesNotMatch(homepage + catalogue + item, /href="#\//);
+    assert.ok(item.includes(`>${escapeHtml(arabic ? product.nameAr : product.name)}</h1>`));
+    assert.ok(item.includes(`href="./${prefix}calculator/?product=${product.id}"`));
+    const alternate = `./${arabic ? '' : 'ar/'}product/${product.id}/`;
+    assert.ok(item.includes(`data-action="language" href="${alternate}" hreflang="${arabic ? 'en' : 'ar'}"`));
+    assert.ok(item.includes(`href="./${prefix}product/${product.id}/#main"`));
+
+    const homeSchema = schemaGraph(homepage);
+    const website = homeSchema.find(node => node['@type'] === 'WebSite');
+    const business = homeSchema.find(node => node['@type'] === 'LocalBusiness');
+    assert.equal(website.url, publishedSite);
+    assert.deepEqual(website.inLanguage, ['en', 'ar']);
+    assert.equal(website.publisher['@id'], business['@id']);
+    assert.equal(business.name, arabic ? 'مطابع القريتين' : 'Al Qaryatin Press');
+    assert.equal(business.address.addressCountry, 'SA');
+    const breadcrumbs = schemaGraph(item).find(node => node['@type'] === 'BreadcrumbList');
+    assert.deepEqual(breadcrumbs.itemListElement.map(crumb => crumb.item), [
+      publishedSite + prefix, publishedSite + prefix + 'catalogue/', publishedSite + prefix + `product/${product.id}/`,
+    ]);
+  }
 });
 
 test('every published size uses the catalogue minimum and matches the advertised price range', () => {

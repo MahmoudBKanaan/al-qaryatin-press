@@ -2,24 +2,26 @@ import { business, categories, getProduct, isAvailable, products } from './catal
 import { calculatorPage, makeBrief, quoteSummary } from './calculator-view.js';
 import { addCartItem, persistCart, readCart, removeCartItem, updateCartQuantity } from './cart.js';
 import { cartCopy, cartPage, updateCartEstimate } from './cart-view.js';
+import { cataloguePage, catalogueResults } from './catalogue-view.js';
 import { copy } from './copy.js';
 import { icon } from './icons.js';
 import { mountProductTape } from './product-tape.js';
-import { getPricePresets, normalizeDigits } from './quote.js';
-import {
-  about, categoryChip, escapeHtml, footer, header, home, label, localeId, number,
-  pageHeading, productDetail, productGrid, route,
-} from './views.js';
+import { getPricePresets } from './quote.js';
+import { isPage, route, routeFromURL } from './routes.js';
+import { renderHead } from './seo-head.js';
+import { about, footer, header, home, number, productDetail } from './views.js';
 
 const app = document.querySelector('#app');
 const notice = document.querySelector('#notice');
 const skipLink = document.querySelector('.skip-link');
 const updateProductTape = mountProductTape(document.querySelector('#product-tape'));
+const siteBase = new URL(document.baseURI);
+// Keep relative assets and links anchored to the site when History changes the path.
+document.querySelector('base').href = siteBase.href;
+const indexable = !document.documentElement.hasAttribute('data-site-private');
 history.scrollRestoration = 'manual';
 let language = 'en';
-try {
-  if (localStorage.getItem('qaryatin-language') === 'ar') language = 'ar';
-} catch { /* Local storage may be unavailable. */ }
+let metadataKey;
 
 let currentPage = null;
 let catalogue = { category: 'all', query: '', order: '' };
@@ -41,8 +43,25 @@ function emptyQuote(productId) {
 }
 
 function readRoute() {
-  const [path, query = ''] = location.hash.startsWith('#/') ? location.hash.slice(2).split('?') : ['', ''];
-  return { path, params: new URLSearchParams(query) };
+  const current = routeFromURL(new URL(location.href), siteBase) ??
+    { path: 'not-found', lang: 'en', params: new URLSearchParams() };
+  if (!location.hash.startsWith('#/')) return current;
+
+  const [legacyPath, query = ''] = location.hash.slice(2).split('?');
+  const path = isPage(legacyPath) ? legacyPath : 'not-found';
+  const params = new URLSearchParams(query);
+  let lang = current.lang;
+  if (!current.path && lang === 'en') {
+    try {
+      if (localStorage.getItem('qaryatin-language') === 'ar') lang = 'ar';
+    } catch { /* Local storage may be unavailable. */ }
+  }
+  history.replaceState(history.state, '', routeURL(path, params, lang));
+  return { path, params, lang };
+}
+
+function routeURL(path, params, lang = language) {
+  return new URL(route(path, params, lang), siteBase);
 }
 
 function readCatalogue(params) {
@@ -55,26 +74,25 @@ function readCatalogue(params) {
 }
 
 function render({ focusPage = false } = {}) {
-  const { path, params } = readRoute();
+  const { path, params, lang } = readRoute();
+  language = lang;
   const enterPage = currentPage === null || focusPage;
   const t = copy[language];
   document.documentElement.lang = language;
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
   skipLink.textContent = t.skip;
+  skipLink.href = routeURL(path, params).href + '#main';
 
   let content;
-  let pageTitle;
   if (path === 'catalogue') {
     currentPage = 'catalogue';
     catalogue = readCatalogue(params);
-    pageTitle = t.catalogTitle;
-    content = cataloguePage(t);
+    content = cataloguePage(catalogue, t, language);
   } else if (path.startsWith('product/')) {
     currentPage = 'product';
     const found = getProduct(path.slice('product/'.length));
     const product = isAvailable(found) ? found : null;
     const related = product ? products.filter(item => item.id !== product.id && item.category === product.category && isAvailable(item)).slice(0, 3) : [];
-    pageTitle = product ? label(product, 'name', language) : t.notFound;
     content = productDetail(product, t, language, related);
   } else if (path === 'calculator') {
     const id = params.get('product') || '';
@@ -82,24 +100,29 @@ function render({ focusPage = false } = {}) {
       quote = emptyQuote(id);
     }
     currentPage = 'calculator';
-    pageTitle = t.calculator;
     content = calculatorPage(quote, t, language);
   } else if (path === 'cart') {
     currentPage = 'cart';
-    pageTitle = t.cartTitle;
     content = cartPage(cart, t, language);
   } else if (path === 'about') {
     currentPage = 'about';
-    pageTitle = t.about;
     content = about(t, language);
-  } else {
+  } else if (path === '') {
     currentPage = 'home';
-    pageTitle = language === 'ar' ? 'المطبوعات والتغليف واللوحات' : 'Printing, Packaging & Signage';
     content = home(t, language);
+  } else {
+    currentPage = 'not-found';
+    content = productDetail(null, t, language, []);
   }
 
-  document.title = currentPage === 'home' ? label(business, 'name', language) + ' | ' + pageTitle : pageTitle + ' | ' + label(business, 'name', language);
-  app.innerHTML = header(currentPage, t, language, cart.length) +
+  const pageKey = `${language}/${path}`;
+  if (metadataKey !== pageKey) {
+    document.head.querySelectorAll('[data-page-head]').forEach(node => node.remove());
+    document.head.insertAdjacentHTML('beforeend', renderHead(path, language, { indexable }));
+    metadataKey = pageKey;
+  }
+  const alternate = route(currentPage === 'not-found' ? '' : path, params, language === 'ar' ? 'en' : 'ar');
+  app.innerHTML = header(currentPage, t, language, cart.length, alternate) +
     `<main id="main"${enterPage ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
     footer(t, language) + briefDialog(t);
   updateProductTape(language, document.querySelector('.footer-tape-controls'));
@@ -107,53 +130,10 @@ function render({ focusPage = false } = {}) {
   if (focusPage) {
     const restore = currentPage === 'catalogue' && history.state?.catalogueReturn;
     const card = restore && Array.from(document.querySelectorAll('.product-link'))
-      .find(link => link.hash === restore.productHash);
+      .find(link => link.href === restore.productHref);
     window.scrollTo(0, restore ? restore.top : 0);
     (card || document.querySelector('#page-title'))?.focus({ preventScroll: true });
   }
-}
-
-function normalized(value) {
-  return normalizeDigits(value.toLocaleLowerCase().normalize('NFKC'))
-    .replace(/[ًٌٍَُِّْـ]/g, '').replace(/[إأآ]/g, 'ا').replace(/ى/g, 'ي').trim();
-}
-
-function catalogueResults(t) {
-  const tokens = normalized(catalogue.query).split(/\s+/).filter(Boolean);
-  const items = products.filter(product => {
-    if (!isAvailable(product) || (catalogue.category !== 'all' && catalogue.category !== product.category)) return false;
-    const searchable = normalized([product.name, product.nameAr, product.code, product.catalogCategory].join(' '));
-    return tokens.every(token => searchable.includes(token));
-  });
-  if (catalogue.order === 'name') {
-    items.sort((a, b) => label(a, 'name', language).localeCompare(label(b, 'name', language), localeId(language)));
-  }
-  const count = items.length + ' ' + (items.length === 1 && language === 'en' ? 'product' : t.found);
-  return {
-    count: number(items.length, language) + count.slice(String(items.length).length),
-    html: items.length ? productGrid(items, t, language)
-      : `<section class="empty-state m3-empty-state" aria-labelledby="catalogue-empty-title"><span class="category-icon">${icon('search')}</span><h2 id="catalogue-empty-title">${t.noProducts}</h2><p>${t.noProductsText}</p><button class="button button-tonal" type="button" data-action="clear-filters">${t.clearFilters}</button></section>`,
-  };
-}
-
-function cataloguePage(t) {
-  const list = catalogueResults(t);
-  return `${pageHeading(t.catalogTitle, t.catalogText)}
-    <div class="wrap catalogue-content">
-      <form class="catalogue-toolbar" id="catalogue-search-form" role="search">
-        <div class="search-field">
-          <label class="sr-only" for="catalogue-search">${t.search}</label>${icon('search')}
-          <input id="catalogue-search" type="search" enterkeyhint="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off">
-          <button type="button" class="icon-button clear-search" data-action="clear-search" aria-label="${t.clearSearch}"${catalogue.query ? '' : ' hidden'}>${icon('close')}</button>
-        </div>
-      </form>
-      <ul class="filters m3-chip-set" role="list" aria-label="${t.category}">
-        <li>${categoryChip('all', t.all, catalogue.category)}</li>
-        ${categories.map(category => `<li>${categoryChip(category.id, label(category, 'label', language), catalogue.category)}</li>`).join('')}
-      </ul>
-      <div class="catalogue-meta"><p id="result-count" role="status">${list.count}</p><label><span>${t.sort}</span><select id="catalogue-order"><option value="">${t.catalogOrder}</option><option value="name" ${catalogue.order === 'name' ? 'selected' : ''}>${t.nameOrder}</option></select></label></div>
-      <div id="catalogue-results">${list.html}</div>
-    </div>`;
 }
 
 function revealCatalogueCategory() {
@@ -171,12 +151,14 @@ function updateCatalogue({ animateCards = false } = {}) {
   if (catalogue.category !== 'all') params.set('category', catalogue.category);
   if (catalogue.query) params.set('q', catalogue.query);
   if (catalogue.order) params.set('sort', catalogue.order);
-  history.replaceState(null, '', route('catalogue', params));
+  history.replaceState(null, '', routeURL('catalogue', params));
+  app.querySelector('.language').href = routeURL('catalogue', params, language === 'ar' ? 'en' : 'ar');
+  skipLink.href = location.href + '#main';
   document.querySelectorAll('[data-category]').forEach(button =>
     button.setAttribute('aria-pressed', String(button.dataset.category === catalogue.category)));
   document.querySelector('.clear-search').hidden = catalogue.query === '';
   revealCatalogueCategory();
-  const { count, html } = catalogueResults(t);
+  const { count, html } = catalogueResults(catalogue, t, language);
   document.querySelector('#result-count').textContent = count;
   const results = document.querySelector('#catalogue-results');
   results.innerHTML = html;
@@ -186,7 +168,7 @@ function updateCatalogue({ animateCards = false } = {}) {
 function updateQuoteRoute() {
   const params = new URLSearchParams();
   if (quote.productId) params.set('product', quote.productId);
-  history.replaceState(null, '', route('calculator', params));
+  history.replaceState(null, '', routeURL('calculator', params));
 }
 
 function updateSummary() {
@@ -296,17 +278,30 @@ app.addEventListener('click', event => {
   }
   const isPlainClick = event.button === 0 && !event.defaultPrevented &&
     !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
-  const catalogueProduct = currentPage === 'catalogue' && event.target.closest('.product-link');
-  if (catalogueProduct && isPlainClick) {
-    history.replaceState({ catalogueReturn: { top: window.scrollY, productHash: catalogueProduct.hash } }, '');
-  }
-  const navigationLink = event.target.closest('.navigation a');
-  if (navigationLink?.hash === location.hash && isPlainClick) {
-    const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
-    if (expanded) {
+  const link = isPlainClick && event.target.closest('a[href]:not([target], [download])');
+  if (link) {
+    const destination = new URL(link.href);
+    const next = routeFromURL(destination, siteBase);
+    if (next && !destination.hash && isPage(next.path)) {
       event.preventDefault();
-      setMenuExpanded(expanded, false);
-      expanded.focus({ preventScroll: true });
+      if (destination.href === location.href) {
+        const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
+        if (expanded) {
+          setMenuExpanded(expanded, false);
+          expanded.focus({ preventScroll: true });
+        }
+        return;
+      }
+      if (currentPage === 'catalogue' && link.classList.contains('product-link')) {
+        history.replaceState({ catalogueReturn: { top: window.scrollY, productHref: destination.href } }, '');
+      }
+      const switchLanguage = link.dataset.action === 'language';
+      if (switchLanguage) {
+        try { localStorage.setItem('qaryatin-language', next.lang); } catch { /* Legacy link preference. */ }
+      }
+      history.pushState(null, '', destination);
+      render({ focusPage: !switchLanguage });
+      if (switchLanguage) app.querySelector('.language').focus({ preventScroll: true });
       return;
     }
   }
@@ -321,13 +316,6 @@ app.addEventListener('click', event => {
     return;
   }
   switch (button.dataset.action) {
-    case 'language': {
-      language = language === 'en' ? 'ar' : 'en';
-      try { localStorage.setItem('qaryatin-language', language); } catch { /* Optional preference. */ }
-      render();
-      document.querySelector('.language')?.focus({ preventScroll: true });
-      break;
-    }
     case 'menu': {
       const expanded = button.getAttribute('aria-expanded') === 'true';
       setMenuExpanded(button, !expanded);
@@ -445,5 +433,8 @@ matchMedia('(max-width: 900px)').addEventListener('change', () => {
   const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
   if (expanded) setMenuExpanded(expanded, false);
 });
-window.addEventListener('hashchange', () => render({ focusPage: true }));
+window.addEventListener('popstate', () => render({ focusPage: true }));
+window.addEventListener('hashchange', () => {
+  if (location.hash.startsWith('#/')) render({ focusPage: true });
+});
 render();

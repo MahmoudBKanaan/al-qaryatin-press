@@ -1,17 +1,15 @@
 import { business, categories, featuredProducts, isOptionAvailable } from './catalog.js';
 import { formatSAR, getPricePresets, getPriceRange } from './quote.js';
 import { icon } from './icons.js';
+import { categoryRoute, productRoute, quoteRoute, route } from './routes.js';
+
+export { categoryRoute, productRoute, quoteRoute, route } from './routes.js';
 
 export function escapeHtml(value = '') {
   return String(value).replace(/[&<>"']/g, character => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[character]);
 }
-
-export const route = (path, params) => '#/' + path + (params?.size ? '?' + params : '');
-export const categoryRoute = id => route('catalogue', new URLSearchParams({ category: id }));
-export const quoteRoute = id => route('calculator', new URLSearchParams({ product: id }));
-export const productRoute = id => route('product/' + id);
 
 export function label(record, key, lang) {
   return (lang === 'ar' && record[key + 'Ar']) || record[key];
@@ -37,26 +35,28 @@ function priceRange(range, lang) {
 }
 
 function brand(lang) {
-  return `<a class="brand" href="#/" aria-label="${label(business, 'name', lang)}">
+  return `<a class="brand" href="${route('', undefined, lang)}" aria-label="${label(business, 'name', lang)}">
     <img src="./media/brand-mark.webp" width="47" height="47" alt="">
     <span><strong lang="ar" dir="rtl">${business.nameAr}</strong><small lang="en" dir="ltr">AL QARYATIN PRESS</small></span>
   </a>`;
 }
 
-export function header(page, t, lang, cartCount = 0) {
+export function header(page, t, lang, cartCount = 0, alternateHref) {
+  const alternateLang = lang === 'en' ? 'ar' : 'en';
+  const languageHref = alternateHref ?? route('', undefined, alternateLang);
   return `<header class="site-header">
     <div class="wrap header-inner">
       ${brand(lang)}
       <nav id="main-navigation" class="navigation" aria-label="${t.primaryNav}">
         <ul class="navigation-list m3-card-list" role="list">
           ${[['home', '', t.home], ['catalogue', 'catalogue', t.catalog], ['calculator', 'calculator', t.calculator], ['about', 'about', t.about]].map(([id, url, text]) =>
-            `<li><a href="#/${url}"${page === id || (page === 'product' && id === 'catalogue') ? ' aria-current="page"' : ''}>${text}</a></li>`).join('')}
+            `<li><a href="${route(url, undefined, lang)}"${page === id || (page === 'product' && id === 'catalogue') ? ' aria-current="page"' : ''}>${text}</a></li>`).join('')}
         </ul>
       </nav>
       <div class="header-actions">
-        <button class="button button-text language" type="button" data-action="language" aria-label="${t.switchLanguage}">${icon('language')}<span class="language-label">${t.lang}</span></button>
-        <a class="button button-primary header-quote" href="#/calculator">${icon('calculator')}${t.estimate}</a>
-        <a class="icon-button header-cart" id="header-cart" href="#/cart" aria-label="${t.cartTitle} (${number(cartCount, lang)})"${page === 'cart' ? ' aria-current="page"' : ''}>${icon('cart')}<span class="cart-badge" aria-hidden="true"${cartCount ? '' : ' hidden'}>${number(cartCount, lang)}</span></a>
+        <a class="button button-text language" data-action="language" href="${escapeHtml(languageHref)}" hreflang="${alternateLang}" aria-label="${t.switchLanguage}">${icon('language')}<span class="language-label" lang="${alternateLang}">${t.lang}</span></a>
+        <a class="button button-primary header-quote" href="${route('calculator', undefined, lang)}">${icon('calculator')}${t.estimate}</a>
+        <a class="icon-button header-cart" id="header-cart" href="${route('cart', undefined, lang)}" aria-label="${t.cartTitle} (${number(cartCount, lang)})"${page === 'cart' ? ' aria-current="page"' : ''}>${icon('cart')}<span class="cart-badge" aria-hidden="true"${cartCount ? '' : ' hidden'}>${number(cartCount, lang)}</span></a>
         <button class="icon-button menu-toggle" type="button" aria-controls="main-navigation" aria-expanded="false" aria-label="${lang === 'ar' ? 'القائمة' : 'Menu'}" data-action="menu">${icon('menu')}</button>
       </div>
     </div>
@@ -69,9 +69,9 @@ export function footer(t, lang) {
       <div class="footer-brand">${brand(lang)}<p>${t.brandPromise}</p></div>
       <nav class="footer-nav" aria-label="${t.footerNav}">
         <ul class="footer-nav-list m3-card-list" role="list">
-          <li><a href="#/catalogue">${t.catalog}</a></li>
-          <li><a href="#/calculator">${t.calculator}</a></li>
-          <li><a href="#/about">${t.about}</a></li>
+          <li><a href="${route('catalogue', undefined, lang)}">${t.catalog}</a></li>
+          <li><a href="${route('calculator', undefined, lang)}">${t.calculator}</a></li>
+          <li><a href="${route('about', undefined, lang)}">${t.about}</a></li>
         </ul>
       </nav>
       <a class="footer-visit" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a>
@@ -85,7 +85,7 @@ export function productCard(product, t, lang) {
   const category = categories.find(item => item.id === product.category);
   const range = getPriceRange(product);
   return `<article class="product-card">
-    <a href="${productRoute(product.id)}" class="product-link" aria-labelledby="name-${product.id}" aria-describedby="price-${product.id}">
+    <a href="${productRoute(product.id, lang)}" class="product-link" aria-labelledby="name-${product.id}" aria-describedby="price-${product.id}">
       <div class="card-image"><img src="${product.image}" alt="" loading="lazy" width="960" height="720"></div>
       <div class="card-info">
         <p class="card-category">${escapeHtml(label(category, 'label', lang))}</p>
@@ -111,9 +111,9 @@ export function pageHeading(title, text, eyebrow = '') {
   </div>`;
 }
 
-function quoteBand(t) {
+function quoteBand(t, lang) {
   return `<section class="quote-band"><div><h2>${t.quoteTitle}</h2><p>${t.quoteText}</p></div>
-    <a class="button button-gold" href="#/calculator">${icon('calculator')}${t.estimate}</a>
+    <a class="button button-gold" href="${route('calculator', undefined, lang)}">${icon('calculator')}${t.estimate}</a>
   </section>`;
 }
 
@@ -136,7 +136,7 @@ export function home(t, lang) {
         <p class="eyebrow">${t.area}</p>
         <h1 id="page-title" tabindex="-1"><span>${t.heroOne}</span><em>${t.heroTwo}</em></h1>
         <p class="hero-description">${t.heroDescription}</p>
-        <div class="hero-actions"><a class="button button-gold" href="#/catalogue">${icon('grid')}${t.explore}</a><a class="button button-tonal" href="#/calculator">${icon('calculator')}${t.estimate}</a></div>
+        <div class="hero-actions"><a class="button button-gold" href="${route('catalogue', undefined, lang)}">${icon('grid')}${t.explore}</a><a class="button button-tonal" href="${route('calculator', undefined, lang)}">${icon('calculator')}${t.estimate}</a></div>
       </div>
       <div class="hero-media"><img src="./media/hero.webp" alt="" width="1480" height="987" fetchpriority="high"></div>
     </div>
@@ -145,19 +145,19 @@ export function home(t, lang) {
     <section class="category-section" aria-labelledby="category-title">
       <h2 id="category-title" class="sr-only">${t.browseTitle}</h2>
       <ul class="category-links m3-card-list" role="list">${categories.map(category =>
-        `<li class="category-grid-item"><a href="${categoryRoute(category.id)}"><span class="category-icon">${icon(category.id)}</span><span>${escapeHtml(label(category, 'label', lang))}</span>${icon('chevron', 'm3-list-trailing')}</a></li>`).join('')}</ul>
+        `<li class="category-grid-item"><a href="${categoryRoute(category.id, lang)}"><span class="category-icon">${icon(category.id)}</span><span>${escapeHtml(label(category, 'label', lang))}</span>${icon('chevron', 'm3-list-trailing')}</a></li>`).join('')}</ul>
     </section>
     <section aria-labelledby="featured-title" class="featured-section">
-      <div class="section-heading"><div><h2 id="featured-title">${t.featured}</h2></div><a class="button button-tonal" href="#/catalogue">${t.viewAll}</a></div>
+      <div class="section-heading"><div><h2 id="featured-title">${t.featured}</h2></div><a class="button button-tonal" href="${route('catalogue', undefined, lang)}">${t.viewAll}</a></div>
       ${productGrid(featuredProducts, t, lang)}
     </section>
-    ${quoteBand(t)}
+    ${quoteBand(t, lang)}
     ${contact(t, lang)}
   </div>`;
 }
 
 export function productDetail(product, t, lang, related) {
-  if (!product) return `${pageHeading(t.notFound, t.notFoundText)}<div class="wrap simple-section"><a class="button button-primary" href="#/catalogue">${t.explore}</a></div>`;
+  if (!product) return `${pageHeading(t.notFound, t.notFoundText)}<div class="wrap simple-section"><a class="button button-primary" href="${route('catalogue', undefined, lang)}">${t.explore}</a></div>`;
   const name = escapeHtml(label(product, 'name', lang));
   const category = categories.find(item => item.id === product.category);
   const options = product.options.filter(option => option.id !== 'number-of-folds' && isOptionAvailable(option));
@@ -165,12 +165,12 @@ export function productDetail(product, t, lang, related) {
   const sizeExamples = range.small.size === range.large.size
     ? [[t.preset, range.small]]
     : [[t.smallSize, range.small], [t.largeSize, range.large]];
-  const catalogueBack = categoryRoute(product.category);
+  const catalogueBack = categoryRoute(product.category, lang);
   const specLang = lang === 'ar' ? ' lang="en" dir="ltr"' : '';
   return `<div class="wrap product-page">
     <nav class="breadcrumb" aria-label="${t.breadcrumbs}">
       <ol class="breadcrumb-list m3-card-list" role="list">
-        <li><a href="${route('catalogue')}">${t.catalog}</a></li>
+        <li><a href="${route('catalogue', undefined, lang)}">${t.catalog}</a></li>
         <li>${icon('chevron')}<a href="${catalogueBack}">${escapeHtml(label(category, 'label', lang))}</a></li>
         <li>${icon('chevron')}<bdi aria-current="page">${product.code}</bdi></li>
       </ol>
@@ -195,7 +195,7 @@ export function productDetail(product, t, lang, related) {
         </dl>
         <div class="product-order-actions">
           <button type="button" class="button button-primary" data-action="add-product-to-cart" data-product-id="${product.id}">${icon('cart')}${t.addMinimumOrder}</button>
-          <a class="button button-tonal" href="${quoteRoute(product.id)}">${icon('calculator')}${t.estimate}</a>
+          <a class="button button-tonal" href="${quoteRoute(product.id, lang)}">${icon('calculator')}${t.estimate}</a>
         </div>
       </section>
     </div>

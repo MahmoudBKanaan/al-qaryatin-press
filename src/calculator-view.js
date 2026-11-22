@@ -80,7 +80,7 @@ export function quoteSummary(product, state, t, lang) {
 
   return `<section class="surface estimate-card">
     <p class="eyebrow">${t.summary}</p>
-    <div class="estimate-product"><img src="${product.image}" alt="" width="92" height="70"><div><a href="${productRoute(product.id)}">${escapeHtml(label(product, 'name', lang))}</a><small><bdi>${product.code}</bdi></small></div></div>
+    <div class="estimate-product"><img src="${product.image}" alt="" width="92" height="70"><div><a href="${productRoute(product.id, lang)}">${escapeHtml(label(product, 'name', lang))}</a><small><bdi>${product.code}</bdi></small></div></div>
     <div class="estimate-live">
       <dl class="estimate-lines m3-list">
         ${result.preset ? `<div class="m3-list-item"><dt>${t.preset}</dt><dd>${escapeHtml(label(result.preset, 'size', lang))}</dd></div>` : ''}

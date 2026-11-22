@@ -1,6 +1,6 @@
 import { describeCartItem, orderMessage, summarizeCart, whatsappOrderUrl } from './cart.js';
 import { icon } from './icons.js';
-import { escapeHtml, label, money, number, pageHeading, productRoute } from './views.js';
+import { escapeHtml, label, money, number, pageHeading, productRoute, route } from './views.js';
 
 export const cartCopy = {
   en: {
@@ -56,7 +56,7 @@ function cartItem(item, index, t, lang, c) {
     <div class="cart-item-product">
       <img src="${escapeHtml(product.image)}" width="96" height="72" loading="lazy" alt="">
       <div>
-        <h2 class="cart-item-title" id="${titleId}"><a href="${productRoute(product.id)}">${productName}</a></h2>
+        <h2 class="cart-item-title" id="${titleId}"><a href="${productRoute(product.id, lang)}">${productName}</a></h2>
         <p class="cart-item-code"><bdi>${escapeHtml(product.code)}</bdi></p>
       </div>
     </div>
@@ -95,7 +95,7 @@ export function cartPage(cart, t, lang) {
     return `${heading}
       <div class="wrap cart-content"><section class="empty-state m3-empty-state">
         <span class="category-icon">${icon('packaging')}</span><h2>${c.empty}</h2><p>${c.emptyText}</p>
-        <a class="button button-primary" href="#/catalogue">${t.catalog}</a>
+        <a class="button button-primary" href="${route('catalogue', undefined, lang)}">${t.catalog}</a>
       </section></div>`;
   }
 
@@ -105,7 +105,7 @@ export function cartPage(cart, t, lang) {
         <ul class="cart-items m3-card-list" role="list" aria-label="${c.items}">
           ${cart.map((item, index) => cartItem(item, index, t, lang, c)).join('')}
         </ul>
-        <a class="button button-tonal cart-continue" href="#/catalogue">${c.continue}</a>
+        <a class="button button-tonal cart-continue" href="${route('catalogue', undefined, lang)}">${c.continue}</a>
       </div>
       <section class="surface cart-summary" aria-labelledby="cart-summary-title">
         <h2 id="cart-summary-title">${c.summary}</h2>
