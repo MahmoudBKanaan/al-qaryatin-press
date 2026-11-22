@@ -76,7 +76,7 @@ export function footer(t, lang) {
       </nav>
       <a class="footer-visit" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a>
     </div>
-    <div class="wrap footer-bottom"><span>&copy; ${number(new Date().getFullYear(), lang)} ${t.copyright}</span><bdi>@${business.username}</bdi></div>
+    <div class="wrap footer-bottom"><span>&copy; ${number(new Date().getFullYear(), lang)} ${t.copyright}</span><bdi>@${business.username}</bdi><div class="footer-tape-controls"></div></div>
   </footer>`;
 }
 

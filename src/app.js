@@ -14,7 +14,7 @@ import {
 const app = document.querySelector('#app');
 const notice = document.querySelector('#notice');
 const skipLink = document.querySelector('.skip-link');
-const setTapeLanguage = mountProductTape(document.querySelector('#product-tape'));
+const updateProductTape = mountProductTape(document.querySelector('#product-tape'));
 history.scrollRestoration = 'manual';
 let language = 'en';
 try {
@@ -61,7 +61,6 @@ function render({ focusPage = false } = {}) {
   const t = copy[language];
   document.documentElement.lang = language;
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
-  setTapeLanguage(language);
   skipLink.textContent = t.skip;
 
   let content;
@@ -104,6 +103,7 @@ function render({ focusPage = false } = {}) {
   app.innerHTML = header(currentPage, t, language, cart.length) +
     `<main id="main"${enterPage ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
     footer(t, language) + briefDialog(t);
+  updateProductTape(language, document.querySelector('.footer-tape-controls'));
   if (currentPage === 'catalogue') revealCatalogueCategory();
   if (focusPage) {
     const restore = currentPage === 'catalogue' && history.state?.catalogueReturn;

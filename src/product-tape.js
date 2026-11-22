@@ -19,38 +19,38 @@ export function mountProductTape(root) {
   const items = categories.map(({ id }) =>
     `<span class="product-tape-item" data-tape-category="${id}">${icon(id)}</span>`).join('');
   const run = `<div class="product-tape-run">${items}</div>`;
+  const trackMarkup = `<div class="product-tape-track" style="--tape-category-count:${categories.length}">${run}${run}</div>`;
 
   root.classList.toggle('is-paused', paused);
-  root.innerHTML = `<div class="product-tape-window" aria-hidden="true" dir="ltr">
-      <div class="product-tape-track" style="--tape-category-count:${categories.length}">${run}${run}</div>
-    </div>
-    <button type="button" class="product-tape-toggle">${icon(paused ? 'play' : 'pause')}</button>`;
+  root.innerHTML = `<div class="product-tape-window product-tape-left" aria-hidden="true">${trackMarkup}</div>
+    <div class="product-tape-window product-tape-right" aria-hidden="true">${trackMarkup}</div>
+    <button type="button" class="button button-light product-tape-toggle"></button>`;
 
   if (typeof ResizeObserver === 'function') {
-    const viewport = root.querySelector('.product-tape-window');
-    const track = root.querySelector('.product-tape-track');
-    const observer = new ResizeObserver(() => {
-      const runHeight = track.firstElementChild.getBoundingClientRect().height;
-      if (!runHeight) return;
-      const viewportHeight = viewport.getBoundingClientRect().height;
-      // A complete extra run covers the top-to-bottom shift of one cycle.
-      const runs = Math.max(2, Math.ceil(viewportHeight / runHeight) + 1);
-      if (runs !== track.childElementCount) track.innerHTML = run.repeat(runs);
+    const observer = new ResizeObserver(entries => {
+      for (const { target: viewport } of entries) {
+        const track = viewport.firstElementChild;
+        const runHeight = track.firstElementChild.getBoundingClientRect().height;
+        if (!runHeight) continue;
+        const viewportHeight = viewport.getBoundingClientRect().height;
+        // One extra run covers the full animation displacement in either direction.
+        const runs = Math.max(2, Math.ceil(viewportHeight / runHeight) + 1);
+        if (runs !== track.childElementCount) track.innerHTML = run.repeat(runs);
+      }
     });
-    observer.observe(viewport);
+    root.querySelectorAll('.product-tape-window').forEach(viewport => observer.observe(viewport));
   }
 
   const button = root.querySelector('.product-tape-toggle');
   function updateLabel() {
     const label = labels[language][paused ? 'resume' : 'pause'];
     button.setAttribute('aria-label', label);
-    button.title = label;
+    button.innerHTML = `${icon(paused ? 'play' : 'pause')}<span>${label}</span>`;
   }
 
   button.addEventListener('click', () => {
     paused = !paused;
     root.classList.toggle('is-paused', paused);
-    button.innerHTML = icon(paused ? 'play' : 'pause');
     updateLabel();
     try {
       globalThis.localStorage?.setItem(preference, String(paused));
@@ -58,7 +58,8 @@ export function mountProductTape(root) {
   });
   updateLabel();
 
-  return function setLanguage(lang) {
+  return function updateProductTape(lang, controls) {
+    controls?.append(button);
     const next = lang === 'ar' ? 'ar' : 'en';
     if (next !== language) {
       language = next;

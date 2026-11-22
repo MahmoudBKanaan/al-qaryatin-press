@@ -235,7 +235,19 @@ test('the public theme uses fill-only icons, elevation, and reduced-motion state
   assert.match(defaultTheme, /@media \(prefers-reduced-motion: reduce\)\s*\{[\s\S]*animation: none !important/);
 });
 
-test('the side tape uses two matching category runs and a persistent localized pause control', async (t) => {
+const tapeCategoryIds = categories.map(category => category.id);
+
+function tapeIcons(markup) {
+  return [...markup.matchAll(/data-tape-category="([^"]+)"/g)].map(match => match[1]);
+}
+
+function tapeWindows(markup) {
+  const windows = [...markup.matchAll(/<div class="product-tape-window product-tape-(left|right)"[^>]*aria-hidden="true"[^>]*>/g)];
+  assert.deepEqual(windows.map(window => window[1]), ['left', 'right']);
+  return windows.map((window, index) => markup.slice(window.index, windows[index + 1]?.index));
+}
+
+test('the side tapes repeat matching categories and share a persistent localized pause control', async (t) => {
   const previousStorage = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
   const preferences = new Map();
   Object.defineProperty(globalThis, 'localStorage', {
@@ -259,20 +271,26 @@ test('the side tape uses two matching category runs and a persistent localized p
         assert.equal(selector, '.product-tape-toggle');
         return button;
       },
+      querySelectorAll() { return []; },
     };
     return { root, button, classes, setLanguage: mountProductTape(root) };
   }
 
   const tape = createTape();
   const markup = tape.root.innerHTML;
-  assert.deepEqual([...markup.matchAll(/data-tape-category="([^"]+)"/g)].map(match => match[1]),
-    [...categories, ...categories].map(category => category.id));
-  assert.match(markup, /class="product-tape-window" aria-hidden="true"/);
+  for (const window of tapeWindows(markup)) {
+    assert.deepEqual(tapeIcons(window), [...tapeCategoryIds, ...tapeCategoryIds]);
+  }
+  const controls = { append(button) { this.button = button; } };
+  tape.setLanguage('en', controls);
+  assert.equal(controls.button, tape.button);
   assert.match(tape.button['aria-label'], /^Pause/);
   tape.button.click();
   assert.ok(tape.classes.has('is-paused'));
   assert.match(tape.button['aria-label'], /^Resume/);
-  tape.setLanguage('ar');
+  const localizedControls = { append(button) { this.button = button; } };
+  tape.setLanguage('ar', localizedControls);
+  assert.equal(localizedControls.button, tape.button);
   assert.match(tape.button['aria-label'], /^استئناف/);
   assert.equal(tape.root.innerHTML, markup);
 
@@ -284,17 +302,20 @@ test('the side tape uses two matching category runs and a persistent localized p
   const index = await readFile(new URL('index.html', site), 'utf8');
   const css = await readFile(new URL('styles.css', site), 'utf8');
   assert.match(index, /id="product-tape" class="product-tape"><\/div>\s*<div id="app"/);
-  const rail = css.match(/^\.product-tape\s*\{([^}]+)\}/m)?.[1] ?? '';
+  assert.match(footer(copy.en, 'en'), /class="footer-tape-controls"/);
+  const rail = css.match(/^\.product-tape-window\s*\{([^}]+)\}/m)?.[1] ?? '';
   assert.match(rail, /position:\s*fixed\s*;/);
-  assert.match(rail, /inset-block-start:\s*[^;]+;/);
-  assert.match(rail, /inset-block-end:\s*[^;]+;/);
-  assert.match(rail, /grid-template-rows:\s*minmax\(0,\s*1fr\) auto;/);
-  assert.doesNotMatch(css, /\.product-tape-window\s*\{[^}]*block-size:\s*min\(/);
+  assert.match(rail, /inset-block:\s*[^;]+;|inset-block-start:\s*[^;]+;[\s\S]*inset-block-end:\s*[^;]+;/);
+  assert.match(rail, /mask-image:\s*(?:linear-gradient\(|var\(--tape-fade\))/);
+  assert.doesNotMatch(rail, /block-size:\s*min\(/);
+  assert.match(css, /\.product-tape-right\s+\.product-tape-track\s*\{[^}]*\breverse\b/);
+  const mobile = css.match(/@media\s*\(max-width:\s*650px\)\s*\{([\s\S]*?)^\}/m)?.[1] ?? '';
+  assert.match(mobile, /\.product-tape(?:-window)?\s*(?:,[^{]+)?\{[^}]*display:\s*none/);
   assert.match(css, /@keyframes product-waterfall\s*\{\s*from\s*\{\s*transform:\s*translateY\(calc\(-1\s*\*\s*var\(--tape-category-count\)\s*\*\s*var\(--tape-pitch\)\)\)[\s\S]*to\s*\{\s*transform:\s*translateY\(0\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.product-tape-track \{ animation: none;/);
 });
 
-test('the tape adds complete icon cycles to cover a taller canvas without gaps', (t) => {
+test('both tapes independently repeat enough icon cycles to cover the canvas', (t) => {
   const previousObserver = Object.getOwnPropertyDescriptor(globalThis, 'ResizeObserver');
   let onResize;
   const observed = [];
@@ -310,55 +331,59 @@ test('the tape adds complete icon cycles to cover a taller canvas without gaps',
     else delete globalThis.ResizeObserver;
   });
 
-  let windowHeight = 1361;
-  let runHeight = 340;
-  let trackMarkup = '';
-  let trackWrites = 0;
-  const viewport = { getBoundingClientRect: () => ({ height: windowHeight }) };
-  const track = {
-    firstElementChild: { getBoundingClientRect: () => ({ height: runHeight }) },
-    get childElementCount() { return [...trackMarkup.matchAll(/class="product-tape-run"/g)].length; },
-    set innerHTML(value) {
-      trackMarkup = value;
-      trackWrites++;
-    },
-  };
-  const selectors = {
-    '.product-tape-toggle': { setAttribute() {}, addEventListener() {} },
-    '.product-tape-window': viewport,
-    '.product-tape-track': track,
-  };
+  function createRail(height, runHeight) {
+    const rail = { height, runHeight, markup: '', writes: 0 };
+    rail.track = {
+      firstElementChild: { getBoundingClientRect: () => ({ height: rail.runHeight }) },
+      get childElementCount() { return [...rail.markup.matchAll(/class="product-tape-run"/g)].length; },
+      set innerHTML(value) {
+        rail.markup = value;
+        rail.writes++;
+      },
+    };
+    rail.viewport = {
+      firstElementChild: rail.track,
+      getBoundingClientRect: () => ({ height: rail.height }),
+    };
+    return rail;
+  }
+  const left = createRail(1361, 340);
+  const right = createRail(540, 270);
+  const button = { setAttribute() {}, addEventListener() {} };
   const root = {
     classList: { toggle() {} },
     set innerHTML(markup) {
       assert.match(markup, new RegExp(`style="--tape-category-count:\\s*${categories.length};?"`));
-      trackMarkup = markup;
+      [left.markup, right.markup] = tapeWindows(markup);
     },
-    querySelector(selector) { return selectors[selector]; },
+    querySelector(selector) {
+      assert.equal(selector, '.product-tape-toggle');
+      return button;
+    },
+    querySelectorAll(selector) {
+      assert.equal(selector, '.product-tape-window');
+      return [left.viewport, right.viewport];
+    },
   };
-  const categoryIds = categories.map(category => category.id);
-  function assertRuns(count) {
-    assert.equal(track.childElementCount, count);
-    assert.deepEqual([...trackMarkup.matchAll(/data-tape-category="([^"]+)"/g)].map(match => match[1]),
-      Array.from({ length: count }, () => categoryIds).flat());
-    assert.ok((count - 1) * runHeight >= windowHeight,
+  function assertRuns(rail, count) {
+    assert.equal(rail.track.childElementCount, count);
+    assert.deepEqual(tapeIcons(rail.markup), Array.from({ length: count }, () => tapeCategoryIds).flat());
+    assert.ok((count - 1) * rail.runHeight >= rail.height,
       'The tape covers its window even when translated up by one full cycle.');
   }
 
   mountProductTape(root);
-  assert.deepEqual(observed, [viewport]);
-  onResize();
-  assertRuns(6);
-  const writes = trackWrites;
-  onResize();
-  assert.equal(trackWrites, writes);
+  assert.deepEqual(observed, [left.viewport, right.viewport]);
+  const entries = observed.map(target => ({ target }));
+  onResize(entries);
+  assertRuns(left, 6);
+  assertRuns(right, 3);
+  onResize(entries);
+  assert.deepEqual([left.writes, right.writes], [1, 1]);
 
-  windowHeight = 540;
-  runHeight = 270;
-  onResize();
-  assertRuns(3);
-
-  windowHeight = 200;
-  onResize();
-  assertRuns(2);
+  right.height = 200;
+  onResize([{ target: right.viewport }]);
+  assertRuns(right, 2);
+  assertRuns(left, 6);
+  assert.deepEqual([left.writes, right.writes], [1, 2]);
 });
