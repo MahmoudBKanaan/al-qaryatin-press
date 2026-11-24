@@ -43,6 +43,12 @@ export function getPricePresets(product) {
   return isAvailable(product) ? pricePresets[product.row] ?? [] : [];
 }
 
+export function getUnitPriceRange(product) {
+  const prices = getPricePresets(product).map(preset => preset.unitPrice);
+  if (!prices.length) return null;
+  return { minimum: Math.min(...prices), maximum: Math.max(...prices) };
+}
+
 export function getPriceRange(product) {
   const presets = getPricePresets(product);
   if (!presets.length) return null;
@@ -126,13 +132,13 @@ export function calculateQuote(product, {
   return result('estimate', [], subtotalInRiyals(selected.unitPrice, count, multiplier));
 }
 
-export function formatSAR(value, locale = 'en-SA') {
+export function formatSAR(value, locale = 'en-SA', maximumFractionDigits = 2) {
   if (!Number.isFinite(value)) return '';
 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'SAR',
     minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
-    maximumFractionDigits: 2,
+    maximumFractionDigits,
   }).format(value);
 }

@@ -4,7 +4,7 @@ import { access, readFile, readdir } from 'node:fs/promises';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { categories, getProduct, products } from '../dist/src/catalog.js';
-import { calculateQuote, getPricePresets, getPriceRange } from '../dist/src/quote.js';
+import { calculateQuote, getPricePresets, getPriceRange, getUnitPriceRange } from '../dist/src/quote.js';
 import { about, categoryChip, escapeHtml, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage, makeBrief } from '../dist/src/calculator-view.js';
 import { copy } from '../dist/src/copy.js';
@@ -166,7 +166,41 @@ test('localized home, catalogue and product content is crawlable without running
   }
 });
 
-test('every published size uses the catalogue minimum and matches the advertised price range', () => {
+test('catalogue cards show localized unit prices and product details show minimum-order totals', () => {
+  const businessCards = getProduct('business-cards');
+  const customCards = getProduct('custom-paper-cards');
+  const products = [businessCards, customCards];
+
+  assert.deepEqual(products.map(product => {
+    const { minimum, maximum } = getUnitPriceRange(product);
+    return [minimum, maximum];
+  }), [[0.2, 0.2], [0.1125, 0.375]]);
+
+  const amounts = text => text.match(/\p{Decimal_Number}+(?:[.٫]\p{Decimal_Number}+)?/gu);
+  for (const lang of ['en', 'ar']) {
+    const t = copy[lang];
+    const locale = lang === 'ar' ? 'ar-SA' : 'en-SA';
+    const decimal = new Intl.NumberFormat(locale, { maximumFractionDigits: 5 });
+    const fixed = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const cards = productGrid(products, t, lang);
+    const prices = [...cards.matchAll(/id="price-([^"]+)"><span>([^<]+)<\/span><bdi>([^<]+)<\/bdi>/g)];
+    assert.deepEqual(prices.map(price => [price[1], price[2], amounts(price[3])]), [
+      [businessCards.id, t.unitPrice, [fixed.format(0.2)]],
+      [customCards.id, t.unitPrice, [decimal.format(0.1125), decimal.format(0.375)]],
+    ]);
+
+    const orderAmounts = [[100], [11.25, 37.5]];
+    for (const [index, product] of products.entries()) {
+      const detail = productDetail(product, t, lang, []);
+      assert.ok(detail.includes('<p class="price-caption">' + t.priceRange + '</p>'));
+      const total = detail.match(/<bdi class="product-price">([^<]+)<\/bdi>/)?.[1];
+      assert.ok(total, product.id);
+      assert.deepEqual(amounts(total), orderAmounts[index].map(amount => decimal.format(amount)));
+    }
+  }
+});
+
+test('every published size matches the product detail price at the minimum quantity', () => {
   const excluded = ['rate', 'unit', 'sellingUnit', 'formula', 'conversionValue', 'dimensions'];
   for (const product of products) {
     assert.ok(excluded.every(key => !Object.hasOwn(product, key)), product.id);

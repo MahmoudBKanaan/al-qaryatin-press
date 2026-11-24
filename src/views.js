@@ -1,5 +1,5 @@
 import { business, categories, featuredProducts, isOptionAvailable } from './catalog.js';
-import { formatSAR, getPricePresets, getPriceRange } from './quote.js';
+import { formatSAR, getPricePresets, getPriceRange, getUnitPriceRange } from './quote.js';
 import { icon } from './icons.js';
 import { categoryRoute, productRoute, quoteRoute, route } from './routes.js';
 
@@ -25,13 +25,14 @@ export const quantityUnit = (quantity, t, lang) => lang === 'en' && quantity !==
 export const localeId = lang => lang === 'ar' ? 'ar-SA' : 'en-SA';
 export const number = (value, lang) => new Intl.NumberFormat(localeId(lang)).format(value);
 export const money = (value, lang) => formatSAR(value, localeId(lang));
-function priceRange(range, lang) {
-  if (range.minimum === range.maximum) return money(range.minimum, lang);
-  const formatter = new Intl.NumberFormat(localeId(lang), {
-    style: 'currency', currency: 'SAR', minimumFractionDigits: 0, maximumFractionDigits: 2,
+function priceRange({ minimum, maximum }, lang, maximumFractionDigits = 2) {
+  const locale = localeId(lang);
+  if (minimum === maximum) return formatSAR(minimum, locale, maximumFractionDigits);
+  const formatter = new Intl.NumberFormat(locale, {
+    style: 'currency', currency: 'SAR', minimumFractionDigits: 0, maximumFractionDigits,
   });
-  return formatter.formatRange?.(range.minimum, range.maximum) ??
-    [money(range.minimum, lang), money(range.maximum, lang)].join(' – ');
+  return formatter.formatRange?.(minimum, maximum) ??
+    [formatSAR(minimum, locale, maximumFractionDigits), formatSAR(maximum, locale, maximumFractionDigits)].join(' – ');
 }
 
 function brand(lang) {
@@ -83,14 +84,14 @@ export function footer(t, lang) {
 export function productCard(product, t, lang) {
   const name = escapeHtml(label(product, 'name', lang));
   const category = categories.find(item => item.id === product.category);
-  const range = getPriceRange(product);
+  const perItem = getUnitPriceRange(product);
   return `<article class="product-card">
     <a href="${productRoute(product.id, lang)}" class="product-link" aria-labelledby="name-${product.id}" aria-describedby="price-${product.id}">
       <div class="card-image"><img src="${product.image}" alt="" loading="lazy" width="960" height="720"></div>
       <div class="card-info">
         <p class="card-category">${escapeHtml(label(category, 'label', lang))}</p>
         <h3 id="name-${product.id}">${name}</h3>
-        <div class="card-bottom"><span class="card-pricing" id="price-${product.id}"><span>${t.priceRange}</span><bdi>${priceRange(range, lang)}</bdi></span><span class="card-more">${icon('diagonal')}</span></div>
+        <div class="card-bottom"><span class="card-pricing" id="price-${product.id}"><span>${t.unitPrice}</span><bdi>${priceRange(perItem, lang, 5)}</bdi></span><span class="card-more">${icon('diagonal')}</span></div>
       </div>
     </a>
   </article>`;
