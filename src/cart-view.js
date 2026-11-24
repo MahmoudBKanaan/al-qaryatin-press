@@ -1,6 +1,6 @@
 import { describeCartItem, orderMessage, summarizeCart, whatsappOrderUrl } from './cart.js';
 import { icon } from './icons.js';
-import { escapeHtml, label, money, number, pageHeading, productRoute, route } from './views.js';
+import { escapeHtml, label, money, number, pageHeading, priceMultiplier, productRoute, route } from './views.js';
 
 export const cartCopy = {
   en: {
@@ -40,10 +40,13 @@ export const cartCopy = {
 };
 
 function itemEstimate(result, t, lang) {
-  if (Number.isFinite(result.subtotal)) {
-    return `<p class="cart-line-price"><span>${t.subtotal}</span><strong><bdi>${money(result.subtotal, lang)}</bdi></strong></p>`;
-  }
-  return `<p class="cart-review">${icon('info')}${t.review}</p>`;
+  const estimate = Number.isFinite(result.subtotal)
+    ? `<p class="cart-line-price"><span>${t.subtotal}</span><strong><bdi>${money(result.subtotal, lang)}</bdi></strong></p>`
+    : `<p class="cart-review">${icon('info')}${t.review}</p>`;
+  const multiplier = result.quantityMultiplier > 1
+    ? `<p class="cart-line-price"><span>${t.smallOrderMultiplier} <bdi dir="ltr">${priceMultiplier(result.quantityMultiplier, lang)}</bdi></span></p>`
+    : '';
+  return estimate + multiplier;
 }
 
 function cartItem(item, index, t, lang, c) {

@@ -1,6 +1,6 @@
 import { getProduct, isAvailable } from './catalog.js';
 import { calculateQuote } from './quote.js';
-import { availableOptions, label, money, number } from './views.js';
+import { availableOptions, label, money, number, priceMultiplier } from './views.js';
 
 const storageKey = 'qaryatin-cart';
 const whatsappRecipient = '966568080265';
@@ -109,6 +109,7 @@ export function orderMessage(cart, t, lang) {
       `${t.finishes} — ${optionLabels.join(arabic ? '، ' : ', ') || t.noOptions}`,
     ];
     if (note) lines.push(`${t.extra} — ${note}`);
+    if (result.quantityMultiplier > 1) lines.push(`${t.smallOrderMultiplier} — ${priceMultiplier(result.quantityMultiplier, lang)}`);
     if (result.status === 'estimate') {
       lines.push(`${t.ready} — ${money(result.subtotal, lang)}`);
     } else {

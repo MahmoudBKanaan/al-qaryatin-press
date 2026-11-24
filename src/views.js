@@ -1,4 +1,4 @@
-import { business, categories, featuredProducts, isOptionAvailable } from './catalog.js';
+import { business, categories, featuredProducts, getSmallOrderTier, isOptionAvailable } from './catalog.js';
 import { formatSAR, getPricePresets, getPriceRange, getUnitPriceRange } from './quote.js';
 import { icon } from './icons.js';
 import { categoryRoute, productRoute, quoteRoute, route } from './routes.js';
@@ -25,6 +25,23 @@ export const quantityUnit = (quantity, t, lang) => lang === 'en' && quantity !==
 export const localeId = lang => lang === 'ar' ? 'ar-SA' : 'en-SA';
 export const number = (value, lang) => new Intl.NumberFormat(localeId(lang)).format(value);
 export const money = (value, lang) => formatSAR(value, localeId(lang));
+export const priceMultiplier = (value, lang) => `${number(value, lang)}×`;
+
+function quantityRange(minimum, maximum, t, lang) {
+  const range = minimum === maximum ? number(minimum, lang) : `${number(minimum, lang)}–${number(maximum, lang)}`;
+  return `<bdi>${range}</bdi> ${quantityUnit(maximum, t, lang)}`;
+}
+
+export function quantityPricingDetails(product, t, lang) {
+  const tier = getSmallOrderTier(product);
+  const minimum = tier?.minimum ?? product.minimum;
+  const range = quantityRange(minimum, product.maximum, t, lang);
+  const smallOrder = tier ? t.smallOrderRule
+    .replace('{range}', quantityRange(tier.minimum, product.minimum - 1, t, lang))
+    .replace('{multiplier}', `<bdi dir="ltr">${priceMultiplier(tier.multiplier, lang)}</bdi>`) : '';
+  return { minimum, range, smallOrder };
+}
+
 function priceRange({ minimum, maximum }, lang, maximumFractionDigits = 2) {
   const locale = localeId(lang);
   if (minimum === maximum) return formatSAR(minimum, locale, maximumFractionDigits);
@@ -164,6 +181,7 @@ export function productDetail(product, t, lang, related) {
   const category = categories.find(item => item.id === product.category);
   const options = product.options.filter(option => option.id !== 'number-of-folds' && isOptionAvailable(option));
   const range = getPriceRange(product);
+  const quantityPricing = quantityPricingDetails(product, t, lang);
   const sizeExamples = range.small.size === range.large.size
     ? [[t.preset, range.small]]
     : [[t.smallSize, range.small], [t.largeSize, range.large]];
@@ -205,7 +223,8 @@ export function productDetail(product, t, lang, related) {
         <dl class="specification-list m3-list">
           <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.material}</dt><dd>${escapeHtml(label(product, 'material', lang))}</dd></div>
           <div class="m3-list-item"><dt>${icon('print', 'm3-list-leading')}${t.specification}</dt><dd>${escapeHtml(label(product, 'specifications', lang))}</dd></div>
-          <div class="m3-list-item"><dt>${icon('packaging', 'm3-list-leading')}${t.range}</dt><dd><bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}</dd></div>
+          <div class="m3-list-item"><dt>${icon('packaging', 'm3-list-leading')}${t.range}</dt><dd>${quantityPricing.range}</dd></div>
+          ${quantityPricing.smallOrder ? `<div class="m3-list-item"><dt>${icon('receipt', 'm3-list-leading')}${t.smallOrderPricing}</dt><dd>${quantityPricing.smallOrder}</dd></div>` : ''}
         </dl>
       </div>
       <div class="surface spec-card"><h2>${t.prepare}</h2><p>${t.prepareText}</p>

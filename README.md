@@ -8,7 +8,7 @@ The public product catalogue and price calculator for Al Qaryatin Press in Hafr 
 
 With Node.js 24, run `npm run dev` and open `http://127.0.0.1:4173/`. The app renders English and Arabic pages at dedicated URLs and uses the History API for in-app navigation. Existing hash links still work.
 
-Catalogue entries are in `src/catalog-data.js`, pricing rules in `src/quote.js`, and mockups in `media/`. Catalogue cards show per-item prices across standard sizes. Product pages show the estimate at the minimum order quantity. Size and unit-price presets are in `src/price-presets.js`. The calculator estimates a selected configuration or prepares a brief for a final quote.
+Catalogue entries are in `src/catalog-data.js`, pricing rules in `src/quote.js`, and mockups in `media/`. Catalogue cards show standard per-item prices. Product pages show the estimate at the standard minimum and any small-order pricing rule. The calculator and cart apply the catalogue's small-order multiplier within the priced range. Size and unit-price presets are in `src/price-presets.js`. The calculator estimates a selected configuration or prepares a brief for a final quote.
 
 ## Deployment
 

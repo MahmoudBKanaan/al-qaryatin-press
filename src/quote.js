@@ -1,4 +1,4 @@
-import { isAvailable, isOptionAvailable } from './catalog.js';
+import { getSmallOrderTier, isAvailable, isOptionAvailable } from './catalog.js';
 import { pricePresets } from './price-presets.js';
 
 const messages = {
@@ -83,6 +83,7 @@ export function calculateQuote(product, {
   const count = numericInput(quantity ?? product?.minimum);
   let baseSubtotal = null;
   let multiplier = null;
+  let quantityMultiplier = null;
 
   function result(status, issueKeys = [], subtotal = null) {
     const uniqueIssues = [...new Set(issueKeys)];
@@ -93,6 +94,7 @@ export function calculateQuote(product, {
       quantity: Number.isFinite(count) ? count : null,
       preset: selected ?? null,
       multiplier,
+      quantityMultiplier,
       issues: uniqueIssues.map(key => messages[key][0]),
       issuesAr: uniqueIssues.map(key => messages[key][1]),
     };
@@ -112,8 +114,15 @@ export function calculateQuote(product, {
   const selectedGroups = selectedOptions.map(option => option.group).filter(Boolean);
   if (new Set(selectedGroups).size !== selectedGroups.length) return result('invalid', ['optionConflict']);
 
+  if (count >= product.minimum) {
+    quantityMultiplier = 1;
+  } else {
+    const tier = getSmallOrderTier(product);
+    if (tier && count >= tier.minimum) quantityMultiplier = tier.multiplier;
+  }
+
   const issueKeys = [];
-  if (count < product.minimum) issueKeys.push('belowMinimum');
+  if (quantityMultiplier === null) issueKeys.push('belowMinimum');
   if (selectedOptions.length !== extraIds.length) issueKeys.push('unknownOption');
   if (typeof customRequirements === 'string' ? customRequirements.trim() : customRequirements) {
     issueKeys.push('customRequirements');
@@ -125,11 +134,11 @@ export function calculateQuote(product, {
 
   const pricedOptions = selectedOptions.filter(option => Number.isFinite(option.multiplier));
   if (pricedOptions.length > 1) issueKeys.push('combinedOptions');
-  if (count >= product.minimum) baseSubtotal = subtotalInRiyals(selected.unitPrice, count);
+  if (quantityMultiplier !== null) baseSubtotal = subtotalInRiyals(selected.unitPrice, count, quantityMultiplier);
   if (issueKeys.length) return result('review', issueKeys);
 
   multiplier = pricedOptions[0]?.multiplier ?? 1;
-  return result('estimate', [], subtotalInRiyals(selected.unitPrice, count, multiplier));
+  return result('estimate', [], subtotalInRiyals(selected.unitPrice, count, quantityMultiplier * multiplier));
 }
 
 export function formatSAR(value, locale = 'en-SA', maximumFractionDigits = 2) {

@@ -3,9 +3,9 @@ import { execFileSync } from 'node:child_process';
 import { access, readFile, readdir } from 'node:fs/promises';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { categories, getProduct, products } from '../dist/src/catalog.js';
+import { categories, getProduct, getSmallOrderTier, products } from '../dist/src/catalog.js';
 import { calculateQuote, getPricePresets, getPriceRange, getUnitPriceRange } from '../dist/src/quote.js';
-import { about, categoryChip, escapeHtml, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
+import { about, categoryChip, escapeHtml, footer, header, home, money, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage, makeBrief } from '../dist/src/calculator-view.js';
 import { cartPage } from '../dist/src/cart-view.js';
 import { copy } from '../dist/src/copy.js';
@@ -281,12 +281,107 @@ test('every published size matches the product detail price at the minimum quant
       const quote = calculateQuote(product, { preset: index });
       assert.equal(quote.status, 'estimate', product.id);
       assert.equal(quote.quantity, product.minimum, product.id);
+      assert.equal(quote.quantityMultiplier, 1, product.id);
       assert.ok(quote.subtotal > 0, product.id);
       return quote.subtotal;
     });
     const range = getPriceRange(product);
     assert.equal(range.minimum, Math.min(...amounts), product.id);
     assert.equal(range.maximum, Math.max(...amounts), product.id);
+  }
+});
+
+test('catalogue small-order tiers apply at their exact quantity boundaries', () => {
+  const tiers = new Map([
+    [2, [20, 4, 100]], [6, [20, 4, 100]], [7, [20, 4, 100]], [8, [20, 4, 100]],
+    [12, [1, 2, 10]], [13, [1, 2, 10]], [14, [2, 2, 10]],
+    [22, [100, 4, 500]], [23, [100, 4, 500]], [24, [1, 1.5, 10]], [25, [1, 1.5, 10]],
+    [26, [1, 1.2, 10]], [27, [1, 1.2, 10]], [43, [20, 3, 100]],
+    [47, [100, 2, 1000]], [48, [100, 2, 1000]], [50, [1, 2, 20]],
+    [57, [5, 1.5, 10]], [58, [1, 1.5, 10]], [72, [100, 2, 1000]], [73, [20, 3, 100]],
+  ]);
+  assert.deepEqual(products.filter(product => getSmallOrderTier(product)).map(product => product.row), [...tiers.keys()]);
+
+  for (const product of products) {
+    const expected = tiers.get(product.row);
+    if (!expected) {
+      assert.equal(getSmallOrderTier(product), null, product.id);
+      continue;
+    }
+
+    const [minimum, multiplier, standardMinimum] = expected;
+    assert.equal(product.minimum, standardMinimum, product.id);
+    assert.equal(product.maximum, 100000, product.id);
+    assert.deepEqual(getSmallOrderTier(product), { minimum, multiplier }, product.id);
+    const quantities = new Map([
+      [minimum, multiplier],
+      [standardMinimum - 1, multiplier],
+      [standardMinimum, 1],
+      [product.maximum, 1],
+    ]);
+    for (const [preset, { unitPrice }] of getPricePresets(product).entries()) {
+      for (const [quantity, expectedMultiplier] of quantities) {
+        const quote = calculateQuote(product, { quantity, preset });
+        const context = `${product.id} size ${preset} quantity ${quantity}`;
+        const subtotal = Math.round((unitPrice * quantity * expectedMultiplier) * 100 + 1e-9) / 100;
+        assert.equal(quote.status, 'estimate', context);
+        assert.equal(quote.quantity, quantity, context);
+        assert.equal(quote.quantityMultiplier, expectedMultiplier, context);
+        assert.equal(quote.subtotal, subtotal, context);
+      }
+    }
+    const belowTier = calculateQuote(product, { quantity: minimum - 1 });
+    assert.equal(belowTier.status, minimum === 1 ? 'invalid' : 'review', product.id);
+    assert.equal(belowTier.subtotal, null, product.id);
+    assert.equal(belowTier.quantityMultiplier, null, product.id);
+    assert.equal(calculateQuote(product, { quantity: product.maximum + 1 }).status, 'invalid', product.id);
+  }
+
+  const untiered = getProduct('business-cards');
+  const belowRegular = calculateQuote(untiered, { quantity: 499 });
+  assert.equal(belowRegular.status, 'review');
+  assert.equal(belowRegular.subtotal, null);
+  assert.equal(belowRegular.quantityMultiplier, null);
+  const regular = calculateQuote(untiered);
+  assert.equal(regular.quantity, 500);
+  assert.equal(regular.quantityMultiplier, 1);
+  assert.equal(regular.subtotal, 100);
+});
+
+test('small-order pricing accepts localized quantities and combines separate finish charges once', () => {
+  const cards = getProduct('custom-paper-cards');
+  const base = calculateQuote(cards, { preset: 0, quantity: 20 });
+  assert.equal(base.quantityMultiplier, 4);
+  assert.equal(base.subtotal, 9);
+  for (const quantity of ['20', '٢٠', '۲۰']) {
+    assert.deepEqual(calculateQuote(cards, { preset: 0, quantity }), base);
+  }
+  const doubleSided = calculateQuote(cards, { preset: 0, quantity: '٢٠', options: ['double-sided-printing'] });
+  assert.equal(doubleSided.quantityMultiplier, 4);
+  assert.equal(doubleSided.subtotal, 18);
+
+  const stickers = getProduct('paper-cup-stickers');
+  // The size option is already represented in the selected preset rate of SAR 0.48.
+  const selectedSize = calculateQuote(stickers, { quantity: '١٠٠', options: ['cup-size-9'] });
+  assert.equal(selectedSize.preset.unitPrice, 0.48);
+  assert.equal(selectedSize.quantityMultiplier, 2);
+  assert.equal(selectedSize.subtotal, 96);
+  assert.deepEqual(calculateQuote(stickers, { preset: 1, quantity: 100 }), selectedSize);
+});
+
+test('volume-based specifications use the workbook conversion for every size', () => {
+  const productRates = [
+    ['paper-boxes', [0.25, 0.54, 1.408], [250, 540, 1408]],
+    ['paper-bags', [0.09504, 0.216, 0.41472], [95.04, 216, 414.72]],
+    ['acrylic-desk-nameplate', [0.45, 1.6, 3.6], [0.45, 1.6, 3.6]],
+    ['custom-acrylic-award', [1.5, 4, 7.5], [1.5, 4, 7.5]],
+  ];
+  for (const [id, rates, totals] of productRates) {
+    const product = getProduct(id);
+    const presets = getPricePresets(product);
+    assert.deepEqual(presets.map(preset => preset.unitPrice), rates, id);
+    assert.deepEqual(getUnitPriceRange(product), { minimum: rates[0], maximum: rates.at(-1) }, id);
+    assert.deepEqual(presets.map((_, preset) => calculateQuote(product, { preset }).subtotal), totals, id);
   }
 });
 
@@ -309,9 +404,10 @@ test('the calculator rounds the order total and keeps custom quotes separate', (
   const paperBoxes = calculateQuote(getProduct('paper-boxes'), { quantity: 1000, preset: 0 });
   const customBoxes = calculateQuote(getProduct('paper-boxes'), { quantity: 1000, preset: 0, customRequirements: true });
   assert.equal(businessCards.subtotal, 100);
+  assert.equal(rollUp.quantityMultiplier, 1);
   assert.equal(rollUp.subtotal, 182);
   assert.equal(cards.subtotal, 11.25);
-  assert.equal(paperBoxes.subtotal, 2500);
+  assert.equal(paperBoxes.subtotal, 250);
   assert.equal(customBoxes.status, 'review');
   assert.equal(customBoxes.subtotal, null);
 });
@@ -329,7 +425,7 @@ test('the calculator accepts grouped quantities from Arabic and English keyboard
 test('the cart merges identical configurations and retains distinct lines', () => {
   const item = { productId: 'custom-paper-cards', preset: 1, options: ['double-sided-printing'] };
   const before = addCartItem([], { ...item, quantity: 99 });
-  assert.deepEqual(summarizeCart(before), { estimatedSubtotal: null, reviewCount: 1 });
+  assert.deepEqual(summarizeCart(before), { estimatedSubtotal: 138.6, reviewCount: 0 });
 
   const merged = addCartItem(before, { ...item, quantity: '١' });
   assert.equal(before[0].quantity, 99);
@@ -374,6 +470,49 @@ test('the cart persists selections and recovers from invalid or blocked storage'
   };
   assert.deepEqual(readCart(blocked), []);
   assert.doesNotThrow(() => persistCart(blocked, cart));
+});
+
+test('persisted cart items and bilingual briefs reprice when the quantity crosses a tier', () => {
+  const product = getProduct('custom-paper-cards');
+  const saved = [{
+    productId: product.id, preset: 0, quantity: 20, options: [], extraEnabled: false, extra: '',
+  }];
+  const cart = readCart({ getItem: () => JSON.stringify(saved) });
+  assert.deepEqual(cart, saved);
+  assert.deepEqual(summarizeCart(cart), { estimatedSubtotal: 9, reviewCount: 0 });
+
+  const regular = updateCartQuantity(cart, 0, '١٠٠');
+  assert.deepEqual(summarizeCart(regular), { estimatedSubtotal: 11.25, reviewCount: 0 });
+  const unsupported = updateCartQuantity(cart, 0, '١٩');
+  assert.deepEqual(summarizeCart(unsupported), { estimatedSubtotal: null, reviewCount: 1 });
+
+  for (const lang of ['en', 'ar']) {
+    const t = copy[lang];
+    const multiplier = lang === 'ar' ? '٤×' : '4×';
+    const smallOrderLine = `${t.smallOrderMultiplier} — ${multiplier}`;
+    const lowTotal = `${t.ready} — ${money(9, lang)}`;
+    const briefLines = makeBrief(product, cart[0], t, lang).split('\n');
+    const orderLines = orderMessage(cart, t, lang).split('\n');
+    assert.ok(briefLines.includes(lowTotal));
+    assert.ok(briefLines.includes(smallOrderLine));
+    assert.ok(orderLines.includes(lowTotal));
+    assert.ok(orderLines.includes(smallOrderLine));
+    for (const markup of [calculatorPage(cart[0], t, lang), cartPage(cart, t, lang)]) {
+      assert.ok(markup.includes(money(9, lang)));
+      assert.ok(markup.includes(t.smallOrderMultiplier));
+      assert.ok(markup.includes(`<bdi dir="ltr">${multiplier}</bdi>`));
+    }
+    const details = productDetail(product, t, lang, []);
+    assert.ok(details.includes(t.smallOrderPricing));
+    assert.ok(details.includes(lang === 'ar' ? '٢٠–٩٩' : '20–99'));
+    const regularMessage = orderMessage(regular, t, lang);
+    assert.ok(regularMessage.split('\n').includes(`${t.ready} — ${money(11.25, lang)}`));
+    assert.ok(!regularMessage.includes(t.smallOrderMultiplier));
+    const reviewMessage = orderMessage(unsupported, t, lang);
+    assert.ok(reviewMessage.includes(t.review));
+    assert.ok(!reviewMessage.includes(t.ready));
+    assert.ok(!reviewMessage.includes(t.smallOrderMultiplier));
+  }
 });
 
 test('WhatsApp checkout encodes every item in the current language', () => {

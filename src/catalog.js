@@ -49,6 +49,14 @@ export function isAvailable(product) {
   return product?.available === true;
 }
 
+export function getSmallOrderTier(product) {
+  if (!isAvailable(product)) return null;
+  const { lowerThreshold: minimum, smallOrderValue } = product;
+  if (!Number.isSafeInteger(minimum) || minimum < 1 || minimum >= product.minimum || typeof smallOrderValue !== 'string') return null;
+  const multiplier = Number(/^(\d+(?:\.\d+)?)x$/i.exec(smallOrderValue.trim())?.[1]);
+  return Number.isFinite(multiplier) && multiplier > 1 ? { minimum, multiplier } : null;
+}
+
 export function isOptionAvailable(option) {
   return option.available !== false && (!option.productId || isAvailable(getProduct(option.productId)));
 }

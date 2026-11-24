@@ -1,5 +1,6 @@
 // Standard sizes and specifications. Unit prices are in SAR per item.
 // Keep preset indices stable for saved carts.
+// Volume-based presets use the catalogue's divisor of 10,000,000.
 // Review exact artwork, dimensions and finishes for a final quotation.
 export const pricePresets = {
   2: [
@@ -13,14 +14,14 @@ export const pricePresets = {
     { size: "Standard print", sizeAr: "طباعة بالمواصفات الأساسية", unitPrice: 0.2 },
   ],
   4: [
-    { size: "10 × 10 × 5 cm", sizeAr: "١٠ × ١٠ × ٥ سم", unitPrice: 2.5 },
-    { size: "15 × 12 × 6 cm", sizeAr: "١٥ × ١٢ × ٦ سم", unitPrice: 5.4 },
-    { size: "22 × 16 × 8 cm", sizeAr: "٢٢ × ١٦ × ٨ سم", unitPrice: 14.08 },
+    { size: "10 × 10 × 5 cm", sizeAr: "١٠ × ١٠ × ٥ سم", unitPrice: 0.25 },
+    { size: "15 × 12 × 6 cm", sizeAr: "١٥ × ١٢ × ٦ سم", unitPrice: 0.54 },
+    { size: "22 × 16 × 8 cm", sizeAr: "٢٢ × ١٦ × ٨ سم", unitPrice: 1.408 },
   ],
   5: [
-    { size: "18 × 8 × 22 cm", sizeAr: "١٨ × ٨ × ٢٢ سم", unitPrice: 0.9504 },
-    { size: "24 × 10 × 30 cm", sizeAr: "٢٤ × ١٠ × ٣٠ سم", unitPrice: 2.16 },
-    { size: "32 × 12 × 36 cm", sizeAr: "٣٢ × ١٢ × ٣٦ سم", unitPrice: 4.1472 },
+    { size: "18 × 8 × 22 cm", sizeAr: "١٨ × ٨ × ٢٢ سم", unitPrice: 0.09504 },
+    { size: "24 × 10 × 30 cm", sizeAr: "٢٤ × ١٠ × ٣٠ سم", unitPrice: 0.216 },
+    { size: "32 × 12 × 36 cm", sizeAr: "٣٢ × ١٢ × ٣٦ سم", unitPrice: 0.41472 },
   ],
   6: [
     { size: "A6 closed · 1 fold", sizeAr: "أ٦ مطوي · طية واحدة", unitPrice: 0.3885 },
@@ -198,9 +199,9 @@ export const pricePresets = {
     { size: "70 × 110 cm", sizeAr: "٧٠ × ١١٠ سم", unitPrice: 385 },
   ],
   41: [
-    { size: "15 × 5 cm · 3 mm", sizeAr: "١٥ × ٥ سم · ٣ مم", unitPrice: 4.5 },
-    { size: "20 × 8 cm · 5 mm", sizeAr: "٢٠ × ٨ سم · ٥ مم", unitPrice: 16 },
-    { size: "25 × 9 cm · 8 mm", sizeAr: "٢٥ × ٩ سم · ٨ مم", unitPrice: 36 },
+    { size: "15 × 5 cm · 3 mm", sizeAr: "١٥ × ٥ سم · ٣ مم", unitPrice: 0.45 },
+    { size: "20 × 8 cm · 5 mm", sizeAr: "٢٠ × ٨ سم · ٥ مم", unitPrice: 1.6 },
+    { size: "25 × 9 cm · 8 mm", sizeAr: "٢٥ × ٩ سم · ٨ مم", unitPrice: 3.6 },
   ],
   42: [
     { size: "Standard model", sizeAr: "النموذج الأساسي", unitPrice: 100 },
@@ -308,9 +309,9 @@ export const pricePresets = {
     { size: "Standard model", sizeAr: "النموذج الأساسي", unitPrice: 140 },
   ],
   65: [
-    { size: "15 × 20 cm · 5 mm", sizeAr: "١٥ × ٢٠ سم · ٥ مم", unitPrice: 15 },
-    { size: "20 × 25 cm · 8 mm", sizeAr: "٢٠ × ٢٥ سم · ٨ مم", unitPrice: 40 },
-    { size: "25 × 30 cm · 10 mm", sizeAr: "٢٥ × ٣٠ سم · ١٠ مم", unitPrice: 75 },
+    { size: "15 × 20 cm · 5 mm", sizeAr: "١٥ × ٢٠ سم · ٥ مم", unitPrice: 1.5 },
+    { size: "20 × 25 cm · 8 mm", sizeAr: "٢٠ × ٢٥ سم · ٨ مم", unitPrice: 4 },
+    { size: "25 × 30 cm · 10 mm", sizeAr: "٢٥ × ٣٠ سم · ١٠ مم", unitPrice: 7.5 },
   ],
   67: [
     { size: "Standard model", sizeAr: "النموذج الأساسي", unitPrice: 140 },

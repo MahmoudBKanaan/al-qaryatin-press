@@ -1,7 +1,7 @@
 import { categories, isAvailable, products } from './catalog.js';
 import { calculateQuote, getPricePresets } from './quote.js';
 import { icon } from './icons.js';
-import { availableOptions, escapeHtml, label, localeId, money, number, pageHeading, productRoute, quantityUnit } from './views.js';
+import { availableOptions, escapeHtml, label, localeId, money, number, pageHeading, priceMultiplier, productRoute, quantityPricingDetails } from './views.js';
 
 export function calculatorPage(state, t, lang) {
   const eligible = products.filter(isAvailable);
@@ -51,13 +51,16 @@ function orderFields(product, state, t, lang) {
     (option.dimensions ? ' · ' + escapeHtml(label(option, 'dimensions', lang)) : '');
   const isSelected = option => state.options.includes(option.id);
   const groupLabel = group => group === 'size' ? (lang === 'ar' ? 'المقاس' : 'Size') : (lang === 'ar' ? 'السلفان' : 'Lamination');
+  const quantityPricing = quantityPricingDetails(product, t, lang);
+  const quantityNote = [`${t.range} — ${quantityPricing.range}`, quantityPricing.smallOrder];
+  if (quantityPricing.minimum > 1) quantityNote.push(t.qtyHint);
 
   return `<fieldset class="preset-field" aria-describedby="preset-note">
       <legend>${t.preset}</legend>
       <p class="preset-note" id="preset-note">${t.presetHint}</p>
       <ul class="preset-options m3-list" role="list">${sizes}</ul>
     </fieldset>
-    <label class="field"><span>${t.quantity}</span><input id="quote-quantity" name="quantity" inputmode="numeric" value="${escapeHtml(state.quantity)}" aria-describedby="qty-note"><small id="qty-note">${t.range} <bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}. ${t.qtyHint}</small></label>
+    <label class="field"><span>${t.quantity}</span><input id="quote-quantity" name="quantity" inputmode="numeric" value="${escapeHtml(state.quantity)}" aria-describedby="qty-note"><small id="qty-note">${quantityNote.filter(Boolean).join('. ')}</small></label>
     ${options.length ? `<fieldset class="field-block"><legend>${t.finishes}</legend>
       ${optionGroups.size ? `<ul class="m3-list option-groups" role="list">${[...optionGroups].map(([group, items]) => `<li class="m3-list-item"><label class="field"><span>${groupLabel(group)}</span><select name="group-${group}"><option value="">${t.noOptions}</option>
         ${items.map(option => `<option value="${option.id}" ${isSelected(option) ? 'selected' : ''}>${optionText(option)}</option>`).join('')}</select></label></li>`).join('')}</ul>` : ''}
@@ -85,6 +88,7 @@ export function quoteSummary(product, state, t, lang) {
       <dl class="estimate-lines m3-list">
         ${result.preset ? `<div class="m3-list-item"><dt>${t.preset}</dt><dd>${escapeHtml(label(result.preset, 'size', lang))}</dd></div>` : ''}
         ${result.quantity !== null ? `<div class="m3-list-item"><dt>${t.quantity}</dt><dd>${number(result.quantity, lang)}</dd></div>` : ''}
+        ${result.quantityMultiplier > 1 ? `<div class="m3-list-item"><dt>${t.smallOrderMultiplier}</dt><dd><bdi dir="ltr">${priceMultiplier(result.quantityMultiplier, lang)}</bdi></dd></div>` : ''}
         ${knownBase ? `<div class="m3-list-item"><dt>${t.baseSubtotal}</dt><dd><bdi>${money(result.baseSubtotal, lang)}</bdi></dd></div>` : ''}
       </dl>
       <section class="estimate-result ${hasSubtotal ? 'has-subtotal' : ''}" aria-labelledby="estimate-result-title"><h2 id="estimate-result-title">${hasSubtotal ? '' : icon('info')}${title}</h2>
@@ -114,7 +118,12 @@ export function makeBrief(product, state, t, lang) {
     items.push(t.finishes + ' — ' + options.map(option => label(option, 'label', lang)).join(lang === 'ar' ? '، ' : ', '));
   }
   if (state.extraEnabled) items.push(t.extra + ' — ' + (state.extra.trim() || t.reviewExtra));
-  if (result.status === 'estimate') items.push(t.ready + ' — ' + money(result.subtotal, lang));
-  else items.push(t.review + '.', ...(lang === 'ar' ? result.issuesAr : result.issues));
+  if (result.quantityMultiplier > 1) items.push(`${t.smallOrderMultiplier} — ${priceMultiplier(result.quantityMultiplier, lang)}`);
+  if (result.status === 'estimate') {
+    items.push(`${t.ready} — ${money(result.subtotal, lang)}`);
+  } else {
+    items.push(t.review + '.', ...(lang === 'ar' ? result.issuesAr : result.issues));
+    if (result.baseSubtotal !== null) items.push(`${t.baseSubtotal} — ${money(result.baseSubtotal, lang)}`);
+  }
   return items.join('\n');
 }
