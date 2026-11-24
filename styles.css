@@ -764,7 +764,7 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
 .product-link:focus-visible .card-more { background: var(--gold); color: var(--on-gold); }
 
 @keyframes page-arrival {
-  from { opacity: .82; transform: translateY(8px); }
+  from { opacity: .74; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
 @keyframes item-arrival {
@@ -780,6 +780,26 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
   to { opacity: 1; }
 }
 .page-enter { animation: page-arrival var(--motion-enter) var(--ease-emphasized); }
+
+/* Capture the two pages separately so different content heights do not stretch either image. */
+:root[data-page-transition] { view-transition-name: none; --page-offset: 12px; }
+:root[data-page-transition][dir="rtl"] { --page-offset: -12px; }
+:root[data-page-transition] #main { view-transition-name: page-arriving; }
+:root[data-page-transition] #main.page-leaving { view-transition-name: page-departing; }
+:root[data-page-transition]::view-transition {
+  clip-path: inset(var(--site-header-height) 0 0);
+  pointer-events: none;
+}
+::view-transition-old(page-departing) { animation: page-fade-out var(--motion-fast) ease-in both; }
+::view-transition-new(page-arriving) { animation: page-fade-in 300ms var(--ease-emphasized) 30ms both; }
+@keyframes page-fade-out {
+  to { opacity: 0; transform: translateX(calc(var(--page-offset) * -.65)); }
+}
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translate(var(--page-offset), 5px); }
+  to { opacity: 1; transform: none; }
+}
+
 .cards-enter > .product-grid-item:nth-child(-n+8) {
   animation: item-arrival var(--motion-standard) var(--ease-emphasized) backwards;
 }
@@ -1092,6 +1112,7 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
   .product-tape-track { animation: none; }
   .footer-tape-controls { display: none; }
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  ::view-transition-old(page-departing), ::view-transition-new(page-arriving) { animation: none !important; }
   :is(.button, .product-card, .card-image img, .category-links a, .snackbar) { transform: none !important; }
   .brief-dialog[open]::backdrop { animation: none !important; }
   @supports selector(::picker(select)) {

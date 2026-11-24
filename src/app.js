@@ -30,6 +30,9 @@ let quote = emptyQuote('');
 let cart = readCart();
 let noticeTimer;
 let unmountHeroCarousel = () => {};
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let activePageTransition;
+let navigationRequest = 0;
 
 function emptyQuote(productId) {
   const found = getProduct(productId);
@@ -75,10 +78,9 @@ function readCatalogue(params) {
   };
 }
 
-function render({ focusPage = false } = {}) {
+function render({ focusPage = false, animateEntry = false } = {}) {
   const { path, params, lang } = readRoute();
   language = lang;
-  const enterPage = currentPage === null || focusPage;
   const t = copy[language];
   document.documentElement.lang = language;
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
@@ -126,7 +128,7 @@ function render({ focusPage = false } = {}) {
   const alternate = route(currentPage === 'not-found' ? '' : path, params, language === 'ar' ? 'en' : 'ar');
   unmountHeroCarousel();
   app.innerHTML = header(currentPage, t, language, cart.length, alternate) +
-    `<main id="main"${enterPage ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
+    `<main id="main"${animateEntry ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
     footer(t, language) + briefDialog(t);
   updateProductTape(language, document.querySelector('.footer-tape-controls'));
   unmountHeroCarousel = mountHeroCarousel(app.querySelector('[data-hero-carousel]'));
@@ -138,6 +140,44 @@ function render({ focusPage = false } = {}) {
     window.scrollTo(0, restore ? restore.top : 0);
     (card || document.querySelector('#page-title'))?.focus({ preventScroll: true });
   }
+}
+
+function renderNavigation({ commit, switchLanguage = false } = {}) {
+  const request = ++navigationRequest;
+  activePageTransition?.skipTransition();
+
+  function update(animateEntry) {
+    // A skipped native transition can still call its update after a newer navigation.
+    if (request !== navigationRequest) return;
+    commit?.();
+    render({ focusPage: !switchLanguage, animateEntry });
+    if (switchLanguage) app.querySelector('.language').focus({ preventScroll: true });
+  }
+
+  const root = document.documentElement;
+  const main = app.querySelector('#main');
+  const canAnimate = !reducedMotion.matches && !document.hidden;
+  if (!canAnimate || !document.startViewTransition || !main) {
+    root.removeAttribute('data-page-transition');
+    update(canAnimate);
+    return;
+  }
+
+  root.setAttribute('data-page-transition', '');
+  main.classList.add('page-leaving');
+  const transition = document.startViewTransition(() => update(false));
+  activePageTransition = transition;
+  function finish() {
+    if (activePageTransition !== transition) return;
+    activePageTransition = undefined;
+    root.removeAttribute('data-page-transition');
+    main.classList.remove('page-leaving');
+  }
+  void transition.ready.catch(() => {});
+  void transition.finished.then(finish, error => {
+    finish();
+    console.error(error);
+  });
 }
 
 function revealCatalogueCategory() {
@@ -296,16 +336,19 @@ app.addEventListener('click', event => {
         }
         return;
       }
-      if (currentPage === 'catalogue' && link.classList.contains('product-link')) {
-        history.replaceState({ catalogueReturn: { top: window.scrollY, productHref: destination.href } }, '');
-      }
       const switchLanguage = link.dataset.action === 'language';
-      if (switchLanguage) {
-        try { localStorage.setItem('qaryatin-language', next.lang); } catch { /* Legacy link preference. */ }
-      }
-      history.pushState(null, '', destination);
-      render({ focusPage: !switchLanguage });
-      if (switchLanguage) app.querySelector('.language').focus({ preventScroll: true });
+      renderNavigation({
+        switchLanguage,
+        commit() {
+          if (currentPage === 'catalogue' && link.classList.contains('product-link')) {
+            history.replaceState({ catalogueReturn: { top: window.scrollY, productHref: destination.href } }, '');
+          }
+          if (switchLanguage) {
+            try { localStorage.setItem('qaryatin-language', next.lang); } catch { /* Legacy link preference. */ }
+          }
+          history.pushState(null, '', destination);
+        },
+      });
       return;
     }
   }
@@ -437,8 +480,11 @@ matchMedia('(max-width: 900px)').addEventListener('change', () => {
   const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
   if (expanded) setMenuExpanded(expanded, false);
 });
-window.addEventListener('popstate', () => render({ focusPage: true }));
+reducedMotion.addEventListener('change', () => {
+  if (reducedMotion.matches) activePageTransition?.skipTransition();
+});
+window.addEventListener('popstate', () => renderNavigation());
 window.addEventListener('hashchange', () => {
-  if (location.hash.startsWith('#/')) render({ focusPage: true });
+  if (location.hash.startsWith('#/')) renderNavigation();
 });
 render();
