@@ -28,7 +28,7 @@ function renderDocument(template, { path, page, content }, lang, indexable) {
   const app = header(page, t, lang, 0, alternate) +
     `<main id="main" tabindex="-1">${content}</main>` + footer(t, lang);
   const noscript = arabic
-    ? 'فعّل JavaScript لاستخدام حاسبة الأسعار ومرشحات الكتالوج والسلة.'
+    ? 'فعّل جافاسكريبت لاستخدام حاسبة الأسعار ومرشحات الكتالوج والسلة.'
     : 'Enable JavaScript to use the price calculator, catalogue filters, and cart.';
 
   return template

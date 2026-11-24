@@ -12,11 +12,15 @@ export const products = [
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Print-grade cardstock.",
+    "materialAr": "ورق مقوّى مخصّص للطباعة.",
     "description": "Cards printed with the customer's design for use as thank-you cards, gift cards or invitations.",
+    "descriptionAr": "بطاقات تُطبع بتصميم العميل لاستخدامها بطاقات شكر أو هدايا أو دعوات.",
     "specifications": "Cut to the approved size and printed on one or both sides as requested, on 350 gsm cardstock, with or without gloss or matte lamination.",
+    "specificationsAr": "قصّ البطاقات بالمقاس المعتمد وطباعتها على وجه واحد أو وجهين حسب الطلب، على ورق مقوّى بوزن ٣٥٠ غرامًا للمتر المربّع، مع تغليف سطحي لامع أو مطفأ أو بدونه.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Card length",
       "Card width",
@@ -25,6 +29,15 @@ export const products = [
       "Rounded or sharp corners",
       "Single-sided or double-sided printing",
       "Custom contour cutting or straight cutting"
+    ],
+    "intakeAr": [
+      "طول البطاقة",
+      "عرض البطاقة",
+      "عدد البطاقات",
+      "التغليف السطحي: بدون تغليف أو تغليف لامع أو مطفأ",
+      "زوايا مدوّرة أو حادّة",
+      "الطباعة على وجه واحد أو وجهين",
+      "قصّ حسب الشكل المخصّص أو قصّ مستقيم"
     ],
     "image": "./media/product-2-v2.webp",
     "options": [
@@ -69,14 +82,22 @@ export const products = [
     "minimum": 500,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Print-grade cardstock.",
+    "materialAr": "ورق مقوّى مخصّص للطباعة.",
     "description": "Personal identification cards displaying the name, job title and contact details.",
+    "descriptionAr": "بطاقات تعريف شخصية تعرض الاسم والمسمّى الوظيفي وبيانات التواصل.",
     "specifications": "Print the details and logo and cut the cards to the approved size.",
+    "specificationsAr": "طباعة البيانات والشعار وقصّ البطاقات بالمقاس المعتمد.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Gloss or matte lamination",
       "Rounded or sharp corners"
+    ],
+    "intakeAr": [
+      "تغليف سطحي لامع أو مطفأ",
+      "زوايا مدوّرة أو حادّة"
     ],
     "image": "./media/product-3-v2.webp",
     "options": []
@@ -94,11 +115,15 @@ export const products = [
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "3 to 5 days",
-    "turnaroundAr": "3 إلى 5 أيام",
+    "turnaroundAr": "٣ إلى ٥ أيام",
     "material": "Folding carton board suited to the packaging type.",
+    "materialAr": "ورق مقوّى قابل للطي ومناسب لنوع العبوة.",
     "description": "Printed boxes for holding products and presenting them with the store's branding.",
+    "descriptionAr": "علب مطبوعة لحفظ المنتجات وعرضها بهوية المتجر.",
     "specifications": "Print, cut and crease the fold lines according to the approved box dieline.",
+    "specificationsAr": "الطباعة والقصّ وتخديد خطوط الطي وفق قالب قصّ العلبة المعتمد.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
@@ -106,6 +131,14 @@ export const products = [
       "Quantity",
       "Lamination choice: none, gloss or matte",
       "Outside-only printing or printing on both outside and inside"
+    ],
+    "intakeAr": [
+      "طول العلبة",
+      "عرض العلبة",
+      "ارتفاع العلبة",
+      "الكمية",
+      "التغليف السطحي: بدون تغليف أو تغليف لامع أو مطفأ",
+      "الطباعة على السطح الخارجي فقط أو على السطحين الخارجي والداخلي"
     ],
     "image": "./media/product-4.webp",
     "options": [
@@ -138,11 +171,15 @@ export const products = [
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "3 to 5 days",
-    "turnaroundAr": "3 إلى 5 أيام",
+    "turnaroundAr": "٣ إلى ٥ أيام",
     "material": "Kraft paper or coated paper, as requested.",
+    "materialAr": "ورق كرافت أو ورق مطلي حسب الطلب.",
     "description": "Paper bags printed with the store logo for handing over purchases.",
+    "descriptionAr": "أكياس ورقية مطبوعة بشعار المتجر لتسليم المشتريات.",
     "specifications": "Print and assemble the bag in the agreed size and with the agreed handle type.",
+    "specificationsAr": "طباعة الكيس وتجميعه بالمقاس ونوع المقبض المتفق عليهما.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
@@ -150,6 +187,14 @@ export const products = [
       "Quantity",
       "Silver or gold foil stamping",
       "Lamination choice: none, gloss or matte"
+    ],
+    "intakeAr": [
+      "طول الكيس",
+      "عرض الكيس",
+      "ارتفاع الكيس",
+      "الكمية",
+      "ختم برقائق فضية أو ذهبية",
+      "التغليف السطحي: بدون تغليف أو تغليف لامع أو مطفأ"
     ],
     "image": "./media/product-5-v2.webp",
     "options": [
@@ -180,17 +225,28 @@ export const products = [
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Coated or uncoated paper suitable for folding.",
+    "materialAr": "ورق مطلي أو غير مطلي مناسب للطي.",
     "description": "A folded leaflet that distributes information across successive sections opened by the reader in sequence.",
+    "descriptionAr": "نشرة مطوية تُوزّع المعلومات على أقسام متتالية يفتحها القارئ بالترتيب.",
     "specifications": "Print, cut and fold according to the number and direction of folds in the design.",
+    "specificationsAr": "الطباعة والقصّ والطي وفق عدد الطيّات واتجاهها في التصميم.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Number of folds",
       "Quantity",
       "Lamination choice: none, gloss or matte"
+    ],
+    "intakeAr": [
+      "طول المطوية",
+      "عرض المطوية",
+      "عدد الطيّات",
+      "الكمية",
+      "التغليف السطحي: بدون تغليف أو تغليف لامع أو مطفأ"
     ],
     "image": "./media/product-6.webp",
     "options": [
@@ -241,16 +297,26 @@ export const products = [
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Coated or uncoated printing paper.",
+    "materialAr": "ورق طباعة مطلي أو غير مطلي.",
     "description": "A printed informational leaflet presenting products or services for distribution to customers.",
+    "descriptionAr": "نشرة تعريفية مطبوعة تعرض المنتجات أو الخدمات لتوزيعها على العملاء.",
     "specifications": "Print and cut to the approved size, with the number of printed sides determined by the design.",
+    "specificationsAr": "الطباعة والقصّ بالمقاس المعتمد، ويحدّد التصميم عدد أوجه الطباعة.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "Lamination choice: none, gloss or matte"
+    ],
+    "intakeAr": [
+      "طول النشرة",
+      "عرض النشرة",
+      "الكمية",
+      "التغليف السطحي: بدون تغليف أو تغليف لامع أو مطفأ"
     ],
     "image": "./media/product-7-v2.webp",
     "options": [
@@ -295,11 +361,15 @@ export const products = [
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Interior paper and cover paper, as requested.",
+    "materialAr": "ورق للصفحات الداخلية وورق للغلاف حسب الطلب.",
     "description": "A printed magazine combining articles and images in a bound copy.",
+    "descriptionAr": "مجلة مطبوعة تجمع المقالات والصور في نسخة مجلّدة.",
     "specifications": "Print the cover and interior pages, collate them and bind them according to the approved specifications.",
+    "specificationsAr": "طباعة الغلاف والصفحات الداخلية وترتيبها وتجليدها وفق المواصفات المعتمدة.",
     "requirements": "PDF file",
+    "requirementsAr": "ملف بصيغة بي دي إف",
     "intake": [
       "Item length",
       "Item width",
@@ -307,6 +377,14 @@ export const products = [
       "Number of copies",
       "Gloss or matte cover lamination",
       "Deluxe binding or magazine binding"
+    ],
+    "intakeAr": [
+      "طول المجلة",
+      "عرض المجلة",
+      "عدد صفحات المجلة",
+      "عدد النسخ",
+      "تغليف لامع أو مطفأ للغلاف",
+      "تجليد فاخر أو تجليد المجلات"
     ],
     "image": "./media/product-8-v2.webp",
     "options": []
@@ -324,17 +402,28 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Uncoated interior paper and a cover as requested.",
+    "materialAr": "ورق داخلي غير مطلي وغلاف حسب الطلب.",
     "description": "A bound book with black and white interior pages.",
+    "descriptionAr": "كتاب مجلّد بصفحات داخلية مطبوعة بالأبيض والأسود.",
     "specifications": "Print the body in black, collate the pages and attach the cover using the agreed binding.",
+    "specificationsAr": "طباعة المتن بالحبر الأسود وترتيب الصفحات وتثبيت الغلاف بطريقة التجليد المتفق عليها.",
     "requirements": "PDF file",
+    "requirementsAr": "ملف بصيغة بي دي إف",
     "intake": [
       "Item length",
       "Item width",
       "Page count",
       "Number of copies",
       "Stapling or metal wire binding"
+    ],
+    "intakeAr": [
+      "طول الكتاب",
+      "عرض الكتاب",
+      "عدد الصفحات",
+      "عدد النسخ",
+      "التدبيس أو التجليد بسلك معدني"
     ],
     "image": "./media/product-9-v2.webp",
     "options": [
@@ -360,17 +449,28 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Interior paper suitable for colour printing and cover paper.",
+    "materialAr": "ورق داخلي مناسب للطباعة بالألوان وورق للغلاف.",
     "description": "A bound book with colour interior pages for text, photographs and illustrations.",
+    "descriptionAr": "كتاب مجلّد بصفحات داخلية ملوّنة للنصوص والصور الفوتوغرافية والرسوم التوضيحية.",
     "specifications": "Print the body in colour, collate the pages and attach the cover using the agreed binding.",
+    "specificationsAr": "طباعة المتن بالألوان وترتيب الصفحات وتثبيت الغلاف بطريقة التجليد المتفق عليها.",
     "requirements": "PDF file",
+    "requirementsAr": "ملف بصيغة بي دي إف",
     "intake": [
       "Item length",
       "Item width",
       "Page count",
       "Number of copies",
       "Stapling or metal wire binding"
+    ],
+    "intakeAr": [
+      "طول الكتاب",
+      "عرض الكتاب",
+      "عدد الصفحات",
+      "عدد النسخ",
+      "التدبيس أو التجليد بسلك معدني"
     ],
     "image": "./media/product-10.webp",
     "options": [
@@ -396,13 +496,20 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Metal binding wire.",
+    "materialAr": "سلك معدني للتجليد.",
     "description": "Bind printed sheets with wire that allows pages to turn and the book to open flat.",
+    "descriptionAr": "تجليد الأوراق المطبوعة بسلك يسمح بتقليب الصفحات وفتح الكتاب بشكل مسطّح.",
     "specifications": "Punch the edge and fit a wire appropriate for the thickness of the sheet stack.",
+    "specificationsAr": "تثقيب حافة الأوراق وتركيب سلك مناسب لسماكة رزمة الأوراق.",
     "requirements": "-",
+    "requirementsAr": "-",
     "intake": [
       "Number of sheets in the book"
+    ],
+    "intakeAr": [
+      "عدد أوراق الكتاب"
     ],
     "image": "./media/product-11.webp",
     "options": [
@@ -427,12 +534,17 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Round base, pin and printed face.",
+    "materialAr": "قاعدة دائرية ودبوس وواجهة مطبوعة.",
     "description": "A round badge displaying a logo or phrase and fastening to clothing.",
+    "descriptionAr": "شارة دائرية تعرض شعارًا أو عبارة وتُثبّت على الملابس.",
     "specifications": "Print the circular face and assemble it with the base and pin.",
+    "specificationsAr": "طباعة الواجهة الدائرية وتجميعها مع القاعدة والدبوس.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [],
+    "intakeAr": [],
     "image": "./media/product-12.webp",
     "options": []
   },
@@ -449,14 +561,22 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Metal with a rear fastener.",
+    "materialAr": "معدن مع مشبك تثبيت خلفي.",
     "description": "A metal badge carrying the establishment's logo or an event symbol and fastening to clothing.",
+    "descriptionAr": "شارة معدنية تحمل شعار المنشأة أو رمز الفعالية وتُثبّت على الملابس.",
     "specifications": "Apply the logo to the face and fit the rear fastener according to the selected model.",
+    "specificationsAr": "وضع الشعار على الواجهة وتركيب مشبك التثبيت الخلفي بحسب النموذج المختار.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Gold or silver colour",
       "Pin or magnetic rear fastener"
+    ],
+    "intakeAr": [
+      "لون ذهبي أو فضي",
+      "تثبيت خلفي بدبوس أو بمغناطيس"
     ],
     "image": "./media/product-13-v2.webp",
     "options": []
@@ -474,14 +594,22 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Acrylic sheet with a rear fastener.",
+    "materialAr": "لوح أكريليك مع مشبك تثبيت خلفي.",
     "description": "An acrylic badge cut to the approved logo or illustration shape.",
+    "descriptionAr": "شارة من الأكريليك تُقصّ على هيئة الشعار أو الرسم المعتمد.",
     "specifications": "Cut the shape, apply the design to the face and fit the rear fastener.",
+    "specificationsAr": "قصّ الشكل ووضع التصميم على الواجهة وتركيب مشبك التثبيت الخلفي.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Front or rear printing",
       "Black or white acrylic"
+    ],
+    "intakeAr": [
+      "الطباعة على الوجه الأمامي أو الخلفي",
+      "أكريليك أسود أو أبيض"
     ],
     "image": "./media/product-14.webp",
     "options": []
@@ -499,11 +627,15 @@ export const products = [
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Ordinary paper or carbonless copy paper (NCR).",
+    "materialAr": "ورق عادي أو ورق نسخ ذاتي من دون كربون.",
     "description": "Voucher books for recording outgoing payments, including the recipient, amount and reason for payment.",
+    "descriptionAr": "دفاتر سندات لتسجيل المبالغ المصروفة، تشمل المستفيد والمبلغ وسبب الصرف.",
     "specifications": "Print the form and assemble vouchers into books with the approved number of copies.",
+    "specificationsAr": "طباعة النموذج وتجميع السندات في دفاتر بعدد النسخ المعتمد.",
     "requirements": "Commercial registration, mobile number, tax number and address",
+    "requirementsAr": "السجل التجاري ورقم الجوال والرقم الضريبي والعنوان",
     "intake": [
       "Book length",
       "Book width",
@@ -515,6 +647,18 @@ export const products = [
       "Establishment or company name",
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
+    ],
+    "intakeAr": [
+      "طول الدفتر",
+      "عرض الدفتر",
+      "عدد الدفاتر",
+      "رقم السجل التجاري",
+      "رقم الجوال",
+      "العنوان",
+      "الرقم الضريبي إن وجد",
+      "اسم المنشأة أو الشركة",
+      "الأصل فقط أو الأصل مع نسخة أو الأصل مع نسختين",
+      "بداية الترقيم التسلسلي: ١ أو رقم آخر"
     ],
     "image": "./media/product-15-v2.webp",
     "options": [
@@ -539,11 +683,15 @@ export const products = [
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Ordinary paper or carbonless copy paper (NCR).",
+    "materialAr": "ورق عادي أو ورق نسخ ذاتي من دون كربون.",
     "description": "Voucher books for recording received payments, including the payer, amount and payment method.",
+    "descriptionAr": "دفاتر سندات لتسجيل المبالغ المقبوضة، تشمل اسم الدافع والمبلغ وطريقة الدفع.",
     "specifications": "Print the form and assemble vouchers into books with the approved number of copies.",
+    "specificationsAr": "طباعة النموذج وتجميع السندات في دفاتر بعدد النسخ المعتمد.",
     "requirements": "Commercial registration, mobile number, tax number and address",
+    "requirementsAr": "السجل التجاري ورقم الجوال والرقم الضريبي والعنوان",
     "intake": [
       "Book length",
       "Book width",
@@ -555,6 +703,18 @@ export const products = [
       "Establishment or company name",
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
+    ],
+    "intakeAr": [
+      "طول الدفتر",
+      "عرض الدفتر",
+      "عدد الدفاتر",
+      "رقم السجل التجاري",
+      "رقم الجوال",
+      "العنوان",
+      "الرقم الضريبي إن وجد",
+      "اسم المنشأة أو الشركة",
+      "الأصل فقط أو الأصل مع نسخة أو الأصل مع نسختين",
+      "بداية الترقيم التسلسلي: ١ أو رقم آخر"
     ],
     "image": "./media/product-16-v2.webp",
     "options": [
@@ -579,11 +739,15 @@ export const products = [
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Ordinary paper or carbonless copy paper (NCR).",
+    "materialAr": "ورق عادي أو ورق نسخ ذاتي من دون كربون.",
     "description": "Paper invoice books with fields for customer details, line items, quantities and amounts.",
+    "descriptionAr": "دفاتر فواتير ورقية تحتوي على خانات لبيانات العميل والبنود والكميات والمبالغ.",
     "specifications": "Print the invoice fields and assemble the forms into books with the approved number of copies.",
+    "specificationsAr": "طباعة خانات الفاتورة وتجميع النماذج في دفاتر بعدد النسخ المعتمد.",
     "requirements": "Commercial registration, mobile number, tax number and address",
+    "requirementsAr": "السجل التجاري ورقم الجوال والرقم الضريبي والعنوان",
     "intake": [
       "Book length",
       "Book width",
@@ -595,6 +759,18 @@ export const products = [
       "Establishment or company name",
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
+    ],
+    "intakeAr": [
+      "طول الدفتر",
+      "عرض الدفتر",
+      "عدد الدفاتر",
+      "رقم السجل التجاري",
+      "رقم الجوال",
+      "العنوان",
+      "الرقم الضريبي إن وجد",
+      "اسم المنشأة أو الشركة",
+      "الأصل فقط أو الأصل مع نسخة أو الأصل مع نسختين",
+      "بداية الترقيم التسلسلي: ١ أو رقم آخر"
     ],
     "image": "./media/product-17-v2.webp",
     "options": [
@@ -619,11 +795,15 @@ export const products = [
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Ordinary paper or carbonless copy paper (NCR).",
+    "materialAr": "ورق عادي أو ورق نسخ ذاتي من دون كربون.",
     "description": "Contract books printed with the customer's text and fields for the parties' details and signatures.",
+    "descriptionAr": "دفاتر عقود مطبوعة بالنص الذي يقدّمه العميل مع خانات لبيانات الأطراف وتوقيعاتهم.",
     "specifications": "Print the approved text, arrange each contract's pages and assemble them into books.",
+    "specificationsAr": "طباعة النص المعتمد وترتيب صفحات كل عقد وتجميعها في دفاتر.",
     "requirements": "Commercial registration, mobile number, tax number and address",
+    "requirementsAr": "السجل التجاري ورقم الجوال والرقم الضريبي والعنوان",
     "intake": [
       "Book length",
       "Book width",
@@ -635,6 +815,18 @@ export const products = [
       "Establishment or company name",
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number"
+    ],
+    "intakeAr": [
+      "طول الدفتر",
+      "عرض الدفتر",
+      "عدد الدفاتر",
+      "رقم السجل التجاري",
+      "رقم الجوال",
+      "العنوان",
+      "الرقم الضريبي إن وجد",
+      "اسم المنشأة أو الشركة",
+      "الأصل فقط أو الأصل مع نسخة أو الأصل مع نسختين",
+      "بداية الترقيم التسلسلي: ١ أو رقم آخر"
     ],
     "image": "./media/product-18-v2.webp",
     "options": [
@@ -659,11 +851,15 @@ export const products = [
     "minimum": 6,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Uncoated writing paper suitable for correspondence.",
+    "materialAr": "ورق كتابة غير مطلي مناسب للمراسلات.",
     "description": "Correspondence paper carrying the establishment's logo and details, with space for letters.",
+    "descriptionAr": "ورق مراسلات يحمل شعار المنشأة وبياناتها، مع مساحة لكتابة الخطابات.",
     "specifications": "Print the establishment's letterhead and contact details at the approved size.",
+    "specificationsAr": "طباعة ترويسة المنشأة وبيانات التواصل بالمقاس المعتمد.",
     "requirements": "Commercial registration, mobile number, tax number and address",
+    "requirementsAr": "السجل التجاري ورقم الجوال والرقم الضريبي والعنوان",
     "intake": [
       "Commercial registration number",
       "Mobile number",
@@ -673,6 +869,16 @@ export const products = [
       "Paper type: textured, snowy, shaded or wavy",
       "Pad length",
       "Pad width"
+    ],
+    "intakeAr": [
+      "رقم السجل التجاري",
+      "رقم الجوال",
+      "العنوان",
+      "الرقم الضريبي إن وجد",
+      "اسم المنشأة أو الشركة",
+      "نوع الورق: محبّب أو ثلجي أو مظلّل أو مموّج",
+      "طول الدفتر",
+      "عرض الدفتر"
     ],
     "image": "./media/product-19-v2.webp",
     "options": []
@@ -690,16 +896,26 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Writable printing paper.",
+    "materialAr": "ورق طباعة قابل للكتابة.",
     "description": "Books of paper coupons for offers or collection, printed with the issuing organisation's details.",
+    "descriptionAr": "دفاتر قسائم ورقية للعروض أو التحصيل، مطبوعة ببيانات الجهة المصدرة.",
     "specifications": "Print, cut and assemble the coupons into books according to the selected model.",
+    "specificationsAr": "طباعة القسائم وقصّها وتجميعها في دفاتر وفق النموذج المختار.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Original only, original plus one copy, or original plus two copies",
       "Starting serial number: 1 or another number",
       "Book length",
       "Book width"
+    ],
+    "intakeAr": [
+      "الأصل فقط أو الأصل مع نسخة أو الأصل مع نسختين",
+      "بداية الترقيم التسلسلي: ١ أو رقم آخر",
+      "طول الدفتر",
+      "عرض الدفتر"
     ],
     "image": "./media/product-20.webp",
     "options": []
@@ -717,16 +933,26 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Cardstock or premium paper according to the sample.",
+    "materialAr": "ورق مقوّى أو ورق فاخر بحسب العيّنة.",
     "description": "Gift or promotional coupons printed on premium paper with the organisation's branding.",
+    "descriptionAr": "قسائم هدايا أو عروض ترويجية مطبوعة على ورق فاخر بهوية الجهة.",
     "specifications": "Print and cut the coupons to the approved size and finish them according to the sample.",
+    "specificationsAr": "طباعة القسائم وقصّها بالمقاس المعتمد وتشطيبها وفق العيّنة.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Starting serial number: 1 or another number",
       "Book length",
       "Book width",
       "Thick or thin premium paper"
+    ],
+    "intakeAr": [
+      "بداية الترقيم التسلسلي: ١ أو رقم آخر",
+      "طول الدفتر",
+      "عرض الدفتر",
+      "ورق فاخر سميك أو رقيق"
     ],
     "image": "./media/product-21.webp",
     "options": []
@@ -744,16 +970,26 @@ export const products = [
     "minimum": 500,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Self-adhesive paper with a backing liner.",
+    "materialAr": "ورق لاصق ذاتيًا مع بطانة خلفية.",
     "description": "Printed paper labels for identifying products or decorating paper packaging.",
+    "descriptionAr": "ملصقات ورقية مطبوعة للتعريف بالمنتجات أو تزيين العبوات الورقية.",
     "specifications": "Print the design and cut the sticker outline while retaining the removable backing liner.",
+    "specificationsAr": "طباعة التصميم وقصّ محيط الملصق مع إبقاء البطانة الخلفية القابلة للإزالة.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "Custom contour cutting or straight cutting"
+    ],
+    "intakeAr": [
+      "طول الملصق",
+      "عرض الملصق",
+      "الكمية",
+      "قصّ حسب الشكل المخصّص أو قصّ مستقيم"
     ],
     "image": "./media/product-22.webp",
     "options": [
@@ -778,16 +1014,26 @@ export const products = [
     "minimum": 500,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Self-adhesive plastic film.",
+    "materialAr": "غشاء بلاستيكي لاصق ذاتيًا.",
     "description": "Printed plastic labels for packaging and products.",
+    "descriptionAr": "ملصقات بلاستيكية مطبوعة للتغليف والمنتجات.",
     "specifications": "Print the design and cut the shape at the approved size on a removable backing liner.",
+    "specificationsAr": "طباعة التصميم وقصّ الشكل بالمقاس المعتمد على بطانة خلفية قابلة للإزالة.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "Custom contour cutting or straight cutting"
+    ],
+    "intakeAr": [
+      "طول الملصق",
+      "عرض الملصق",
+      "الكمية",
+      "قصّ حسب الشكل المخصّص أو قصّ مستقيم"
     ],
     "image": "./media/product-23.webp",
     "options": [
@@ -804,7 +1050,7 @@ export const products = [
     "row": 24,
     "code": "A0022",
     "name": "Large A4 nylon stickers",
-    "nameAr": "ستكر نايلون (ملصقات كبيرة A4)",
+    "nameAr": "ستكر نايلون (ملصقات كبيرة أ٤)",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
@@ -812,16 +1058,26 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Self-adhesive plastic film.",
+    "materialAr": "غشاء بلاستيكي لاصق ذاتيًا.",
     "description": "Printed plastic labels for packaging and products.",
+    "descriptionAr": "ملصقات بلاستيكية مطبوعة للتغليف والمنتجات.",
     "specifications": "Print the design and cut the shape at the approved size on a removable backing liner.",
+    "specificationsAr": "طباعة التصميم وقصّ الشكل بالمقاس المعتمد على بطانة خلفية قابلة للإزالة.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "Custom contour cutting or straight cutting"
+    ],
+    "intakeAr": [
+      "طول الملصق",
+      "عرض الملصق",
+      "الكمية",
+      "قصّ حسب الشكل المخصّص أو قصّ مستقيم"
     ],
     "image": "./media/product-24.webp",
     "options": [
@@ -838,7 +1094,7 @@ export const products = [
     "row": 25,
     "code": "A0023",
     "name": "Large A4 German vinyl stickers",
-    "nameAr": "ستكر ألماني (ملصقات كبيرة A4)",
+    "nameAr": "ستكر ألماني (ملصقات كبيرة أ٤)",
     "category": "stickers",
     "catalogCategory": "Stickers",
     "type": "Sticker",
@@ -846,16 +1102,26 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Self-adhesive vinyl from the approved German grade.",
+    "materialAr": "فينيل لاصق ذاتيًا من الخامة الألمانية المعتمدة.",
     "description": "A vinyl sticker for graphics and branding on smooth surfaces.",
+    "descriptionAr": "ملصق فينيل لعرض الرسومات والهوية البصرية على الأسطح الملساء.",
     "specifications": "Produce the design and cut the vinyl to the approved size and shape.",
+    "specificationsAr": "تنفيذ التصميم وقصّ الفينيل بالمقاس والشكل المعتمدين.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "Custom contour cutting or straight cutting"
+    ],
+    "intakeAr": [
+      "طول الملصق",
+      "عرض الملصق",
+      "الكمية",
+      "قصّ حسب الشكل المخصّص أو قصّ مستقيم"
     ],
     "image": "./media/product-25.webp",
     "options": [
@@ -880,15 +1146,24 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Chinese fabric-reinforced PVC banner material.",
+    "materialAr": "خامة بنر صينية من كلوريد البولي فينيل المقوّى بالنسيج.",
     "description": "A flexible banner printed with an advertisement or event design.",
+    "descriptionAr": "بنر مرن تُطبع عليه مادة إعلانية أو تصميم خاص بفعالية.",
     "specifications": "Colour printing and cutting to the approved size.",
+    "specificationsAr": "طباعة بالألوان وقص بالمقاس المعتمد.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-26-v2.webp",
     "options": []
@@ -906,15 +1181,24 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Korean fabric-reinforced PVC banner material.",
+    "materialAr": "خامة بنر كورية من كلوريد البولي فينيل المقوّى بالنسيج.",
     "description": "A flexible printed banner displaying an advertisement or event identity.",
+    "descriptionAr": "بنر مرن مطبوع لعرض إعلان أو إبراز الهوية البصرية لفعالية.",
     "specifications": "Colour printing and cutting to the approved size.",
+    "specificationsAr": "طباعة بالألوان وقص بالمقاس المعتمد.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-27-v2.webp",
     "options": []
@@ -932,13 +1216,20 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Rollable display material, retractable base and support pole.",
+    "materialAr": "خامة عرض قابلة للّف وقاعدة سحب وعمود داعم.",
     "description": "A portable advertising stand whose printed face pulls out of the base for display and rolls back inside after use.",
+    "descriptionAr": "حامل إعلاني متنقل تُسحب واجهته المطبوعة من القاعدة عند العرض وتُلفّ داخلها بعد الاستخدام.",
     "specifications": "Print the display face at the size suited to the base and fit it into the retractable mechanism.",
+    "specificationsAr": "طباعة واجهة العرض بمقاس يناسب القاعدة وتركيبها في آلية السحب واللف.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Size: small 50 x 150 cm, medium 85 x 200 cm, or large 100 x 200 cm"
+    ],
+    "intakeAr": [
+      "المقاس: صغير ٥٠ × ١٥٠ سم، أو متوسط ٨٥ × ٢٠٠ سم، أو كبير ١٠٠ × ٢٠٠ سم"
     ],
     "image": "./media/product-28-v2.webp",
     "options": [
@@ -948,7 +1239,8 @@ export const products = [
         "labelAr": "مقاس متوسط",
         "multiplier": 1.3,
         "group": "size",
-        "dimensions": "85 × 200 cm"
+        "dimensions": "85 × 200 cm",
+        "dimensionsAr": "٨٥ × ٢٠٠ سم"
       },
       {
         "id": "large-size",
@@ -956,7 +1248,8 @@ export const products = [
         "labelAr": "مقاس كبير",
         "multiplier": 1.8,
         "group": "size",
-        "dimensions": "100 × 200 cm"
+        "dimensions": "100 × 200 cm",
+        "dimensionsAr": "١٠٠ × ٢٠٠ سم"
       }
     ]
   },
@@ -973,15 +1266,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Canvas fabric intended for printing.",
+    "materialAr": "قماش كانفس مخصّص للطباعة.",
     "description": "A photograph or artwork printed on a piece of canvas at the requested size.",
+    "descriptionAr": "صورة فوتوغرافية أو عمل فني يُطبع على قماش كانفس بالمقاس المطلوب.",
     "specifications": "Colour printing and cutting the fabric, leaving a stretching margin when requested.",
+    "specificationsAr": "طباعة بالألوان وقص القماش، مع ترك هامش للشد عند الطلب.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-29.webp",
     "options": []
@@ -999,15 +1301,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Perforated self-adhesive vinyl.",
+    "materialAr": "فينيل مثقّب ذاتي الالتصاق.",
     "description": "A sticker displaying a design on glass while retaining holes that allow visibility through it.",
+    "descriptionAr": "ملصق يعرض التصميم على الزجاج مع فتحات تسمح بالرؤية من خلاله.",
     "specifications": "Print the outward-facing side and cut to the approved glass dimensions.",
+    "specificationsAr": "طباعة الوجه الخارجي وقص الملصق حسب أبعاد الزجاج المعتمدة.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-30-v2.webp",
     "options": []
@@ -1025,15 +1336,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Self-adhesive vinyl on a release liner.",
+    "materialAr": "فينيل ذاتي الالتصاق مثبت على بطانة قابلة للنزع.",
     "description": "Letters or logos cut from vinyl and transferred to the surface without a surrounding background.",
+    "descriptionAr": "حروف أو شعارات مقصوصة من الفينيل تُنقل إلى سطح التركيب من دون خلفية محيطة.",
     "specifications": "Cut along the design path, weed the excess vinyl and prepare the elements for transfer.",
+    "specificationsAr": "القص على مسار التصميم وإزالة الفينيل الزائد وتجهيز العناصر للنقل.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-31.webp",
     "options": []
@@ -1051,15 +1371,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Lightweight foam board.",
+    "materialAr": "لوح فلين خفيف الوزن.",
     "description": "A lightweight panel for displaying graphics or instructions indoors.",
+    "descriptionAr": "لوحة خفيفة لعرض الرسومات أو الإرشادات في الأماكن الداخلية.",
     "specifications": "Apply the design to the panel face and trim the edges to the approved size.",
+    "specificationsAr": "تطبيق التصميم على واجهة اللوح وتشذيب الحواف حسب المقاس المعتمد.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-32-v2.webp",
     "options": []
@@ -1077,15 +1406,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Foamed PVC board (Forex).",
+    "materialAr": "لوح من كلوريد البولي فينيل الرغوي (فوركس).",
     "description": "A rigid wall panel displaying the organisation's branding or instructional text.",
+    "descriptionAr": "لوحة جدارية صلبة لعرض الهوية البصرية للجهة أو النصوص الإرشادية.",
     "specifications": "Apply the design to the board surface and cut it to the approved size and shape.",
+    "specificationsAr": "تطبيق التصميم على سطح اللوح وقصه وفق المقاس والشكل المعتمدين.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-33-v3.webp",
     "options": []
@@ -1103,15 +1441,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Canvas fabric and a wooden stretcher frame.",
+    "materialAr": "قماش كانفس وإطار خشبي للشد.",
     "description": "Wall art made from printed canvas stretched over an internal frame.",
+    "descriptionAr": "لوحة جدارية من قماش كانفس مطبوع ومشدود على إطار داخلي.",
     "specifications": "Print the image, stretch the fabric and secure its edges to the frame.",
+    "specificationsAr": "طباعة الصورة وشد القماش وتثبيت حوافه على الإطار.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-34.webp",
     "options": []
@@ -1129,16 +1476,26 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Acrylic sheet.",
+    "materialAr": "لوح أكريليك.",
     "description": "An acrylic wall panel displaying a logo, name or instructions.",
+    "descriptionAr": "لوحة جدارية من الأكريليك لعرض شعار أو اسم أو إرشادات.",
     "specifications": "Cut the sheet and apply the text or logo according to the approved design and size.",
+    "specificationsAr": "قص اللوح وتطبيق النص أو الشعار وفق التصميم والمقاس المعتمدين.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "High or low acrylic thickness"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية",
+      "سماكة لوح الأكريليك: سميك أم رفيع"
     ],
     "image": "./media/product-35.webp",
     "options": [
@@ -1163,15 +1520,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Flexible banner material and a tensioning structure as requested.",
+    "materialAr": "خامة بنر مرنة مع هيكل للشد حسب الطلب.",
     "description": "A printed banner face prepared for wall display.",
+    "descriptionAr": "واجهة بنر مطبوعة ومجهّزة للعرض على الجدار.",
     "specifications": "Print the face and finish the edges to suit the agreed mounting method.",
+    "specificationsAr": "طباعة الواجهة وإنهاء الحواف بما يناسب طريقة التثبيت المتفق عليها.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-36-v2.webp",
     "options": []
@@ -1189,15 +1555,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Lightweight foam board and a rear support or base.",
+    "materialAr": "لوح فلين خفيف الوزن ودعامة خلفية أو قاعدة.",
     "description": "A lightweight floor stand for an advertisement or a character cut-out at events.",
+    "descriptionAr": "حامل أرضي خفيف لعرض إعلان أو مجسّم مسطّح لشخصية في الفعاليات.",
     "specifications": "Apply the design, cut the board outline and prepare a support suitable for the shape.",
+    "specificationsAr": "تطبيق التصميم وقص محيط اللوح وتجهيز دعامة تناسب شكله.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-37-v2.webp",
     "options": []
@@ -1215,16 +1590,26 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Foamed PVC board (Forex) and a base or support.",
+    "materialAr": "لوح من كلوريد البولي فينيل الرغوي (فوركس) وقاعدة أو دعامة.",
     "description": "A floor stand with a Forex face for advertisements or instructions.",
+    "descriptionAr": "حامل أرضي بواجهة من الفوركس لعرض الإعلانات أو الإرشادات.",
     "specifications": "Produce and cut the display face and prepare the base or support to suit the size.",
+    "specificationsAr": "تنفيذ واجهة العرض وقصّها وتجهيز قاعدة أو دعامة تناسب المقاس.",
     "requirements": "Design content",
+    "requirementsAr": "محتوى التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "High or low Forex thickness"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية",
+      "سماكة لوح الفوركس: سميك أم رفيع"
     ],
     "image": "./media/product-38-v2.webp",
     "options": [
@@ -1249,16 +1634,26 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 36 to 70 hours",
-    "turnaroundAr": "حوالي 36 إلى 70 ساعة",
+    "turnaroundAr": "حوالي ٣٦ إلى ٧٠ ساعة",
     "material": "Acrylic sheets and a support base.",
+    "materialAr": "ألواح أكريليك وقاعدة داعمة.",
     "description": "An acrylic floor stand displaying a logo or an informational message.",
+    "descriptionAr": "حامل أرضي من الأكريليك لعرض شعار أو رسالة تعريفية.",
     "specifications": "Cut the stand components, apply the design, and assemble the parts with the base.",
+    "specificationsAr": "قص أجزاء الحامل وتطبيق التصميم ثم تجميع الأجزاء مع القاعدة.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "High or low acrylic thickness"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية",
+      "سماكة لوح الأكريليك: سميك أم رفيع"
     ],
     "image": "./media/product-39-v2.webp",
     "options": [
@@ -1283,16 +1678,26 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 36 to 70 hours",
-    "turnaroundAr": "حوالي 36 إلى 70 ساعة",
+    "turnaroundAr": "حوالي ٣٦ إلى ٧٠ ساعة",
     "material": "Wood or MDF panels according to the design.",
+    "materialAr": "ألواح خشبية أو ألواح ألياف خشبية متوسطة الكثافة بحسب التصميم.",
     "description": "A wooden floor stand for displaying an advertisement or directing visitors.",
+    "descriptionAr": "حامل أرضي خشبي لعرض إعلان أو توجيه الزوار.",
     "specifications": "Cut the frame and base, produce the display face, and assemble the stand components.",
+    "specificationsAr": "قص الإطار والقاعدة وتنفيذ واجهة العرض وتجميع أجزاء الحامل.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity",
       "High or low wood thickness"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية",
+      "سماكة اللوح الخشبي: سميك أم رفيع"
     ],
     "image": "./media/product-40-v3.webp",
     "options": [
@@ -1317,16 +1722,26 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Acrylic.",
+    "materialAr": "أكريليك.",
     "description": "A desk nameplate displaying a person's name and job title.",
+    "descriptionAr": "لوحة اسم مكتبية تعرض اسم الشخص ومسمّاه الوظيفي.",
     "specifications": "Produce the approved name and title and prepare the nameplate to stand on a desk.",
+    "specificationsAr": "تنفيذ الاسم والمسمّى الوظيفي المعتمدين وتجهيز اللوحة لتقف على المكتب.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Item height",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "ارتفاع القطعة",
+      "الكمية"
     ],
     "image": "./media/product-41.webp",
     "options": []
@@ -1344,14 +1759,22 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Rubber die, self-inking body, and internal ink pad.",
+    "materialAr": "قالب ختم مطاطي وجسم ذاتي التحبير ووسادة حبر داخلية.",
     "description": "A stamp that prints an organization's details when the body is pressed repeatedly.",
+    "descriptionAr": "ختم يطبع بيانات الجهة عند الضغط المتكرر على جسمه.",
     "specifications": "Produce the approved impression die, fit it into the body, and adjust its alignment.",
+    "specificationsAr": "تصنيع قالب البصمة المعتمدة وتركيبه في جسم الختم وضبط محاذاته.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Business name",
       "Business unified number"
+    ],
+    "intakeAr": [
+      "اسم المنشأة",
+      "الرقم الموحّد للمنشأة"
     ],
     "image": "./media/product-42-v2.webp",
     "options": []
@@ -1369,15 +1792,24 @@ export const products = [
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Foldable cardstock.",
+    "materialAr": "ورق مقوّى قابل للطي.",
     "description": "A folded display card that stands on a table to show a name, number, or advertisement.",
+    "descriptionAr": "بطاقة عرض مطوية تقف على الطاولة لإظهار اسم أو رقم أو إعلان.",
     "specifications": "Print and cut the design and mark the fold lines needed to form the standing base.",
+    "specificationsAr": "طباعة التصميم وقصّه وتحديد خطوط الطي اللازمة لتشكيل قاعدة تثبّت البطاقة على الطاولة.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Item length",
       "Item width",
       "Quantity"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية"
     ],
     "image": "./media/product-43.webp",
     "options": []
@@ -1395,13 +1827,20 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Rubber die and manual handle.",
+    "materialAr": "قالب ختم مطاطي ومقبض يدوي.",
     "description": "A traditional stamp pressed onto a separate ink pad before printing the details.",
+    "descriptionAr": "ختم تقليدي يُضغط على وسادة حبر منفصلة قبل طباعة البيانات.",
     "specifications": "Engrave the impression from the approved text or logo and attach it to the handle.",
+    "specificationsAr": "حفر قالب البصمة وفق النص أو الشعار المعتمد وتثبيته على المقبض.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Business name and unified number, or the stamp details"
+    ],
+    "intakeAr": [
+      "اسم المنشأة ورقمها الموحّد، أو بيانات الختم"
     ],
     "image": "./media/product-44-v2.webp",
     "options": []
@@ -1419,13 +1858,20 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Rubber die and a stamp body according to the selected model.",
+    "materialAr": "قالب ختم مطاطي وجسم ختم بحسب الطراز المختار.",
     "description": "A stamp bearing a person's name to identify documents, with the option to add a job title.",
+    "descriptionAr": "ختم يحمل اسم الشخص للتعريف به على المستندات، مع إمكانية إضافة المسمّى الوظيفي.",
     "specifications": "Arrange the personal text within the approved impression size, then produce and fit the die.",
+    "specificationsAr": "ترتيب البيانات الشخصية ضمن مقاس البصمة المعتمد ثم تصنيع قالب الختم وتركيبه.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Stamp details"
+    ],
+    "intakeAr": [
+      "بيانات الختم"
     ],
     "image": "./media/product-45-v3.webp",
     "options": []
@@ -1443,13 +1889,20 @@ export const products = [
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "3 to 5 days",
-    "turnaroundAr": "3 إلى 5 أيام",
+    "turnaroundAr": "٣ إلى ٥ أيام",
     "material": "Cup paper with an internal lining.",
+    "materialAr": "ورق مخصّص للأكواب مع بطانة داخلية.",
     "description": "Paper cups carrying a cafe or event identity on the outside.",
+    "descriptionAr": "أكواب ورقية تحمل الهوية البصرية للمقهى أو الفعالية على سطحها الخارجي.",
     "specifications": "Apply the design within the printable area appropriate to the approved cup capacity.",
+    "specificationsAr": "تطبيق التصميم في مساحة الطباعة التي تناسب سعة الكوب المعتمدة.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Cup size: medium 7, large 9, or extra-large 12"
+    ],
+    "intakeAr": [
+      "مقاس الكوب: متوسط ٧، أو كبير ٩، أو كبير جدًا ١٢"
     ],
     "image": "./media/product-46.webp",
     "options": [
@@ -1489,13 +1942,20 @@ export const products = [
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Self-adhesive paper or film according to the intended use.",
+    "materialAr": "ورق أو غشاء ذاتي الالتصاق بحسب الاستخدام المقصود.",
     "description": "Separate stickers bearing a logo or order details for application to the outside of a cup.",
+    "descriptionAr": "ملصقات منفصلة تحمل شعارًا أو تفاصيل الطلب وتُثبّت على السطح الخارجي للكوب.",
     "specifications": "Print the design and cut the stickers to the size and shape suitable for the cup.",
+    "specificationsAr": "طباعة التصميم وقص الملصقات بالمقاس والشكل المناسبين للكوب.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Cup size: medium 7, large 9, or extra-large 12"
+    ],
+    "intakeAr": [
+      "مقاس الكوب: متوسط ٧، أو كبير ٩، أو كبير جدًا ١٢"
     ],
     "image": "./media/product-47-v2.webp",
     "options": [
@@ -1535,14 +1995,22 @@ export const products = [
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Cardstock.",
+    "materialAr": "ورق مقوّى.",
     "description": "A folder carrying an organization's identity for holding and presenting documents.",
+    "descriptionAr": "ملف يحمل الهوية البصرية للجهة لحفظ المستندات وتقديمها.",
     "specifications": "Print and cut the folder, mark its fold lines, and form the pockets according to the approved model.",
+    "specificationsAr": "طباعة الملف وقصّه وتحديد خطوط الطي وتشكيل الجيوب وفق النموذج المعتمد.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Folder details",
       "Gloss or matte lamination"
+    ],
+    "intakeAr": [
+      "تفاصيل الملف",
+      "تغليف بالسلوفان اللامع أو المطفي"
     ],
     "image": "./media/product-48.webp",
     "options": []
@@ -1560,14 +2028,22 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Polypropylene (PP) or cardstock.",
+    "materialAr": "بولي بروبيلين أو ورق مقوّى.",
     "description": "A school binder printed with the school name or logo for holding student papers.",
+    "descriptionAr": "مجلّد مدرسي مطبوع عليه اسم المدرسة أو شعارها لحفظ أوراق الطلاب.",
     "specifications": "Print the cover in the approved size and design.",
+    "specificationsAr": "طباعة الغلاف بالمقاس والتصميم المعتمدين.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Folder details",
       "Selected design"
+    ],
+    "intakeAr": [
+      "تفاصيل الملف",
+      "التصميم المختار"
     ],
     "image": "./media/product-49-v2.webp",
     "options": []
@@ -1585,13 +2061,20 @@ export const products = [
     "minimum": 20,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "A ceramic mug prepared for printing.",
+    "materialAr": "كوب سيراميك مهيّأ للطباعة.",
     "description": "A mug printed with a name, logo, or image and supplied ready for use.",
+    "descriptionAr": "كوب يُطبع عليه اسم أو شعار أو صورة، ويُسلّم جاهزًا للاستخدام.",
     "specifications": "Print the design within the designated area on the mug.",
+    "specificationsAr": "يُطبع التصميم ضمن المساحة المخصصة للطباعة على الكوب.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Mug details"
+    ],
+    "intakeAr": [
+      "مواصفات الكوب"
     ],
     "image": "./media/product-50.webp",
     "options": []
@@ -1609,15 +2092,24 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "White printing paper.",
+    "materialAr": "ورق طباعة أبيض.",
     "description": "Paper copies printed in black and grayscale and arranged in page order.",
+    "descriptionAr": "نسخ ورقية مطبوعة بالأسود وتدرجات الرمادي، مرتبة بحسب تسلسل الصفحات.",
     "specifications": "Print the required pages and copies in the agreed size and with the agreed number of printed sides.",
+    "specificationsAr": "تُطبع الصفحات والنسخ المطلوبة بالمقاس المتفق عليه، على وجه واحد أو وجهين بحسب الاتفاق.",
     "requirements": "PDF file",
+    "requirementsAr": "ملف بصيغة بي دي إف",
     "intake": [
       "A4, A5, or A3 size",
       "Single-sided or double-sided printing",
       "Page count"
+    ],
+    "intakeAr": [
+      "المقاس: أ٤ أو أ٥ أو أ٣",
+      "الطباعة على وجه واحد أو وجهين",
+      "عدد الصفحات"
     ],
     "image": "./media/product-51-v2.webp",
     "options": []
@@ -1635,15 +2127,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "White paper for colour printing.",
+    "materialAr": "ورق أبيض مخصص للطباعة الملونة.",
     "description": "Colour paper copies of a document, including its text and images as shown in the approved file.",
+    "descriptionAr": "نسخ ورقية ملونة من المستند، تشمل النصوص والصور كما تظهر في الملف المعتمد.",
     "specifications": "Print the required pages and copies in the agreed size and with the agreed number of printed sides.",
+    "specificationsAr": "تُطبع الصفحات والنسخ المطلوبة بالمقاس المتفق عليه، على وجه واحد أو وجهين بحسب الاتفاق.",
     "requirements": "PDF file",
+    "requirementsAr": "ملف بصيغة بي دي إف",
     "intake": [
       "A4, A5, or A3 size",
       "Single-sided or double-sided printing",
       "Page count"
+    ],
+    "intakeAr": [
+      "المقاس: أ٤ أو أ٥ أو أ٣",
+      "الطباعة على وجه واحد أو وجهين",
+      "عدد الصفحات"
     ],
     "image": "./media/product-52-v2.webp",
     "options": []
@@ -1661,15 +2162,24 @@ export const products = [
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Black paper suitable for printing.",
+    "materialAr": "ورق أسود قابل للطباعة.",
     "description": "A colour design printed on black paper, with the appearance of the colours established on a print sample.",
+    "descriptionAr": "تصميم ملون مطبوع على ورق أسود، ويُعتمد مظهر الألوان بناءً على عينة مطبوعة.",
     "specifications": "Print the approved colours and use a white underbase when the design requires it.",
+    "specificationsAr": "تُطبع الألوان المعتمدة مع استخدام طبقة أساس بيضاء عندما يتطلب التصميم ذلك.",
     "requirements": "PDF file",
+    "requirementsAr": "ملف بصيغة بي دي إف",
     "intake": [
       "A4, A5, or A3 size",
       "Single-sided or double-sided printing",
       "Page count"
+    ],
+    "intakeAr": [
+      "المقاس: أ٤ أو أ٥ أو أ٣",
+      "الطباعة على وجه واحد أو وجهين",
+      "عدد الصفحات"
     ],
     "image": "./media/product-53.webp",
     "options": []
@@ -1687,15 +2197,24 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Premium paper in the selected weight and texture.",
+    "materialAr": "ورق فاخر بالوزن والملمس المختارين.",
     "description": "A design printed on selected paper for invitations, correspondence, and special printed items.",
+    "descriptionAr": "تصميم يُطبع على ورق مختار للدعوات والمراسلات والمطبوعات الخاصة.",
     "specifications": "Print and cut the selected paper to the approved size.",
+    "specificationsAr": "يُطبع التصميم على الورق المختار، ثم يُقص وفق المقاس المعتمد.",
     "requirements": "PDF file",
+    "requirementsAr": "ملف بصيغة بي دي إف",
     "intake": [
       "A4, A5, or A3 size",
       "Single-sided or double-sided printing",
       "Page count"
+    ],
+    "intakeAr": [
+      "المقاس: أ٤ أو أ٥ أو أ٣",
+      "الطباعة على وجه واحد أو وجهين",
+      "عدد الصفحات"
     ],
     "image": "./media/product-54-v2.webp",
     "options": []
@@ -1713,16 +2232,26 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "A garment made from a material suitable for printing.",
+    "materialAr": "قطعة ملابس بخامة مناسبة للطباعة.",
     "description": "A garment bearing a logo or phrase in the approved position.",
+    "descriptionAr": "قطعة ملابس تحمل شعارًا أو عبارة في الموضع المعتمد.",
     "specifications": "Apply the print at the agreed artwork size and position.",
+    "specificationsAr": "تُنفذ الطباعة وفق مقاس التصميم وموضعه المتفق عليهما.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details",
       "Front only or front and back",
       "Front print dimensions",
       "Back print dimensions, if applicable"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة",
+      "الطباعة على الأمام فقط أم على الأمام والخلف",
+      "أبعاد الطباعة الأمامية",
+      "أبعاد الطباعة الخلفية عند طلبها"
     ],
     "image": "./media/product-55.webp",
     "options": []
@@ -1732,7 +2261,7 @@ export const products = [
     "row": 56,
     "code": "A0054",
     "name": "DTF garment printing",
-    "nameAr": "طباعة ملابس DTF",
+    "nameAr": "طباعة ملابس دي تي إف",
     "category": "gifts",
     "catalogCategory": "Textile printing",
     "type": "Service",
@@ -1740,16 +2269,26 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Fabric suitable for heat transfer and DTF film.",
+    "materialAr": "قماش مناسب للنقل الحراري وفيلم مخصص للطباعة المباشرة.",
     "description": "A garment with a colour design applied by DTF heat transfer.",
+    "descriptionAr": "قطعة ملابس تحمل تصميمًا ملونًا يُنقل حراريًا من فيلم الطباعة المباشرة.",
     "specifications": "Print the design onto film and heat-press it at the approved position.",
+    "specificationsAr": "يُطبع التصميم على الفيلم، ثم يُنقل بالمكبس الحراري إلى الموضع المعتمد.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details",
       "Front only or front and back",
       "Front print dimensions",
       "Back print dimensions, if applicable"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة",
+      "الطباعة على الأمام فقط أم على الأمام والخلف",
+      "أبعاد الطباعة الأمامية",
+      "أبعاد الطباعة الخلفية عند طلبها"
     ],
     "image": "./media/product-56.webp",
     "options": []
@@ -1767,13 +2306,20 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "A fabric cap suitable for printing.",
+    "materialAr": "طاقية قماشية مناسبة للطباعة.",
     "description": "A cap printed with a logo or name within the available print area.",
+    "descriptionAr": "طاقية يُطبع عليها شعار أو اسم ضمن مساحة الطباعة المتاحة.",
     "specifications": "Size the artwork and print it at the approved position.",
+    "specificationsAr": "يُضبط مقاس التصميم ويُطبع في الموضع المعتمد.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة"
     ],
     "image": "./media/product-57.webp",
     "options": []
@@ -1791,13 +2337,20 @@ export const products = [
     "minimum": 10,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Metal piece and key ring.",
+    "materialAr": "قطعة معدنية وحلقة مفاتيح.",
     "description": "A metal keychain bearing a name or logo.",
+    "descriptionAr": "ميدالية مفاتيح معدنية تحمل اسمًا أو شعارًا.",
     "specifications": "Customize the available area on the keychain according to the selected model.",
+    "specificationsAr": "تُخصص المساحة المتاحة على الميدالية وفق النموذج المختار.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة"
     ],
     "image": "./media/product-58.webp",
     "options": []
@@ -1815,13 +2368,20 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Sash fabric suitable for printing.",
+    "materialAr": "قماش وشاح مناسب للطباعة.",
     "description": "A printed sash bearing a name, phrase, or event logo.",
+    "descriptionAr": "وشاح مطبوع يحمل اسمًا أو عبارة أو شعار المناسبة.",
     "specifications": "Apply the print according to the phrase length and its approved arrangement on the sash.",
+    "specificationsAr": "تُنفذ الطباعة بما يناسب طول العبارة وتوزيعها المعتمد على الوشاح.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة"
     ],
     "image": "./media/product-59-v2.webp",
     "options": []
@@ -1831,7 +2391,7 @@ export const products = [
     "row": 60,
     "code": "A0058",
     "name": "DTF sash printing",
-    "nameAr": "طباعة وشاح DTF",
+    "nameAr": "طباعة وشاح دي تي إف",
     "category": "gifts",
     "catalogCategory": "Textile printing",
     "type": "Service",
@@ -1839,13 +2399,20 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Sash fabric suitable for heat transfer and DTF film.",
+    "materialAr": "قماش وشاح مناسب للنقل الحراري وفيلم مخصص للطباعة المباشرة.",
     "description": "A sash bearing colour text or artwork applied by DTF heat transfer.",
+    "descriptionAr": "وشاح يحمل نصًا ملونًا أو تصميمًا يُنقل حراريًا من فيلم الطباعة المباشرة.",
     "specifications": "Print the artwork onto film and heat-press it at the approved size and position.",
+    "specificationsAr": "يُطبع التصميم على الفيلم، ثم يُنقل بالمكبس الحراري وفق المقاس والموضع المعتمدين.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة"
     ],
     "image": "./media/product-60.webp",
     "options": []
@@ -1863,14 +2430,22 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Acrylic (PMMA).",
+    "materialAr": "أكريليك (بولي ميثيل ميثاكريلات).",
     "description": "An acrylic presentation award bearing the recipient's name and the organization's logo.",
+    "descriptionAr": "درع تكريم من الأكريليك يحمل اسم المكرّم وشعار الجهة.",
     "specifications": "Produce the text and logo by printing or engraving according to the approved model.",
+    "specificationsAr": "يُنفذ النص والشعار بالطباعة أو الحفر بحسب النموذج المعتمد.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Award shape",
       "Printing details"
+    ],
+    "intakeAr": [
+      "شكل الدرع",
+      "تفاصيل الطباعة"
     ],
     "image": "./media/product-63.webp",
     "options": []
@@ -1888,12 +2463,17 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Glass.",
+    "materialAr": "زجاج.",
     "description": "A glass award customized with a recipient name, organization logo, or dedication.",
+    "descriptionAr": "درع زجاجي يُخصص باسم المكرّم أو شعار الجهة أو نص الإهداء.",
     "specifications": "Apply the customization by printing or engraving on the selected model.",
+    "specificationsAr": "تُضاف التفاصيل بالطباعة أو الحفر على النموذج المختار.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [],
+    "intakeAr": [],
     "image": "./media/product-64.webp",
     "options": []
   },
@@ -1910,12 +2490,17 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 36 to 70 hours",
-    "turnaroundAr": "حوالي 36 إلى 70 ساعة",
+    "turnaroundAr": "حوالي ٣٦ إلى ٧٠ ساعة",
     "material": "Acrylic (PMMA) in the selected thickness.",
+    "materialAr": "أكريليك (بولي ميثيل ميثاكريلات) بالسماكة المختارة.",
     "description": "An acrylic award made to order in the approved shape, size, and finish.",
+    "descriptionAr": "درع أكريليك يُصنع حسب الطلب بالشكل والمقاس والتشطيب المعتمدة.",
     "specifications": "Cut the award outline according to the drawing and customize the text and logo.",
+    "specificationsAr": "يُقص محيط الدرع وفق الرسم، ثم يُضاف النص والشعار حسب الطلب.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [],
+    "intakeAr": [],
     "image": "./media/product-65.webp",
     "options": []
   },
@@ -1932,14 +2517,22 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Wood or medium-density fibreboard (MDF).",
+    "materialAr": "خشب أو ألواح ألياف خشبية متوسطة الكثافة.",
     "description": "A wooden presentation award bearing the recipient's name, a logo, or a dedication.",
+    "descriptionAr": "درع تكريم خشبي يحمل اسم المكرّم أو شعارًا أو إهداءً.",
     "specifications": "Customize the face by engraving or printing according to the selected finish.",
+    "specificationsAr": "تُضاف التفاصيل إلى واجهة الدرع بالحفر أو الطباعة وفق التشطيب المختار.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details",
       "Award shape"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة",
+      "شكل الدرع"
     ],
     "image": "./media/product-67-v2.webp",
     "options": []
@@ -1957,14 +2550,22 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 24 to 48 hours",
-    "turnaroundAr": "حوالي 24 إلى 48 ساعة",
+    "turnaroundAr": "حوالي ٢٤ إلى ٤٨ ساعة",
     "material": "Optical crystal.",
+    "materialAr": "كريستال بصري.",
     "description": "A crystal presentation award with customized engraving or printing.",
+    "descriptionAr": "درع تكريم من الكريستال يُخصص بالحفر أو الطباعة.",
     "specifications": "Apply the name, logo, or dedication within the available area.",
+    "specificationsAr": "يُنفذ الاسم أو الشعار أو الإهداء ضمن المساحة المتاحة.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details",
       "Award shape"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة",
+      "شكل الدرع"
     ],
     "image": "./media/product-69-v2.webp",
     "options": []
@@ -1982,13 +2583,20 @@ export const products = [
     "minimum": 1,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Digital design.",
+    "materialAr": "تصميم رقمي.",
     "description": "A graphic design delivered in a digital format suitable for printing or publication.",
+    "descriptionAr": "تصميم بصري يُسلّم في صيغة رقمية مناسبة للطباعة أو النشر.",
     "specifications": "Arrange text and visual elements at the approved dimensions and export the file in the agreed format.",
+    "specificationsAr": "تُرتب النصوص والعناصر البصرية وفق الأبعاد المعتمدة، ثم يُصدّر الملف بالصيغة المتفق عليها.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Printing details"
+    ],
+    "intakeAr": [
+      "تفاصيل الطباعة"
     ],
     "image": "./media/product-71.webp",
     "options": []
@@ -2006,11 +2614,15 @@ export const products = [
     "minimum": 1000,
     "maximum": 100000,
     "turnaround": "Approximately 12 to 36 hours",
-    "turnaroundAr": "حوالي 12 إلى 36 ساعة",
+    "turnaroundAr": "حوالي ١٢ إلى ٣٦ ساعة",
     "material": "Coated paper or cardstock according to the model.",
+    "materialAr": "ورق مطلي أو ورق مقوّى بحسب النموذج.",
     "description": "A printed menu displaying the items and prices in the approved file.",
+    "descriptionAr": "قائمة طعام مطبوعة تعرض الأصناف والأسعار الواردة في الملف المعتمد.",
     "specifications": "Print and cut the menu in the approved size and with the approved number of printed sides.",
+    "specificationsAr": "تُطبع القائمة على وجه واحد أو وجهين بحسب الاعتماد، وتُقص وفق المقاس المعتمد.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Item length",
       "Item width",
@@ -2018,6 +2630,14 @@ export const products = [
       "No lamination, gloss lamination, or matte lamination",
       "Single-sided or double-sided printing",
       "Custom-shaped or straight cutting"
+    ],
+    "intakeAr": [
+      "طول القطعة",
+      "عرض القطعة",
+      "الكمية",
+      "بدون تغليف، أو بتغليف لامع، أو بتغليف غير لامع",
+      "الطباعة على وجه واحد أو وجهين",
+      "القص على شكل مخصص أو القص المستقيم"
     ],
     "image": "./media/product-72.webp",
     "options": [
@@ -2062,11 +2682,15 @@ export const products = [
     "minimum": 100,
     "maximum": 100000,
     "turnaround": "Approximately 10 to 24 hours",
-    "turnaroundAr": "حوالي 10 إلى 24 ساعة",
+    "turnaroundAr": "حوالي ١٠ إلى ٢٤ ساعة",
     "material": "Paper or cardstock according to the design.",
+    "materialAr": "ورق أو ورق مقوّى بحسب التصميم.",
     "description": "Printed paper favours carrying a phrase, name, or logo for distribution at events.",
+    "descriptionAr": "قطع ورقية مطبوعة تحمل عبارة أو اسمًا أو شعارًا لتوزيعها في المناسبات.",
     "specifications": "Print and cut the pieces to the approved shape and size.",
+    "specificationsAr": "تُطبع القطع وتُقص بالشكل والمقاس المعتمدين.",
     "requirements": "Design details",
+    "requirementsAr": "تفاصيل التصميم",
     "intake": [
       "Card length",
       "Card width",
@@ -2075,6 +2699,15 @@ export const products = [
       "Rounded or sharp corners",
       "Single-sided or double-sided printing",
       "Custom-shaped or straight cutting"
+    ],
+    "intakeAr": [
+      "طول البطاقة",
+      "عرض البطاقة",
+      "عدد البطاقات",
+      "بدون تغليف، أو بتغليف لامع، أو بتغليف غير لامع",
+      "زوايا مستديرة أو حادة",
+      "الطباعة على وجه واحد أو وجهين",
+      "القص على شكل مخصص أو القص المستقيم"
     ],
     "image": "./media/product-73-v2.webp",
     "options": [

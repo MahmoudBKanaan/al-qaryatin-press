@@ -7,6 +7,7 @@ import { categories, getProduct, products } from '../dist/src/catalog.js';
 import { calculateQuote, getPricePresets, getPriceRange, getUnitPriceRange } from '../dist/src/quote.js';
 import { about, categoryChip, escapeHtml, footer, header, home, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage, makeBrief } from '../dist/src/calculator-view.js';
+import { cartPage } from '../dist/src/cart-view.js';
 import { copy } from '../dist/src/copy.js';
 import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, removeCartItem, summarizeCart, updateCartQuantity, whatsappOrderUrl } from '../dist/src/cart.js';
 import { mountProductTape } from '../dist/src/product-tape.js';
@@ -163,6 +164,74 @@ test('localized home, catalogue and product content is crawlable without running
     assert.deepEqual(breadcrumbs.itemListElement.map(crumb => crumb.item), [
       publishedSite + prefix, publishedSite + prefix + 'catalogue/', publishedSite + prefix + `product/${product.id}/`,
     ]);
+  }
+});
+
+test('published pages and order controls use only the selected language', async () => {
+  const paths = ['', 'catalogue/', 'calculator/', 'about/', 'cart/', ...products.map(product => `product/${product.id}/`)];
+  const brochure = getProduct('brochures-and-flyers');
+  const garmentPrinting = getProduct('dtf-garment-printing');
+
+  function assertPageText(text, lang, context) {
+    // Product reference codes are shared identifiers, rather than prose.
+    const content = text.replace(/\bA[0-9]{4}\b/g, '').replace(/&(?:amp|quot|apos|lt|gt|nbsp|copy);/g, '');
+    const wrongScript = lang === 'ar' ? /\p{Script=Latin}+/gu : /\p{Script=Arabic}+/gu;
+    const unexpected = [...new Set(content.match(wrongScript) ?? [])];
+    assert.deepEqual(unexpected, [], context);
+  }
+
+  function assertPageMarkup(markup, lang, context) {
+    const tags = /<(?:[^"'<>]|"[^"]*"|'[^']*')+>/g;
+    const prose = markup.replace(/<!--[\s\S]*?-->/g, '').replace(/<(script|style|template)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+    const labels = [...prose.matchAll(tags)].flatMap(([tag]) => (
+      [...tag.matchAll(/\s(?:alt|aria-label|aria-description|label|placeholder|title)="([^"]*)"/g)]
+        .map(([, value]) => value)
+    ));
+    assertPageText([prose.replace(tags, ' '), ...labels].join(' '), lang, context);
+  }
+
+  function configuredOrder(product) {
+    return {
+      productId: product.id,
+      preset: getPricePresets(product).length - 1,
+      quantity: product.minimum,
+      options: [],
+      extraEnabled: false,
+      extra: '',
+    };
+  }
+
+  for (const lang of ['en', 'ar']) {
+    const t = copy[lang];
+    const arabic = lang === 'ar';
+    const prefix = arabic ? 'ar/' : '';
+    await Promise.all(paths.map(async path => {
+      const route = prefix + path;
+      assertPageMarkup(await documentMarkup(route), lang, route || '/');
+    }));
+
+    for (const product of products) {
+      const state = configuredOrder(product);
+      assertPageMarkup(calculatorPage(state, t, lang), lang, lang + ' calculator ' + product.id);
+      const brief = makeBrief(product, state, t, lang);
+      assert.ok(brief, product.id);
+      assertPageText(brief, lang, lang + ' quote brief ' + product.id);
+    }
+
+    const cart = [brochure, garmentPrinting].reduce((items, product) => addCartItem(items, configuredOrder(product)), []);
+    assert.equal(cart.length, 2);
+    const message = orderMessage(cart, t, lang);
+    assertPageText(message, lang, lang + ' WhatsApp order');
+    assertPageMarkup(cartPage(cart, t, lang), lang, lang + ' populated cart');
+    assert.ok(message.includes(arabic ? 'أ٤' : 'A4'));
+    assert.ok(message.includes(arabic ? 'دي تي إف' : 'DTF garment printing'));
+
+    const nav = header('home', t, lang);
+    const name = arabic ? 'مطابع القريتين' : 'Al Qaryatin Press';
+    assert.ok(nav.includes(name) && footer(t, lang).includes(name));
+    assert.match(nav, arabic
+      ? /<span class="language-label"[^>]*>الإنجليزية<\/span>/
+      : /<span class="language-label"[^>]*>Arabic<\/span>/);
   }
 });
 

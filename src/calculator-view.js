@@ -48,7 +48,7 @@ function orderFields(product, state, t, lang) {
     }
   }
   const optionText = option => escapeHtml(label(option, 'label', lang)) +
-    (option.dimensions ? ' · ' + escapeHtml(option.dimensions) : '');
+    (option.dimensions ? ' · ' + escapeHtml(label(option, 'dimensions', lang)) : '');
   const isSelected = option => state.options.includes(option.id);
   const groupLabel = group => group === 'size' ? (lang === 'ar' ? 'المقاس' : 'Size') : (lang === 'ar' ? 'السلفان' : 'Lamination');
 

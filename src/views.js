@@ -36,9 +36,10 @@ function priceRange({ minimum, maximum }, lang, maximumFractionDigits = 2) {
 }
 
 function brand(lang) {
-  return `<a class="brand" href="${route('', undefined, lang)}" aria-label="${label(business, 'name', lang)}">
+  const name = escapeHtml(label(business, 'name', lang));
+  return `<a class="brand" href="${route('', undefined, lang)}">
     <img src="./media/brand-mark.webp" width="47" height="47" alt="">
-    <span><strong lang="ar" dir="rtl">${business.nameAr}</strong><small lang="en" dir="ltr">AL QARYATIN PRESS</small></span>
+    <strong>${name}</strong>
   </a>`;
 }
 
@@ -55,7 +56,7 @@ export function header(page, t, lang, cartCount = 0, alternateHref) {
         </ul>
       </nav>
       <div class="header-actions">
-        <a class="button button-text language" data-action="language" href="${escapeHtml(languageHref)}" hreflang="${alternateLang}" aria-label="${t.switchLanguage}">${icon('language')}<span class="language-label" lang="${alternateLang}">${t.lang}</span></a>
+        <a class="button button-text language" data-action="language" href="${escapeHtml(languageHref)}" hreflang="${alternateLang}" aria-label="${t.switchLanguage}">${icon('language')}<span class="language-label">${t.lang}</span></a>
         <a class="button button-primary header-quote" href="${route('calculator', undefined, lang)}">${icon('calculator')}${t.estimate}</a>
         <a class="icon-button header-cart" id="header-cart" href="${route('cart', undefined, lang)}" aria-label="${t.cartTitle} (${number(cartCount, lang)})"${page === 'cart' ? ' aria-current="page"' : ''}>${icon('cart')}<span class="cart-badge" aria-hidden="true"${cartCount ? '' : ' hidden'}>${number(cartCount, lang)}</span></a>
         <button class="icon-button menu-toggle" type="button" aria-controls="main-navigation" aria-expanded="false" aria-label="${lang === 'ar' ? 'القائمة' : 'Menu'}" data-action="menu">${icon('menu')}</button>
@@ -77,7 +78,7 @@ export function footer(t, lang) {
       </nav>
       <a class="footer-visit" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a>
     </div>
-    <div class="wrap footer-bottom"><span>&copy; ${number(new Date().getFullYear(), lang)} ${t.copyright}</span><bdi>@${business.username}</bdi><div class="footer-tape-controls"></div></div>
+    <div class="wrap footer-bottom"><span>&copy; ${number(new Date().getFullYear(), lang)} ${t.copyright}</span><div class="footer-tape-controls"></div></div>
   </footer>`;
 }
 
@@ -120,7 +121,7 @@ function quoteBand(t, lang) {
 
 export function contact(t, lang) {
   const address = [label(business, 'street', lang), label(business, 'district', lang),
-    label(business, 'city', lang) + ' ' + business.postcode].join(lang === 'ar' ? '، ' : ', ');
+    label(business, 'city', lang) + ' ' + label(business, 'postcode', lang)].join(lang === 'ar' ? '، ' : ', ');
   return `<section class="visit-card">
     <div class="visit-lead"><p class="eyebrow">${t.area}</p><h2>${t.contactTitle}</h2><p>${t.contactText}</p><a class="button button-tonal" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a></div>
     <dl class="visit-details m3-list">
@@ -167,7 +168,7 @@ export function productDetail(product, t, lang, related) {
     ? [[t.preset, range.small]]
     : [[t.smallSize, range.small], [t.largeSize, range.large]];
   const catalogueBack = categoryRoute(product.category, lang);
-  const specLang = lang === 'ar' ? ' lang="en" dir="ltr"' : '';
+  const requirements = [label(product, 'requirements', lang), ...label(product, 'intake', lang)].filter(Boolean);
   return `<div class="wrap product-page">
     <nav class="breadcrumb" aria-label="${t.breadcrumbs}">
       <ol class="breadcrumb-list m3-card-list" role="list">
@@ -181,8 +182,7 @@ export function productDetail(product, t, lang, related) {
       <section class="product-overview">
         <p class="eyebrow">${escapeHtml(label(category, 'label', lang))}</p>
         <h1 id="page-title" tabindex="-1">${name}</h1>
-        <p class="product-alias" lang="${lang === 'ar' ? 'en' : 'ar'}">${escapeHtml(lang === 'ar' ? product.name : product.nameAr)}</p>
-        <p class="product-description"${specLang}>${escapeHtml(product.description)}</p>
+        <p class="product-description">${escapeHtml(label(product, 'description', lang))}</p>
         <div class="product-pricing">
           <p class="price-caption">${t.priceRange}</p>
           <bdi class="product-price">${priceRange(range, lang)}</bdi>
@@ -201,19 +201,19 @@ export function productDetail(product, t, lang, related) {
       </section>
     </div>
     <section class="spec-section">
-      <div class="surface spec-card"><h2>${t.details}</h2>${t.specificationsLanguage ? `<p class="detail-note">${t.specificationsLanguage}</p>` : ''}
+      <div class="surface spec-card"><h2>${t.details}</h2>
         <dl class="specification-list m3-list">
-          <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.material}</dt><dd${specLang}>${escapeHtml(product.material)}</dd></div>
-          <div class="m3-list-item"><dt>${icon('print', 'm3-list-leading')}${t.specification}</dt><dd${specLang}>${escapeHtml(product.specifications)}</dd></div>
+          <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.material}</dt><dd>${escapeHtml(label(product, 'material', lang))}</dd></div>
+          <div class="m3-list-item"><dt>${icon('print', 'm3-list-leading')}${t.specification}</dt><dd>${escapeHtml(label(product, 'specifications', lang))}</dd></div>
           <div class="m3-list-item"><dt>${icon('packaging', 'm3-list-leading')}${t.range}</dt><dd><bdi>${number(product.minimum, lang)}–${number(product.maximum, lang)}</bdi> ${quantityUnit(product.maximum, t, lang)}</dd></div>
         </dl>
       </div>
       <div class="surface spec-card"><h2>${t.prepare}</h2><p>${t.prepareText}</p>
-        <ul class="requirements-list m3-list" role="list"${specLang}>${[product.requirements, ...product.intake].filter(Boolean).map(text =>
+        <ul class="requirements-list m3-list" role="list">${requirements.map(text =>
           `<li class="m3-list-item">${escapeHtml(text)}</li>`).join('')}</ul>
       </div>
       ${options.length ? `<div class="surface spec-card finishes"><h2>${t.finishes}</h2><ul class="finishes-list m3-list" role="list">${options.map(option =>
-        `<li class="m3-list-item"><span>${escapeHtml(label(option, 'label', lang))}</span>${option.dimensions ? `<bdi class="detail-note m3-list-trailing">${escapeHtml(option.dimensions)}</bdi>` : ''}</li>`).join('')}</ul></div>` : ''}
+        `<li class="m3-list-item"><span>${escapeHtml(label(option, 'label', lang))}</span>${option.dimensions ? `<bdi class="detail-note m3-list-trailing">${escapeHtml(label(option, 'dimensions', lang))}</bdi>` : ''}</li>`).join('')}</ul></div>` : ''}
     </section>
     ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-tonal" href="${catalogueBack}">${t.back}</a></div>${productGrid(related, t, lang)}</section>` : ''}
   </div>`;

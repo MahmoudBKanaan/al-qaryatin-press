@@ -16,7 +16,7 @@ export const business = {
   "country": "Saudi Arabia",
   "countryAr": "المملكة العربية السعودية",
   "postcode": "39953",
-  "username": "alqaryatayn",
+  "postcodeAr": "٣٩٩٥٣",
   "timeZone": "Asia/Riyadh",
   "hours": "Saturday–Thursday, 09:00–23:00",
   "hoursAr": "السبت–الخميس، ٠٩:٠٠–٢٣:٠٠",
