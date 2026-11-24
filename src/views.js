@@ -148,6 +148,31 @@ export function contact(t, lang) {
   </section>`;
 }
 
+function heroCarousel(t) {
+  const images = ['print', 'packaging', 'displays', 'labels', 'gifts'];
+  const slides = t.heroSlides.map(([title, description], index) => {
+    const image = `./media/hero-${images[index]}.webp`;
+    return `<figure class="hero-slide${index === 0 ? ' is-active' : ''}" data-hero-slide${index === 0 ? '' : ' aria-hidden="true"'}>
+      <img ${index === 0 ? `src="${image}" fetchpriority="high"` : `data-src="${image}"`} alt="" width="1440" height="960">
+      <figcaption class="hero-caption"><strong>${title}</strong><span>${description}</span></figcaption>
+    </figure>`;
+  }).join('');
+  const choices = t.heroSlides.map(([title], index) =>
+    `<button class="hero-indicator" type="button" data-hero-select aria-label="${t.heroChooseSlide.replace('{service}', title)}"${index === 0 ? ' aria-current="true"' : ''}></button>`).join('');
+
+  return `<section class="hero-media" data-hero-carousel aria-label="${t.heroGallery}" data-pause-label="${t.heroPause}" data-play-label="${t.heroPlay}">
+    <div class="hero-frame">${slides}</div>
+    <div class="hero-controls" data-hero-controls hidden>
+      <button class="button button-tonal hero-autoplay" type="button" data-hero-toggle>
+        <span data-hero-pause-icon>${icon('pause')}</span><span data-hero-play-icon hidden>${icon('play')}</span>
+        <span data-hero-toggle-label>${t.heroPause}</span>
+      </button>
+      <div class="hero-indicators">${choices}</div>
+    </div>
+    <p class="sr-only" aria-live="polite" data-hero-status></p>
+  </section>`;
+}
+
 export function home(t, lang) {
   return `<section class="hero">
     <div class="hero-inner wrap">
@@ -157,7 +182,7 @@ export function home(t, lang) {
         <p class="hero-description">${t.heroDescription}</p>
         <div class="hero-actions"><a class="button button-gold" href="${route('catalogue', undefined, lang)}">${icon('grid')}${t.explore}</a><a class="button button-tonal" href="${route('calculator', undefined, lang)}">${icon('calculator')}${t.estimate}</a></div>
       </div>
-      <div class="hero-media"><img src="./media/hero.webp" alt="" width="1480" height="987" fetchpriority="high"></div>
+      ${heroCarousel(t)}
     </div>
   </section>
   <div class="wrap home-content">

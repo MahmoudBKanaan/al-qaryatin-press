@@ -4,6 +4,7 @@ import { addCartItem, persistCart, readCart, removeCartItem, updateCartQuantity 
 import { cartCopy, cartPage, updateCartEstimate } from './cart-view.js';
 import { cataloguePage, catalogueResults } from './catalogue-view.js';
 import { copy } from './copy.js';
+import { mountHeroCarousel } from './hero-carousel.js';
 import { icon } from './icons.js';
 import { mountProductTape } from './product-tape.js';
 import { getPricePresets } from './quote.js';
@@ -28,6 +29,7 @@ let catalogue = { category: 'all', query: '', order: '' };
 let quote = emptyQuote('');
 let cart = readCart();
 let noticeTimer;
+let unmountHeroCarousel = () => {};
 
 function emptyQuote(productId) {
   const found = getProduct(productId);
@@ -122,10 +124,12 @@ function render({ focusPage = false } = {}) {
     metadataKey = pageKey;
   }
   const alternate = route(currentPage === 'not-found' ? '' : path, params, language === 'ar' ? 'en' : 'ar');
+  unmountHeroCarousel();
   app.innerHTML = header(currentPage, t, language, cart.length, alternate) +
     `<main id="main"${enterPage ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
     footer(t, language) + briefDialog(t);
   updateProductTape(language, document.querySelector('.footer-tape-controls'));
+  unmountHeroCarousel = mountHeroCarousel(app.querySelector('[data-hero-carousel]'));
   if (currentPage === 'catalogue') revealCatalogueCategory();
   if (focusPage) {
     const restore = currentPage === 'catalogue' && history.state?.catalogueReturn;

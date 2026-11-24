@@ -5,7 +5,7 @@ import { routePath } from './routes.js';
 export const SITE_URL = 'https://mahmoudbkanaan.github.io/al-qaryatin-press/';
 
 const businessId = SITE_URL + '#press';
-const heroImage = new URL('media/hero.webp', SITE_URL).href;
+const heroImage = new URL('media/hero-print.webp', SITE_URL).href;
 const logo = new URL('media/brand-mark.webp', SITE_URL).href;
 const pageUrl = (path, lang) => new URL(routePath(path, lang), SITE_URL).href;
 

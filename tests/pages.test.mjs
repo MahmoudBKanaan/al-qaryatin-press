@@ -167,6 +167,55 @@ test('localized home, catalogue and product content is crawlable without running
   }
 });
 
+test('both homepages ship five localized hero slides with an immediately visible lead image', async () => {
+  const imagePaths = ['print', 'packaging', 'displays', 'labels', 'gifts']
+    .map(name => './media/hero-' + name + '.webp');
+  for (const path of imagePaths) {
+    const asset = await readFile(new URL(path, site));
+    assert.equal(asset.toString('ascii', 0, 4), 'RIFF', path);
+    assert.equal(asset.toString('ascii', 8, 12), 'WEBP', path);
+  }
+
+  const attribute = (tag, name) => tag.match(new RegExp('\\s' + name + '="([^"]*)"'))?.[1];
+  for (const path of ['', 'ar/']) {
+    const markup = await documentMarkup(path);
+    const language = path ? /\p{Script=Arabic}/u : /\p{Script=Latin}/u;
+    assert.match(markup, /<[^>]+\sdata-hero-carousel(?=\s|>)/);
+
+    const slides = [...markup.matchAll(/(<figure\b[^>]*\sdata-hero-slide(?=\s|>)[^>]*>)([\s\S]*?)<\/figure>/g)];
+    assert.equal(slides.length, imagePaths.length);
+    for (const [index, [, tag, content]] of slides.entries()) {
+      const lead = index === 0;
+      const image = content.match(/<img\b[^>]*>/)?.[0];
+      const caption = content.match(/<figcaption\b[^>]*>([\s\S]*?)<\/figcaption>/)?.[1];
+      assert.ok(image && caption, imagePaths[index]);
+      assert.equal(attribute(tag, 'class')?.split(/\s+/).includes('is-active'), lead);
+      assert.equal(attribute(tag, 'aria-hidden') === 'true', !lead);
+      assert.equal(attribute(image, lead ? 'src' : 'data-src'), imagePaths[index]);
+      assert.equal(attribute(image, lead ? 'data-src' : 'src'), undefined);
+      assert.equal(attribute(image, 'fetchpriority') === 'high', lead);
+      assert.equal(Number(attribute(image, 'width')) / Number(attribute(image, 'height')), 3 / 2);
+      assert.match(caption.replace(/<[^>]+>/g, ''), language);
+    }
+
+    const controls = markup.match(/<[^>]+\sdata-hero-controls(?=\s|>)[^>]*>/)?.[0];
+    assert.match(controls ?? '', /\shidden(?=\s|>)/);
+    const selectors = [...markup.matchAll(/<button\b[^>]*\sdata-hero-select(?=\s|>)[^>]*>/g)].map(([tag]) => tag);
+    assert.equal(selectors.length, imagePaths.length);
+    const labels = selectors.map(tag => attribute(tag, 'aria-label'));
+    assert.equal(new Set(labels).size, imagePaths.length);
+    labels.forEach(label => assert.match(label ?? '', language));
+    assert.deepEqual(selectors.map(tag => attribute(tag, 'aria-current') === 'true'), [true, false, false, false, false]);
+
+    const socialPreview = new URL(imagePaths[0], publishedSite).href;
+    for (const key of ['og:image', 'twitter:image']) {
+      const meta = [...markup.matchAll(/<meta\b[^>]*>/g)].find(([tag]) =>
+        attribute(tag, 'property') === key || attribute(tag, 'name') === key);
+      assert.equal(attribute(meta?.[0] ?? '', 'content'), socialPreview);
+    }
+  }
+});
+
 test('published pages and order controls use only the selected language', async () => {
   const paths = ['', 'catalogue/', 'calculator/', 'about/', 'cart/', ...products.map(product => `product/${product.id}/`)];
   const brochure = getProduct('brochures-and-flyers');
