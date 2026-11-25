@@ -39,6 +39,10 @@ jobs:
         env:
           CF_PAGES: '1'
         run: npm test
+      - name: Include commit in the deployment
+        run: |
+          mkdir -p dist/.well-known
+          printf '%s\n' "$GITHUB_SHA" > dist/.well-known/deployment-revision.txt
       - name: Deploy to Cloudflare Pages
         id: pages
         uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
@@ -46,6 +50,20 @@ jobs:
           accountId: 816ab737b2bbd85c4b1ab206d4967bc4
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: pages deploy dist --project-name=al-qaryatin-press --branch=${{ steps.target.outputs.branch }} --commit-hash=${{ github.sha }}
+      - name: Verify the published commit on Qaryatain.com
+        if: steps.target.outputs.branch == 'main'
+        run: |
+          url="https://qaryatain.com/.well-known/deployment-revision.txt"
+          for attempt in {1..10}; do
+            revision_url="$url?sha=$GITHUB_SHA&run=$GITHUB_RUN_ID&attempt=$GITHUB_RUN_ATTEMPT-$attempt"
+            if revision=$(curl -fsS --max-time 7 "$revision_url") && [[ "$revision" == "$GITHUB_SHA" ]]; then
+              echo "Verified $GITHUB_SHA on Qaryatain.com"
+              exit 0
+            fi
+            if [[ "$attempt" != 10 ]]; then sleep 5; fi
+          done
+          echo "::error::Qaryatain.com did not serve expected commit $GITHUB_SHA"
+          exit 1
       - name: Show site URL
         env:
           SITE_URL: ${{ steps.target.outputs.branch == 'main' && 'https://qaryatain.com/' || steps.pages.outputs.pages-deployment-alias-url || steps.pages.outputs.deployment-url }}
