@@ -23,10 +23,13 @@ export const business = {
   "closed": "Friday",
   "closedAr": "الجمعة",
   "mapsUrl": "https://maps.app.goo.gl/rjZ8sLKiXXuygppB6",
+  "orderPhone": "+966568080265",
   "deliveryFee": 15,
   "minimumDeposit": 0.5,
   "revisionRounds": 2
 };
+
+export const whatsappUrl = 'https://wa.me/' + business.orderPhone.slice(1);
 
 export const categories = [
   {"id":"print","label":"Commercial print","labelAr":"المطبوعات التجارية"},

@@ -93,9 +93,9 @@ function render({ focusPage = false, animateEntry = false } = {}) {
     catalogue = readCatalogue(params);
     content = cataloguePage(catalogue, t, language);
   } else if (path.startsWith('product/')) {
-    currentPage = 'product';
     const found = getProduct(path.slice('product/'.length));
     const product = isAvailable(found) ? found : null;
+    currentPage = product ? 'product' : 'not-found';
     const related = product ? products.filter(item => item.id !== product.id && item.category === product.category && isAvailable(item)).slice(0, 3) : [];
     content = productDetail(product, t, language, related);
   } else if (path === 'calculator') {

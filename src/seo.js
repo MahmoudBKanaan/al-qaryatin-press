@@ -1,4 +1,4 @@
-import { business, getProduct, isAvailable } from './catalog.js';
+import { business, categories, getProduct, isAvailable, products, whatsappUrl } from './catalog.js';
 import { copy } from './copy.js';
 import { routePath } from './routes.js';
 import { SITE_URL } from './site-url.js';
@@ -6,9 +6,21 @@ import { SITE_URL } from './site-url.js';
 export { SITE_URL };
 
 const businessId = SITE_URL + '#press';
+const websiteId = SITE_URL + '#website';
 const heroImage = new URL('media/hero-print.webp', SITE_URL).href;
 const logo = new URL('media/brand-mark.webp', SITE_URL).href;
 const pageUrl = (path, lang) => new URL(routePath(path, lang), SITE_URL).href;
+
+function shareImage(source, imageAlt) {
+  const filename = source.split('/').pop().replace(/\.webp$/, '.jpg');
+  return {
+    image: new URL('media/share/' + filename, SITE_URL).href,
+    imageType: 'image/jpeg',
+    imageWidth: 1200,
+    imageHeight: 630,
+    imageAlt,
+  };
+}
 
 const pages = {
   '': {
@@ -45,14 +57,26 @@ function schema(...nodes) {
   return { '@context': 'https://schema.org', '@graph': nodes };
 }
 
-function businessSchema(lang) {
+function pageNode(path, lang, name, description, type = 'WebPage') {
+  const url = pageUrl(path, lang);
+  return {
+    '@type': type,
+    '@id': url + '#webpage',
+    url, name, description,
+    inLanguage: lang,
+    isPartOf: { '@id': websiteId },
+    publisher: { '@id': businessId },
+  };
+}
+
+function businessSchema(lang, page) {
   const arabic = lang === 'ar';
   return schema({
     '@type': 'WebSite',
-    '@id': SITE_URL + '#website',
+    '@id': websiteId,
     url: SITE_URL,
-    name: business.name,
-    alternateName: business.nameAr,
+    name: arabic ? business.nameAr : business.name,
+    alternateName: arabic ? business.name : business.nameAr,
     inLanguage: ['en', 'ar'],
     publisher: { '@id': businessId },
   }, {
@@ -66,6 +90,13 @@ function businessSchema(lang) {
     image: heroImage,
     foundingDate: String(business.founded),
     hasMap: business.mapsUrl,
+    telephone: business.orderPhone,
+    contactPoint: {
+      '@type': 'ContactPoint',
+      url: whatsappUrl,
+      telephone: business.orderPhone,
+      contactType: arabic ? 'طلبات الطباعة' : 'Print orders',
+    },
     address: {
       '@type': 'PostalAddress',
       streetAddress: arabic ? `${business.streetAr}، ${business.districtAr}` : `${business.street}, ${business.district}`,
@@ -79,24 +110,43 @@ function businessSchema(lang) {
       opens: '09:00',
       closes: '23:00',
     },
-  });
+  }, { ...page, about: { '@id': businessId } });
 }
 
 function productMetadata(product, path, lang) {
   const arabic = lang === 'ar';
   const name = arabic ? product.nameAr : product.name;
-  const trail = [['', copy[lang].home], ['catalogue', copy[lang].catalogTitle], [path, name]];
+  const description = arabic ? product.descriptionAr : product.description;
+  const url = pageUrl(path, lang);
+  const itemId = pageUrl(path, 'en') + '#item';
+  const category = categories.find(category => category.id === product.category);
+  const categoryName = arabic ? category.labelAr : category.label;
+  const isService = product.category === 'services';
+  const trail = [['', copy[lang].home], ['catalogue', copy[lang].catalog], [path, name]];
   return {
     title: `${name} | ${arabic ? business.nameAr : business.name}`,
     description: arabic
-      ? `${name} من ${business.nameAr} في ${business.cityAr}. تعرّف على المواصفات والخيارات وقدّر تكلفة طلبك.`
-      : `${product.description} Explore specifications and request a quote from ${business.name}.`,
-    image: new URL(product.image, SITE_URL).href,
-    imageAlt: arabic ? `صورة توضيحية: ${name}` : `${name} product mockup`,
+      ? `${name} من ${business.nameAr} في ${business.cityAr}. ${description}`
+      : `${name} from ${business.name} in ${business.city}. ${description}`,
+    ...shareImage(product.image, arabic ? `نموذج ${name}` : `${name} product mockup`),
     type: 'product',
     indexable: true,
     structuredData: schema({
+      ...pageNode(path, lang, name, description),
+      mainEntity: { '@id': itemId },
+      breadcrumb: { '@id': url + '#breadcrumbs' },
+    }, {
+      '@id': itemId,
+      '@type': isService ? 'Service' : 'Product',
+      name, description, url,
+      image: new URL(product.image, SITE_URL).href,
+      category: categoryName,
+      ...(isService
+        ? { provider: { '@id': businessId } }
+        : { material: arabic ? product.materialAr : product.material }),
+    }, {
       '@type': 'BreadcrumbList',
+      '@id': url + '#breadcrumbs',
       itemListElement: trail.map(([route, title], index) => ({
         '@type': 'ListItem',
         position: index + 1,
@@ -105,6 +155,29 @@ function productMetadata(product, path, lang) {
       })),
     }),
   };
+}
+
+function contentSchema(path, lang, label, description) {
+  if (path === '' || path === 'about') {
+    const type = path === 'about' ? 'AboutPage' : 'WebPage';
+    return businessSchema(lang, pageNode(path, lang, label, description, type));
+  }
+  if (path === 'calculator') return schema(pageNode(path, lang, label, description));
+  if (path !== 'catalogue') return null;
+  const items = products.filter(isAvailable);
+  return schema({
+    ...pageNode(path, lang, label, description, 'CollectionPage'),
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: items.length,
+      itemListElement: items.map((product, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: lang === 'ar' ? product.nameAr : product.name,
+        url: pageUrl('product/' + product.id, lang),
+      })),
+    },
+  });
 }
 
 export function pageMetadata(path = '', lang = 'en') {
@@ -122,10 +195,11 @@ export function pageMetadata(path = '', lang = 'en') {
   return {
     title: path === '' ? `${name} | ${label}` : `${label} | ${name}`,
     description,
-    image: heroImage,
-    imageAlt: arabic ? 'نماذج تغليف وطباعة تشمل كتيبًا وبطاقات وعلبة عرض' : 'Print and packaging mockups with a booklet, cards and a presentation box',
+    ...shareImage(heroImage, arabic
+      ? 'كتيب وبطاقات ومجلد مطبوعة بألوان كحلية وذهبية'
+      : 'A printed booklet, cards and presentation folder in navy and gold'),
     type: 'website',
     indexable: Boolean(localizedPage) && path !== 'cart',
-    structuredData: path === '' || path === 'about' ? businessSchema(lang) : null,
+    structuredData: contentSchema(path, lang, label, description),
   };
 }

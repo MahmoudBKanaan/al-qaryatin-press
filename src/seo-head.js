@@ -9,7 +9,7 @@ export function renderHead(path, lang, { indexable }) {
   const page = pageMetadata(path, lang);
   const canonical = new URL(routePath(path, lang), SITE_URL).href;
   const allowIndex = indexable && page.indexable;
-  const meta = (attribute, key, value) => `<meta data-page-head ${attribute}="${key}" content="${escapeHtml(value)}">`;
+  const meta = (attribute, key, value) => `<meta ${attribute}="${key}" content="${escapeHtml(value)}" data-page-head>`;
   const link = (rel, href, language) => `<link data-page-head rel="${rel}" href="${escapeHtml(href)}"${language ? ` hreflang="${language}"` : ''}>`;
   const localized = code => new URL(routePath(path, code), SITE_URL).href;
 
@@ -28,6 +28,10 @@ export function renderHead(path, lang, { indexable }) {
     meta('property', 'og:description', page.description),
     meta('property', 'og:url', canonical),
     meta('property', 'og:image', page.image),
+    meta('property', 'og:image:secure_url', page.image),
+    meta('property', 'og:image:type', page.imageType),
+    meta('property', 'og:image:width', page.imageWidth),
+    meta('property', 'og:image:height', page.imageHeight),
     meta('property', 'og:image:alt', page.imageAlt),
     meta('property', 'og:site_name', label(business, 'name', lang)),
     meta('property', 'og:locale', lang === 'ar' ? 'ar_SA' : 'en_SA'),

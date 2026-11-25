@@ -1,5 +1,6 @@
 export const copy = {
   en: {
+    orderContact: 'WhatsApp orders',
     primaryNav: 'Main navigation', footerNav: 'Footer navigation', breadcrumbs: 'Breadcrumbs',
     skip: 'Skip to content', home: 'Home', catalog: 'Catalogue', calculator: 'Price calculator', about: 'About', visit: 'Visit the press', directions: 'Get directions', lang: 'Arabic', switchLanguage: 'Switch to Arabic',
     area: 'Hafr Al Batin, Saudi Arabia', heroOne: 'Print made to', heroTwo: 'stand out.', heroDescription: 'Commercial print, custom packaging and signage from Al Qaryatin Press. Serving Hafr Al Batin since 2005.', explore: 'Explore catalogue', estimate: 'Calculate a price', browseTitle: 'Find what you need', featured: 'Featured products', featuredText: 'Explore some of our most requested print formats.', viewAll: 'View all products',
@@ -28,9 +29,10 @@ export const copy = {
       ['Can I bring my own artwork?', 'Yes. The press will check whether it is ready to print. The files and specifications needed depend on the product.'],
       ['How long does printing take?', 'Each product page shows the recorded approximate turnaround. Confirm timing and availability when you place the order.'],
       ['Can I make changes after approval?', 'Please check all content and specifications before approving. Changes or cancellations are unavailable after artwork approval and release to printing.'],
-    ], notFound: 'Product not found', notFoundText: 'This product may be unavailable. Browse the catalogue to see the current range.', copyright: 'Al Qaryatin Press',
+    ], notFound: 'Page not found', notFoundText: 'Browse the catalogue to see our current products or return to the home page.', copyright: 'Al Qaryatin Press',
   },
   ar: {
+    orderContact: 'الطلبات عبر واتساب',
     primaryNav: 'القائمة الرئيسية', footerNav: 'روابط التذييل', breadcrumbs: 'مسار التنقل',
     skip: 'انتقل إلى المحتوى', home: 'الرئيسية', catalog: 'الكتالوج', calculator: 'حاسبة الأسعار', about: 'عن المطابع', visit: 'زيارة المطابع', directions: 'احصل على الاتجاهات', lang: 'الإنجليزية', switchLanguage: 'التبديل إلى الإنجليزية',
     area: 'حفر الباطن، المملكة العربية السعودية', heroOne: 'مطبوعات', heroTwo: 'تلفت الأنظار.', heroDescription: 'مطابع القريتين للمطبوعات التجارية والتغليف المخصص واللوحات. نخدم حفر الباطن منذ عام ٢٠٠٥.', explore: 'تصفح الكتالوج', estimate: 'احسب السعر', browseTitle: 'اعثر على ما تحتاجه', featured: 'منتجات مختارة', featuredText: 'تعرّف على مجموعة من منتجات الطباعة والتغليف.', viewAll: 'عرض جميع المنتجات',
@@ -59,6 +61,6 @@ export const copy = {
       ['هل يمكنني تقديم تصميمي؟', 'نعم. تتحقق المطابع من جاهزيته للطباعة. تختلف الملفات والمواصفات المطلوبة حسب المنتج.'],
       ['كم يستغرق تنفيذ الطلب؟', 'توضح صفحة كل منتج مدة التنفيذ التقريبية المسجلة. أكد الموعد والتوفر عند الطلب.'],
       ['هل يمكن تعديل التصميم بعد اعتماده؟', 'راجع المحتوى والمواصفات قبل الاعتماد. لا يمكن التعديل أو الإلغاء بعد اعتماد التصميم وإحالته للطباعة.'],
-    ], notFound: 'المنتج غير موجود', notFoundText: 'قد يكون المنتج غير متاح. تصفح الكتالوج للاطلاع على المنتجات الحالية.', copyright: 'مطابع القريتين',
+    ], notFound: 'الصفحة غير موجودة', notFoundText: 'تصفّح الكتالوج للاطلاع على منتجاتنا الحالية أو عُد إلى الصفحة الرئيسية.', copyright: 'مطابع القريتين',
   }
 };

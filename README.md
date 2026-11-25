@@ -2,7 +2,7 @@
 
 The public product catalogue and price calculator for Al Qaryatin Press in Hafr Al Batin.
 
-[Visit the website](https://mahmoudbkanaan.github.io/al-qaryatin-press/)
+[Visit Qaryatain.com](https://qaryatain.com/)
 
 ## Development
 
@@ -12,8 +12,8 @@ Catalogue entries are in `src/catalog-data.js`, pricing rules in `src/quote.js`,
 
 ## Deployment
 
-Run `npm test` to build and validate the site. GitHub Actions runs the same checks for pull requests to `main` and deploys the validated `dist/` build to GitHub Pages after each push to `main`.
+Run `npm test` to build and validate the site. Pushes to `main` deploy to Cloudflare Pages at Qaryatain.com and to the GitHub Pages mirror. Other branches get Cloudflare preview deployments. The production workflow verifies the live commit and fetches share cards from the public domain.
 
 ## Search indexing
 
-The build renders crawlable pages in both languages and publishes [sitemap.xml](https://mahmoudbkanaan.github.io/al-qaryatin-press/sitemap.xml). The sitemap lists canonical content pages. Cart pages carry a noindex directive. Submit the sitemap in Google Search Console using the verified URL-prefix property for the GitHub Pages project.
+The build renders both languages into HTML with canonical URLs on Qaryatain.com, alternate-language links, structured data, and social metadata. The public robots file points crawlers to the bilingual sitemap. Cart and error pages carry a noindex directive. [Production sitemap](https://qaryatain.com/sitemap.xml)

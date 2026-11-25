@@ -1,9 +1,8 @@
-import { getProduct, isAvailable } from './catalog.js';
+import { getProduct, isAvailable, whatsappUrl } from './catalog.js';
 import { calculateQuote } from './quote.js';
 import { availableOptions, label, money, number, priceMultiplier } from './views.js';
 
 const storageKey = 'qaryatin-cart';
-const whatsappRecipient = '966568080265';
 
 function normalizeItem(configuration) {
   if (!configuration || typeof configuration !== 'object') return null;
@@ -139,7 +138,7 @@ export function whatsappOrderUrl(cart, t, lang) {
   const message = orderMessage(cart, t, lang);
   if (!message) return '';
 
-  const url = new URL(`https://wa.me/${whatsappRecipient}`);
+  const url = new URL(whatsappUrl);
   url.searchParams.set('text', message);
   return url.href.replaceAll('+', '%20');
 }

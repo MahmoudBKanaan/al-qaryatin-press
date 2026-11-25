@@ -64,6 +64,9 @@ jobs:
           done
           echo "::error::Qaryatain.com did not serve expected commit $GITHUB_SHA"
           exit 1
+      - name: Verify public social preview images
+        if: steps.target.outputs.branch == 'main'
+        run: node scripts/verify-link-preview.mjs
       - name: Show site URL
         env:
           SITE_URL: ${{ steps.target.outputs.branch == 'main' && 'https://qaryatain.com/' || steps.pages.outputs.pages-deployment-alias-url || steps.pages.outputs.deployment-url }}

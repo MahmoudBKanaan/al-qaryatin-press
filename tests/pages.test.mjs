@@ -11,11 +11,11 @@ import { cartPage } from '../dist/src/cart-view.js';
 import { copy } from '../dist/src/copy.js';
 import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, removeCartItem, summarizeCart, updateCartQuantity, whatsappOrderUrl } from '../dist/src/cart.js';
 import { mountProductTape } from '../dist/src/product-tape.js';
+import { readPreview, verifyJpeg } from '../scripts/verify-link-preview.mjs';
 
 const site = new URL('../dist/', import.meta.url);
-const publishedSite = process.env.CF_PAGES === '1'
-  ? 'https://qaryatain.com/'
-  : 'https://mahmoudbkanaan.github.io/al-qaryatin-press/';
+const publishedSite = 'https://qaryatain.com/';
+const mirrorSite = 'https://mahmoudbkanaan.github.io/al-qaryatin-press/';
 
 function documentMarkup(path) {
   return readFile(new URL(`${path}index.html`, site), 'utf8');
@@ -114,12 +114,20 @@ test('the bilingual sitemap lists every public page with reciprocal language lin
       const entry = byUrl.get(canonical);
       assert.ok(entry, canonical);
       assert.deepEqual(Object.fromEntries(alternateLinks(entry)), alternates, canonical);
+      const productId = path.match(/^product\/([^/]+)\/$/)?.[1];
+      const primaryImage = path === '' ? 'media/hero-print.webp' : productId && getProduct(productId).image;
+      if (primaryImage) {
+        assert.ok(entry.includes(`<image:loc>${new URL(primaryImage, publishedSite).href}</image:loc>`), canonical);
+      }
 
       const doc = await documentMarkup(route);
       assert.equal(doc.match(/<link\b[^>]*\brel="canonical"[^>]*\bhref="([^"]+)"/)[1], canonical);
       assert.deepEqual(Object.fromEntries(alternateLinks(doc)), alternates, route);
       assert.match(doc, /\bname="robots" content="index,follow,max-image-preview:large"/);
-      assert.equal(new URL(doc.match(/<base href="([^"]+)"/)[1], canonical).href, publishedSite, route);
+      const base = doc.match(/<base href="([^"]+)"/)[1];
+      for (const origin of [publishedSite, mirrorSite]) {
+        assert.equal(new URL(base, origin + route).href, origin, route);
+      }
     }
   }));
 
@@ -162,6 +170,13 @@ test('localized home, catalogue and product content is crawlable without running
     assert.equal(website.publisher['@id'], business['@id']);
     assert.equal(business.name, arabic ? 'مطابع القريتين' : 'Al Qaryatin Press');
     assert.equal(business.address.addressCountry, 'SA');
+    assert.equal(business.telephone, '+966568080265');
+    const collection = schemaGraph(catalogue).find(node => node['@type'] === 'CollectionPage');
+    assert.equal(collection.mainEntity.numberOfItems, products.length);
+    const entity = schemaGraph(item).find(node => node['@type'] === 'Product');
+    assert.equal(entity.name, arabic ? product.nameAr : product.name);
+    assert.equal(entity.description, arabic ? product.descriptionAr : product.description);
+    assert.equal(entity.image, new URL(product.image, publishedSite).href);
     const breadcrumbs = schemaGraph(item).find(node => node['@type'] === 'BreadcrumbList');
     assert.deepEqual(breadcrumbs.itemListElement.map(crumb => crumb.item), [
       publishedSite + prefix, publishedSite + prefix + 'catalogue/', publishedSite + prefix + `product/${product.id}/`,
@@ -208,13 +223,41 @@ test('both homepages ship five localized hero slides with an immediately visible
     assert.equal(new Set(labels).size, imagePaths.length);
     labels.forEach(label => assert.match(label ?? '', language));
     assert.deepEqual(selectors.map(tag => attribute(tag, 'aria-current') === 'true'), [true, false, false, false, false]);
+  }
+});
 
-    const socialPreview = new URL(imagePaths[0], publishedSite).href;
-    for (const key of ['og:image', 'twitter:image']) {
-      const meta = [...markup.matchAll(/<meta\b[^>]*>/g)].find(([tag]) =>
-        attribute(tag, 'property') === key || attribute(tag, 'name') === key);
-      assert.equal(attribute(meta?.[0] ?? '', 'content'), socialPreview);
+test('all sitemap routes publish readable social cards with the correct JPEG in the initial HTML', async () => {
+  const sitemap = await readFile(new URL('sitemap.xml', site), 'utf8');
+  const productImages = new Set();
+  for (const [, canonical] of sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+    const { pathname } = new URL(canonical);
+    const markup = await documentMarkup(pathname.slice(1));
+    const preview = readPreview(markup, canonical);
+    const localPath = preview.image.pathname.slice(1);
+    const bytes = await readFile(new URL(localPath, site));
+    verifyJpeg(bytes, preview);
+    assert.deepEqual([preview.width, preview.height], [1200, 630]);
+    const productId = pathname.match(/\/product\/([^/]+)\/$/)?.[1];
+    if (productId) {
+      const sourceImage = getProduct(productId).image.split('/').pop().replace(/\.webp$/, '.jpg');
+      assert.equal(localPath, 'media/share/' + sourceImage, canonical);
+      productImages.add(localPath);
+    } else if (pathname === '/' || pathname === '/ar/') {
+      assert.equal(localPath, 'media/share/hero-print.jpg');
     }
+  }
+  assert.equal(productImages.size, new Set(products.map(product => product.image)).size);
+});
+
+test('search crawlers can discover the sitemap and receive non-indexable error documents', async () => {
+  const robots = await readFile(new URL('robots.txt', site), 'utf8');
+  assert.match(robots, /^User-agent:\s*\*\s*$/im);
+  assert.match(robots, /^Sitemap:\s*https:\/\/qaryatain\.com\/sitemap\.xml\s*$/im);
+  assert.doesNotMatch(robots, /^Disallow:\s*\/\s*$/im);
+  for (const path of ['404.html', 'ar/404.html']) {
+    const page = await readFile(new URL(path, site), 'utf8');
+    assert.match(page, /name="robots" content="noindex/);
+    assert.doesNotMatch(page, /rel="canonical"/);
   }
 });
 

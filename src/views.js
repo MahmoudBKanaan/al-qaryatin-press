@@ -1,4 +1,4 @@
-import { business, categories, featuredProducts, getSmallOrderTier, isOptionAvailable } from './catalog.js';
+import { business, categories, featuredProducts, getSmallOrderTier, isOptionAvailable, whatsappUrl } from './catalog.js';
 import { formatSAR, getPricePresets, getPriceRange, getUnitPriceRange } from './quote.js';
 import { icon } from './icons.js';
 import { categoryRoute, productRoute, quoteRoute, route } from './routes.js';
@@ -142,6 +142,7 @@ export function contact(t, lang) {
   return `<section class="visit-card">
     <div class="visit-lead"><p class="eyebrow">${t.area}</p><h2>${t.contactTitle}</h2><p>${t.contactText}</p><a class="button button-tonal" href="${business.mapsUrl}" target="_blank" rel="noopener">${icon('location')}${t.directions}</a></div>
     <dl class="visit-details m3-list">
+      <div class="m3-list-item"><dt>${icon('chat', 'm3-list-leading')}${t.orderContact}</dt><dd><a href="${whatsappUrl}"><bdi dir="ltr">${business.orderPhone}</bdi></a></dd></div>
       <div class="m3-list-item"><dt>${icon('location', 'm3-list-leading')}${t.address}</dt><dd>${escapeHtml(address)}</dd></div>
       <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.hours}</dt><dd>${label(business, 'hours', lang)}<br>${t.friday}</dd></div>
     </dl>
@@ -215,9 +216,9 @@ export function productDetail(product, t, lang, related) {
   return `<div class="wrap product-page">
     <nav class="breadcrumb" aria-label="${t.breadcrumbs}">
       <ol class="breadcrumb-list m3-card-list" role="list">
-        <li><a href="${route('catalogue', undefined, lang)}">${t.catalog}</a></li>
-        <li>${icon('chevron')}<a href="${catalogueBack}">${escapeHtml(label(category, 'label', lang))}</a></li>
-        <li>${icon('chevron')}<bdi aria-current="page">${product.code}</bdi></li>
+        <li><a href="${route('', undefined, lang)}">${t.home}</a></li>
+        <li>${icon('chevron')}<a href="${route('catalogue', undefined, lang)}">${t.catalog}</a></li>
+        <li>${icon('chevron')}<span aria-current="page">${name}</span></li>
       </ol>
     </nav>
     <div class="product-hero">
