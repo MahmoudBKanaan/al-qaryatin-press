@@ -159,9 +159,9 @@ export function formatSAR(value, locale = 'en-SA') {
   const halalas = Number(parts.find(part => part.type === 'fraction').value);
   if (value > 0 && halalas === 0) {
     const hint = arabic ? 'أقل من هللة واحدة' : 'less than 1 halala';
-    return `${amount} (${hint})`;
+    return `${amount} · ${hint}`;
   }
 
   const unit = arabic ? (halalas >= 3 && halalas <= 10 ? 'هللات' : 'هللة') : (halalas === 1 ? 'halala' : 'halalas');
-  return `${amount} (${halalas}\u00a0${unit})`;
+  return `${amount} · ${halalas}\u00a0${unit}`;
 }

@@ -353,7 +353,7 @@ test('catalogue cards show localized unit prices and product details show minimu
       [businessCards.id, t.unitPrice, ['0.20']],
       [customCards.id, t.unitPrice, ['0.11', '0.38']],
     ]);
-    assert.match(prices[0][3], lang === 'ar' ? /20\s+هللة/ : /20\s+halalas/);
+    assert.match(prices[0][3], lang === 'ar' ? /0\.20\s+SAR\s+·\s+20\s+هللة/ : /SAR\s+0\.20\s+·\s+20\s+halalas/);
 
     const orderAmounts = [['100.00'], ['11.25', '37.50']];
     for (const [index, product] of products.entries()) {
@@ -509,7 +509,8 @@ test('the calculator rounds the order total and keeps custom quotes separate', (
   const order = { productId: documents.id, preset: 0, quantity: 12, options: [] };
   assert.equal(calculateQuote(documents, order).subtotal, 0.75);
   assert.equal(summarizeCart(addCartItem([], order)).estimatedSubtotal, 0.75);
-  assert.match(money(0.027, 'en'), /SAR\s+0\.03\s+\(3\s+halalas\)/);
+  assert.match(money(0.027, 'en'), /^SAR\s+0\.03\s+·\s+3\s+halalas$/);
+  assert.match(money(0.004, 'en'), /^SAR\s+0\.00\s+·\s+less than 1 halala$/);
   assert.match(money(0.995, 'en'), /^SAR\s+1\.00$/);
   assert.equal(customBoxes.status, 'review');
   assert.equal(customBoxes.subtotal, null);
