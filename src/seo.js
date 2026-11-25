@@ -45,7 +45,7 @@ const pages = {
     en: ['About the Print Shop in Hafr Al Batin',
       'Al Qaryatin Press has served Hafr Al Batin since 2005. Find our address, opening hours and directions, and learn how to place a print order.'],
     ar: ['عن المطابع وموقعها في حفر الباطن',
-      'تخدم مطابع القريتين حفر الباطن منذ عام ٢٠٠٥. تعرّف على خطوات طلب الطباعة وموقع المطابع وساعات العمل وطريقة الوصول.'],
+      'تخدم مطابع القريتين حفر الباطن منذ عام 2005. تعرّف على خطوات طلب الطباعة وموقع المطابع وساعات العمل وطريقة الوصول.'],
   },
   cart: {
     en: ['Cart', 'Review the items in your Al Qaryatin Press order.'],

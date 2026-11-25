@@ -24,7 +24,7 @@ export const copy = {
       ['file', 'Share your project', 'Choose a product and share the quantity, dimensions, finish and artwork details.'],
       ['receipt', 'Confirm the quote', 'Agree on the specification and turnaround. A payment of at least 50% of the agreed total is required to start the order.'],
       ['check', 'Approve your artwork', 'Review your design and send changes in one message per round. The press can usually accommodate one or two rounds. Final approval is required before printing.'],
-      ['packaging', 'Collect your order', 'We’ll let you know when it’s ready. Collect from the shop or ask about delivery within Hafr Al Batin, typically SAR 15.'],
+      ['packaging', 'Collect your order', 'We’ll let you know when it’s ready. Collect from the shop or ask about delivery within Hafr Al Batin, typically {deliveryFee}.'],
     ], faq: 'Frequently asked questions', faqs: [
       ['Can I bring my own artwork?', 'Yes. The press will check whether it is ready to print. The files and specifications needed depend on the product.'],
       ['How long does printing take?', 'Each product page shows the recorded approximate turnaround. Confirm timing and availability when you place the order.'],
@@ -35,7 +35,7 @@ export const copy = {
     orderContact: 'الطلبات عبر واتساب',
     primaryNav: 'القائمة الرئيسية', footerNav: 'روابط التذييل', breadcrumbs: 'مسار التنقل',
     skip: 'انتقل إلى المحتوى', home: 'الرئيسية', catalog: 'الكتالوج', calculator: 'حاسبة الأسعار', about: 'عن المطابع', visit: 'زيارة المطابع', directions: 'احصل على الاتجاهات', lang: 'الإنجليزية', switchLanguage: 'التبديل إلى الإنجليزية',
-    area: 'حفر الباطن، المملكة العربية السعودية', heroOne: 'مطبوعات', heroTwo: 'تلفت الأنظار.', heroDescription: 'مطابع القريتين للمطبوعات التجارية والتغليف المخصص واللوحات. نخدم حفر الباطن منذ عام ٢٠٠٥.', explore: 'تصفح الكتالوج', estimate: 'احسب السعر', browseTitle: 'اعثر على ما تحتاجه', featured: 'منتجات مختارة', featuredText: 'تعرّف على مجموعة من منتجات الطباعة والتغليف.', viewAll: 'عرض جميع المنتجات',
+    area: 'حفر الباطن، المملكة العربية السعودية', heroOne: 'مطبوعات', heroTwo: 'تلفت الأنظار.', heroDescription: 'مطابع القريتين للمطبوعات التجارية والتغليف المخصص واللوحات. نخدم حفر الباطن منذ عام 2005.', explore: 'تصفح الكتالوج', estimate: 'احسب السعر', browseTitle: 'اعثر على ما تحتاجه', featured: 'منتجات مختارة', featuredText: 'تعرّف على مجموعة من منتجات الطباعة والتغليف.', viewAll: 'عرض جميع المنتجات',
     heroGallery: 'خدمات طباعة مختارة', heroChooseSlide: 'عرض شريحة {service}', heroPause: 'إيقاف مؤقت', heroPlay: 'تشغيل',
     heroSlides: [
       ['المطبوعات التجارية', 'بطاقات أعمال وبروشورات وأوراق مراسلات'],
@@ -52,11 +52,11 @@ export const copy = {
     each: 'قطعة', details: 'تفاصيل المنتج', material: 'الخامة', specification: 'مواصفات الطباعة', quantity: 'الكمية', lead: 'مدة التنفيذ التقريبية', min: 'الحد الأدنى القياسي', range: 'نطاق الكمية المتاح', reference: 'رمز المنتج', back: 'العودة إلى الكتالوج', finishes: 'الخيارات والتشطيبات', prepare: 'معلومات نحتاجها منك', prepareText: 'جهّز التفاصيل التالية لطلب عرض سعر.', referenceImage: 'صورة توضيحية للمنتج', related: 'منتجات مشابهة', timingNote: 'أكد مدة التنفيذ عند تقديم الطلب.',
     smallOrderPricing: 'تسعير الكميات الصغيرة', smallOrderRule: '{range} بسعر يعادل {multiplier} السعر القياسي للقطعة', smallOrderMultiplier: 'مضاعف سعر الكمية الصغيرة',
     calculatorTitle: 'حاسبة الأسعار', calculatorText: 'اختر المنتج والمقاس والكمية لمعرفة التكلفة التقديرية أو إعداد طلب عرض سعر.', configure: 'تفاصيل الطلب', product: 'المنتج', select: 'اختر منتجًا', preset: 'المقاس أو المواصفة', presetHint: 'تبقى الكمية كما هي عند تغيير المقاس.', noOptions: 'المواصفات الأساسية', chooseOption: 'اختر أحد الخيارات', extra: 'متطلبات إضافية', extraPlaceholder: 'أضف تفاصيل التصميم أو المقاس المخصص أو التشطيبات التي تود مراجعتها مع المطابع.', reviewExtra: 'لديّ مقاس مخصص أو تشطيب خاص أو طلب توصيل أو متطلبات أخرى', qtyHint: 'أدخل كمية أقل من هذا النطاق لطلب المراجعة.', summary: 'تقدير التكلفة', subtotal: 'المجموع الفرعي للمنتج', baseSubtotal: 'المجموع الفرعي التقديري قبل احتساب التشطيبات', review: 'يتطلب مراجعة عرض السعر', ready: 'المجموع الفرعي التقديري', pending: 'اختر منتجًا للبدء', pendingText: 'اختر المنتج والمقاس والكمية لمعرفة التكلفة التقديرية.', invalid: 'تحقق من تفاصيل الطلب', unavailable: 'توفر المنتج', prepBrief: 'نسخ تفاصيل طلب السعر', copied: 'تم نسخ تفاصيل الطلب', copyFailed: 'حدد نص الطلب وانسخه يدويًا.', showBrief: 'عرض تفاصيل الطلب', brief: 'طلب عرض سعر', estimateNote: 'أكد المقاس والكمية والتشطيب والضريبة والتصميم والتوصيل مع المطابع. تطبق شروط الدفع على إجمالي الطلب المتفق عليه.', unpricedNote: 'يمكن للمطابع تأكيد سعر المواصفات المختارة.', caseNotes: 'ملاحظات على المواصفات', support: 'تفضل بزيارتنا لتأكيد عرض السعر', pcShort: 'قطعة',
-    aboutTitle: 'مطابعكم في حفر الباطن.', aboutText: 'تخدم مطابع القريتين الأفراد والشركات والمؤسسات في حفر الباطن منذ عام ٢٠٠٥. نقدم المطبوعات التجارية واللوحات والاستاندات والملصقات والتغليف والهدايا الدعائية.', orderTitle: 'من الطلب إلى الطباعة', orderIntro: 'أكد المواصفات والسعر مع المطابع قبل بدء الإنتاج.', orderSteps: [
+    aboutTitle: 'مطابعكم في حفر الباطن.', aboutText: 'تخدم مطابع القريتين الأفراد والشركات والمؤسسات في حفر الباطن منذ عام 2005. نقدم المطبوعات التجارية واللوحات والاستاندات والملصقات والتغليف والهدايا الدعائية.', orderTitle: 'من الطلب إلى الطباعة', orderIntro: 'أكد المواصفات والسعر مع المطابع قبل بدء الإنتاج.', orderSteps: [
       ['file', 'شارك تفاصيل مشروعك', 'اختر المنتج وشارك الكمية والمقاسات والتشطيب وتفاصيل التصميم.'],
-      ['receipt', 'أكد عرض السعر', 'اتفق على المواصفات ومدة التنفيذ. لبدء الطلب يلزم دفع ما لا يقل عن ٥٠٪ من الإجمالي المتفق عليه.'],
+      ['receipt', 'أكد عرض السعر', 'اتفق على المواصفات ومدة التنفيذ. لبدء الطلب يلزم دفع ما لا يقل عن 50% من الإجمالي المتفق عليه.'],
       ['check', 'اعتمد التصميم', 'راجع التصميم واجمع التعديلات في رسالة واحدة لكل جولة. عادةً يمكن إجراء جولة أو جولتين. الاعتماد النهائي مطلوب قبل الطباعة.'],
-      ['packaging', 'استلم طلبك', 'نبلغك عند جاهزية الطلب. يمكنك الاستلام من المطابع أو الاستفسار عن التوصيل داخل حفر الباطن بتكلفة معتادة قدرها ١٥ ريالًا.'],
+      ['packaging', 'استلم طلبك', 'نبلغك عند جاهزية الطلب. يمكنك الاستلام من المطابع أو الاستفسار عن التوصيل داخل حفر الباطن بتكلفة معتادة قدرها {deliveryFee}.'],
     ], faq: 'أسئلة شائعة', faqs: [
       ['هل يمكنني تقديم تصميمي؟', 'نعم. تتحقق المطابع من جاهزيته للطباعة. تختلف الملفات والمواصفات المطلوبة حسب المنتج.'],
       ['كم يستغرق تنفيذ الطلب؟', 'توضح صفحة كل منتج مدة التنفيذ التقريبية المسجلة. أكد الموعد والتوفر عند الطلب.'],

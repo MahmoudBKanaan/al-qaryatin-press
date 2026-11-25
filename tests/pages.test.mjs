@@ -267,8 +267,9 @@ test('published pages and order controls use only the selected language', async 
   const garmentPrinting = getProduct('dtf-garment-printing');
 
   function assertPageText(text, lang, context) {
-    // Product reference codes are shared identifiers, rather than prose.
-    const content = text.replace(/\bA[0-9]{4}\b/g, '').replace(/&(?:amp|quot|apos|lt|gt|nbsp|copy);/g, '');
+    assert.doesNotMatch(text, /[٠-٩۰-۹]/u, context);
+    // Product IDs, paper size codes, and the currency code are shared across both locales.
+    const content = text.replace(/\b(?:A[0-9]{4}|A[3-6]|DL|SAR)\b/g, '').replace(/&(?:amp|quot|apos|lt|gt|nbsp|copy);/g, '');
     const wrongScript = lang === 'ar' ? /\p{Script=Latin}+/gu : /\p{Script=Arabic}+/gu;
     const unexpected = [...new Set(content.match(wrongScript) ?? [])];
     assert.deepEqual(unexpected, [], context);
@@ -317,7 +318,7 @@ test('published pages and order controls use only the selected language', async 
     const message = orderMessage(cart, t, lang);
     assertPageText(message, lang, lang + ' WhatsApp order');
     assertPageMarkup(cartPage(cart, t, lang), lang, lang + ' populated cart');
-    assert.ok(message.includes(arabic ? 'أ٤' : 'A4'));
+    assert.ok(message.includes('A4'));
     assert.ok(message.includes(arabic ? 'دي تي إف' : 'DTF garment printing'));
 
     const nav = header('home', t, lang);
@@ -339,26 +340,28 @@ test('catalogue cards show localized unit prices and product details show minimu
     return [minimum, maximum];
   }), [[0.2, 0.2], [0.1125, 0.375]]);
 
-  const amounts = text => text.match(/\p{Decimal_Number}+(?:[.٫]\p{Decimal_Number}+)?/gu);
+  const amounts = (markup, lang) => {
+    const text = markup.replace(/<[^>]+>|\p{Cf}/gu, '');
+    const currency = lang === 'ar' ? /([\d,]+\.\d{2})\s+SAR\b/g : /\bSAR\s+([\d,]+\.\d{2})(?!\d)/g;
+    return [...text.matchAll(currency)].map(([, amount]) => amount);
+  };
   for (const lang of ['en', 'ar']) {
     const t = copy[lang];
-    const locale = lang === 'ar' ? 'ar-SA' : 'en-SA';
-    const decimal = new Intl.NumberFormat(locale, { maximumFractionDigits: 5 });
-    const fixed = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const cards = productGrid(products, t, lang);
-    const prices = [...cards.matchAll(/id="price-([^"]+)"><span>([^<]+)<\/span><bdi>([^<]+)<\/bdi>/g)];
-    assert.deepEqual(prices.map(price => [price[1], price[2], amounts(price[3])]), [
-      [businessCards.id, t.unitPrice, [fixed.format(0.2)]],
-      [customCards.id, t.unitPrice, [decimal.format(0.1125), decimal.format(0.375)]],
+    const prices = [...cards.matchAll(/id="price-([^"]+)"><span>([^<]+)<\/span>([\s\S]*?)<\/span><span class="card-more"/g)];
+    assert.deepEqual(prices.map(price => [price[1], price[2], amounts(price[3], lang)]), [
+      [businessCards.id, t.unitPrice, ['0.20']],
+      [customCards.id, t.unitPrice, ['0.11', '0.38']],
     ]);
+    assert.match(prices[0][3], lang === 'ar' ? /20\s+هللة/ : /20\s+halalas/);
 
-    const orderAmounts = [[100], [11.25, 37.5]];
+    const orderAmounts = [['100.00'], ['11.25', '37.50']];
     for (const [index, product] of products.entries()) {
       const detail = productDetail(product, t, lang, []);
       assert.ok(detail.includes('<p class="price-caption">' + t.priceRange + '</p>'));
-      const total = detail.match(/<bdi class="product-price">([^<]+)<\/bdi>/)?.[1];
+      const total = detail.match(/<bdi class="product-price"[^>]*>([\s\S]*?)<p class="range-note">/)?.[1];
       assert.ok(total, product.id);
-      assert.deepEqual(amounts(total), orderAmounts[index].map(amount => decimal.format(amount)));
+      assert.deepEqual(amounts(total, lang), orderAmounts[index]);
     }
   }
 });
@@ -502,6 +505,12 @@ test('the calculator rounds the order total and keeps custom quotes separate', (
   assert.equal(rollUp.subtotal, 182);
   assert.equal(cards.subtotal, 11.25);
   assert.equal(paperBoxes.subtotal, 250);
+  const documents = getProduct('black-and-white-document-printing');
+  const order = { productId: documents.id, preset: 0, quantity: 12, options: [] };
+  assert.equal(calculateQuote(documents, order).subtotal, 0.75);
+  assert.equal(summarizeCart(addCartItem([], order)).estimatedSubtotal, 0.75);
+  assert.match(money(0.027, 'en'), /SAR\s+0\.03\s+\(3\s+halalas\)/);
+  assert.match(money(0.995, 'en'), /^SAR\s+1\.00$/);
   assert.equal(customBoxes.status, 'review');
   assert.equal(customBoxes.subtotal, null);
 });
@@ -582,7 +591,7 @@ test('persisted cart items and bilingual briefs reprice when the quantity crosse
 
   for (const lang of ['en', 'ar']) {
     const t = copy[lang];
-    const multiplier = lang === 'ar' ? '٤×' : '4×';
+    const multiplier = '4×';
     const smallOrderLine = `${t.smallOrderMultiplier} — ${multiplier}`;
     const lowTotal = `${t.ready} — ${money(9, lang)}`;
     const briefLines = makeBrief(product, cart[0], t, lang).split('\n');
@@ -598,7 +607,7 @@ test('persisted cart items and bilingual briefs reprice when the quantity crosse
     }
     const details = productDetail(product, t, lang, []);
     assert.ok(details.includes(t.smallOrderPricing));
-    assert.ok(details.includes(lang === 'ar' ? '٢٠–٩٩' : '20–99'));
+    assert.ok(details.includes('20–99'));
     const regularMessage = orderMessage(regular, t, lang);
     assert.ok(regularMessage.split('\n').includes(`${t.ready} — ${money(11.25, lang)}`));
     assert.ok(!regularMessage.includes(t.smallOrderMultiplier));
@@ -629,8 +638,8 @@ test('WhatsApp checkout encodes every item in the current language', () => {
     assert.ok(message.includes(localized ? primary.nameAr : primary.name));
     assert.ok(message.includes(localized ? secondary.nameAr : secondary.name));
     assert.ok(message.includes(primary.code) && message.includes(secondary.code));
-    const quantityLine = t.quantity + (localized ? ' — ٢٥٠' : ' — 250');
-    const specification = localized ? '١٠ × ٧ سم' : '10 × 7 cm';
+    const quantityLine = t.quantity + ' — 250';
+    const specification = localized ? '10 × 7 سم' : '10 × 7 cm';
     const specificationLine = `${t.preset} — ${specification}`;
     assert.ok(message.split('\n').includes(quantityLine));
     assert.ok(message.split('\n').includes(specificationLine));

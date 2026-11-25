@@ -5,7 +5,8 @@ import { categoryChip, escapeHtml, label, localeId, number, pageHeading, product
 
 function normalized(value) {
   return normalizeDigits(value.toLocaleLowerCase().normalize('NFKC'))
-    .replace(/[ًٌٍَُِّْـ]/g, '').replace(/[إأآ]/g, 'ا').replace(/ى/g, 'ي').trim();
+    .replace(/[ًٌٍَُِّْـ]/g, '').replace(/[إأآ]/g, 'ا').replace(/ى/g, 'ي')
+    .replace(/(^|[^\p{L}\p{N}])ا([3-6])(?![\p{L}\p{N}])/gu, '$1a$2').trim();
 }
 
 export function catalogueResults(catalogue, t, lang) {

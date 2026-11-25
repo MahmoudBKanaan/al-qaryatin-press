@@ -11,6 +11,10 @@ export function escapeHtml(value = '') {
   })[character]);
 }
 
+export function formatNumericText(value) {
+  return escapeHtml(value).replace(/\d+(?:[.:]\d+)?(?:(?: × |–)\d+(?:[.:]\d+)?)+/g, '<bdi dir="ltr">$&</bdi>');
+}
+
 export function label(record, key, lang) {
   return (lang === 'ar' && record[key + 'Ar']) || record[key];
 }
@@ -22,14 +26,14 @@ export function availableOptions(product) {
 }
 
 export const quantityUnit = (quantity, t, lang) => lang === 'en' && quantity !== 1 ? 'pieces' : t.each;
-export const localeId = lang => lang === 'ar' ? 'ar-SA' : 'en-SA';
+export const localeId = lang => lang === 'ar' ? 'ar-SA-u-nu-latn' : 'en-SA';
 export const number = (value, lang) => new Intl.NumberFormat(localeId(lang)).format(value);
 export const money = (value, lang) => formatSAR(value, localeId(lang));
 export const priceMultiplier = (value, lang) => `${number(value, lang)}×`;
 
 function quantityRange(minimum, maximum, t, lang) {
   const range = minimum === maximum ? number(minimum, lang) : `${number(minimum, lang)}–${number(maximum, lang)}`;
-  return `<bdi>${range}</bdi> ${quantityUnit(maximum, t, lang)}`;
+  return `<bdi dir="ltr">${range}</bdi> ${quantityUnit(maximum, t, lang)}`;
 }
 
 export function quantityPricingDetails(product, t, lang) {
@@ -42,14 +46,12 @@ export function quantityPricingDetails(product, t, lang) {
   return { minimum, range, smallOrder };
 }
 
-function priceRange({ minimum, maximum }, lang, maximumFractionDigits = 2) {
-  const locale = localeId(lang);
-  if (minimum === maximum) return formatSAR(minimum, locale, maximumFractionDigits);
-  const formatter = new Intl.NumberFormat(locale, {
-    style: 'currency', currency: 'SAR', minimumFractionDigits: 0, maximumFractionDigits,
-  });
-  return formatter.formatRange?.(minimum, maximum) ??
-    [formatSAR(minimum, locale, maximumFractionDigits), formatSAR(maximum, locale, maximumFractionDigits)].join(' – ');
+function priceRange({ minimum, maximum }, lang) {
+  const lower = money(minimum, lang);
+  const upper = money(maximum, lang);
+  if (lower === upper) return escapeHtml(lower);
+  const separator = lang === 'ar' ? 'إلى' : '–';
+  return `<bdi>${escapeHtml(lower)}</bdi> ${separator} <bdi>${escapeHtml(upper)}</bdi>`;
 }
 
 function brand(lang) {
@@ -109,7 +111,7 @@ export function productCard(product, t, lang) {
       <div class="card-info">
         <p class="card-category">${escapeHtml(label(category, 'label', lang))}</p>
         <h3 id="name-${product.id}">${name}</h3>
-        <div class="card-bottom"><span class="card-pricing" id="price-${product.id}"><span>${t.unitPrice}</span><bdi>${priceRange(perItem, lang, 5)}</bdi></span><span class="card-more">${icon('diagonal')}</span></div>
+        <div class="card-bottom"><span class="card-pricing" id="price-${product.id}"><span>${t.unitPrice}</span><bdi dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${priceRange(perItem, lang)}</bdi></span><span class="card-more">${icon('diagonal')}</span></div>
       </div>
     </a>
   </article>`;
@@ -144,7 +146,7 @@ export function contact(t, lang) {
     <dl class="visit-details m3-list">
       <div class="m3-list-item"><dt>${icon('chat', 'm3-list-leading')}${t.orderContact}</dt><dd><a href="${whatsappUrl}"><bdi dir="ltr">${business.orderPhone}</bdi></a></dd></div>
       <div class="m3-list-item"><dt>${icon('location', 'm3-list-leading')}${t.address}</dt><dd>${escapeHtml(address)}</dd></div>
-      <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.hours}</dt><dd>${label(business, 'hours', lang)}<br>${t.friday}</dd></div>
+      <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.hours}</dt><dd>${formatNumericText(label(business, 'hours', lang))}<br>${t.friday}</dd></div>
     </dl>
   </section>`;
 }
@@ -229,10 +231,10 @@ export function productDetail(product, t, lang, related) {
         <p class="product-description">${escapeHtml(label(product, 'description', lang))}</p>
         <div class="product-pricing">
           <p class="price-caption">${t.priceRange}</p>
-          <bdi class="product-price">${priceRange(range, lang)}</bdi>
+          <bdi class="product-price" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${priceRange(range, lang)}</bdi>
           <p class="range-note">${t.rangeNote}</p>
           <dl class="order-examples m3-list">${sizeExamples.map(([title, size]) =>
-            `<div class="m3-list-item"><dt>${title}</dt><dd>${escapeHtml(label(size, 'size', lang))}</dd></div>`).join('')}</dl>
+            `<div class="m3-list-item"><dt>${title}</dt><dd>${formatNumericText(label(size, 'size', lang))}</dd></div>`).join('')}</dl>
         </div>
         <dl class="product-stats m3-list">
           <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.min}</dt><dd>${number(product.minimum, lang)} ${quantityUnit(product.minimum, t, lang)}</dd></div>
@@ -255,10 +257,10 @@ export function productDetail(product, t, lang, related) {
       </div>
       <div class="surface spec-card"><h2>${t.prepare}</h2><p>${t.prepareText}</p>
         <ul class="requirements-list m3-list" role="list">${requirements.map(text =>
-          `<li class="m3-list-item">${escapeHtml(text)}</li>`).join('')}</ul>
+          `<li class="m3-list-item">${formatNumericText(text)}</li>`).join('')}</ul>
       </div>
       ${options.length ? `<div class="surface spec-card finishes"><h2>${t.finishes}</h2><ul class="finishes-list m3-list" role="list">${options.map(option =>
-        `<li class="m3-list-item"><span>${escapeHtml(label(option, 'label', lang))}</span>${option.dimensions ? `<bdi class="detail-note m3-list-trailing">${escapeHtml(label(option, 'dimensions', lang))}</bdi>` : ''}</li>`).join('')}</ul></div>` : ''}
+        `<li class="m3-list-item"><span>${escapeHtml(label(option, 'label', lang))}</span>${option.dimensions ? `<bdi class="detail-note m3-list-trailing">${formatNumericText(label(option, 'dimensions', lang))}</bdi>` : ''}</li>`).join('')}</ul></div>` : ''}
     </section>
     ${related.length ? `<section class="related-section"><div class="section-heading"><h2>${t.related}</h2><a class="button button-tonal" href="${catalogueBack}">${t.back}</a></div>${productGrid(related, t, lang)}</section>` : ''}
   </div>`;
@@ -269,7 +271,7 @@ export function about(t, lang) {
     <div class="wrap about-content">
       <section><div class="section-heading"><div><h2>${t.orderTitle}</h2><p>${t.orderIntro}</p></div></div>
         <ol class="steps-grid m3-card-list" role="list">${t.orderSteps.map(([symbol, title, description]) =>
-          `<li class="surface order-step"><span class="category-icon">${icon(symbol)}</span><h3>${title}</h3><p>${description}</p></li>`).join('')}</ol>
+          `<li class="surface order-step"><span class="category-icon">${icon(symbol)}</span><h3>${title}</h3><p>${description.replace('{deliveryFee}', `<bdi>${escapeHtml(money(business.deliveryFee, lang))}</bdi>`)}</p></li>`).join('')}</ol>
       </section>
       <section class="faq-section"><h2>${t.faq}</h2>
         <ul class="faq-list m3-list" role="list">${t.faqs.map(([question, answer]) =>

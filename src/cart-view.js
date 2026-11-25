@@ -1,6 +1,6 @@
 import { describeCartItem, orderMessage, summarizeCart, whatsappOrderUrl } from './cart.js';
 import { icon } from './icons.js';
-import { escapeHtml, label, money, number, pageHeading, priceMultiplier, productRoute, route } from './views.js';
+import { escapeHtml, formatNumericText, label, money, number, pageHeading, priceMultiplier, productRoute, route } from './views.js';
 
 export const cartCopy = {
   en: {
@@ -64,7 +64,7 @@ function cartItem(item, index, t, lang, c) {
       </div>
     </div>
     <dl class="cart-item-details m3-list">
-      <div class="m3-list-item"><dt>${t.preset}</dt><dd>${escapeHtml(presetLabel)}</dd></div>
+      <div class="m3-list-item"><dt>${t.preset}</dt><dd>${formatNumericText(presetLabel)}</dd></div>
       <div class="m3-list-item"><dt>${t.finishes}</dt><dd>${escapeHtml(optionLabels.join(lang === 'ar' ? '، ' : ', ') || t.noOptions)}</dd></div>
       ${note ? `<div class="m3-list-item cart-item-note"><dt>${t.extra}</dt><dd dir="auto">${escapeHtml(note)}</dd></div>` : ''}
     </dl>

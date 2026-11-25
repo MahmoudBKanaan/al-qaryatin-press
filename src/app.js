@@ -7,7 +7,7 @@ import { copy } from './copy.js';
 import { mountHeroCarousel } from './hero-carousel.js';
 import { icon } from './icons.js';
 import { mountProductTape } from './product-tape.js';
-import { getPricePresets } from './quote.js';
+import { getPricePresets, normalizeDigits } from './quote.js';
 import { isPage, route, routeFromURL } from './routes.js';
 import { renderHead } from './seo-head.js';
 import { about, footer, header, home, number, productDetail } from './views.js';
@@ -246,6 +246,14 @@ function invalidCartField() {
   return app.querySelector('input[name="cart-quantity"][aria-invalid="true"]');
 }
 
+function normalizeQuantityInput(field) {
+  const quantity = normalizeDigits(field.value);
+  if (quantity === field.value) return;
+  const { selectionStart, selectionEnd, selectionDirection } = field;
+  field.value = quantity;
+  field.setSelectionRange(selectionStart, selectionEnd, selectionDirection);
+}
+
 function updateCartField(field) {
   const index = Number(field.dataset.cartIndex);
   const updated = updateCartQuantity(cart, index, field.value);
@@ -415,6 +423,10 @@ app.addEventListener('input', event => {
   if (field.id === 'catalogue-search') {
     catalogue.query = field.value;
     updateCatalogue();
+  }
+  if (field.name === 'quantity' || field.name === 'cart-quantity') {
+    if (event.isComposing) return;
+    normalizeQuantityInput(field);
   }
   if (field.name === 'quantity') {
     quote.quantity = field.value;

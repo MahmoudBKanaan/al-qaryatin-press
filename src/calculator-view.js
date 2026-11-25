@@ -1,7 +1,7 @@
 import { categories, isAvailable, products } from './catalog.js';
 import { calculateQuote, getPricePresets } from './quote.js';
 import { icon } from './icons.js';
-import { availableOptions, escapeHtml, label, localeId, money, number, pageHeading, priceMultiplier, productRoute, quantityPricingDetails } from './views.js';
+import { availableOptions, escapeHtml, formatNumericText, label, localeId, money, number, pageHeading, priceMultiplier, productRoute, quantityPricingDetails } from './views.js';
 
 export function calculatorPage(state, t, lang) {
   const eligible = products.filter(isAvailable);
@@ -34,7 +34,7 @@ function orderFields(product, state, t, lang) {
     if (presets.findIndex(item => item.size === preset.size) !== index) return '';
     return `<li class="m3-list-item"><label class="preset-choice">
       <input type="radio" name="preset" value="${index}" ${selectedSize === preset.size ? 'checked' : ''}>
-      <strong class="preset-description">${escapeHtml(label(preset, 'size', lang))}</strong>
+      <strong class="preset-description">${formatNumericText(label(preset, 'size', lang))}</strong>
     </label></li>`;
   }).join('');
   const options = availableOptions(product);
@@ -86,7 +86,7 @@ export function quoteSummary(product, state, t, lang) {
     <div class="estimate-product"><img src="${product.image}" alt="" width="92" height="70"><div><a href="${productRoute(product.id, lang)}">${escapeHtml(label(product, 'name', lang))}</a><small><bdi>${product.code}</bdi></small></div></div>
     <div class="estimate-live">
       <dl class="estimate-lines m3-list">
-        ${result.preset ? `<div class="m3-list-item"><dt>${t.preset}</dt><dd>${escapeHtml(label(result.preset, 'size', lang))}</dd></div>` : ''}
+        ${result.preset ? `<div class="m3-list-item"><dt>${t.preset}</dt><dd>${formatNumericText(label(result.preset, 'size', lang))}</dd></div>` : ''}
         ${result.quantity !== null ? `<div class="m3-list-item"><dt>${t.quantity}</dt><dd>${number(result.quantity, lang)}</dd></div>` : ''}
         ${result.quantityMultiplier > 1 ? `<div class="m3-list-item"><dt>${t.smallOrderMultiplier}</dt><dd><bdi dir="ltr">${priceMultiplier(result.quantityMultiplier, lang)}</bdi></dd></div>` : ''}
         ${knownBase ? `<div class="m3-list-item"><dt>${t.baseSubtotal}</dt><dd><bdi>${money(result.baseSubtotal, lang)}</bdi></dd></div>` : ''}
