@@ -144,24 +144,12 @@ export function calculateQuote(product, {
 export function formatSAR(value, locale = 'en-SA') {
   if (!Number.isFinite(value)) return '';
 
-  const parts = new Intl.NumberFormat(locale, {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'SAR',
     currencyDisplay: 'code',
     numberingSystem: 'latn',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).formatToParts(value);
-  const amount = parts.map(part => part.value).join('');
-  if (value < 0 || parts.find(part => part.type === 'integer').value !== '0') return amount;
-
-  const arabic = locale.startsWith('ar');
-  const halalas = Number(parts.find(part => part.type === 'fraction').value);
-  if (value > 0 && halalas === 0) {
-    const hint = arabic ? 'أقل من هللة واحدة' : 'less than 1 halala';
-    return `${amount} · ${hint}`;
-  }
-
-  const unit = arabic ? (halalas >= 3 && halalas <= 10 ? 'هللات' : 'هللة') : (halalas === 1 ? 'halala' : 'halalas');
-  return `${amount} · ${halalas}\u00a0${unit}`;
+  }).format(value);
 }
