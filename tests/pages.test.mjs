@@ -13,7 +13,9 @@ import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, rem
 import { mountProductTape } from '../dist/src/product-tape.js';
 
 const site = new URL('../dist/', import.meta.url);
-const publishedSite = 'https://mahmoudbkanaan.github.io/al-qaryatin-press/';
+const publishedSite = process.env.CF_PAGES === '1'
+  ? 'https://qaryatain.com/'
+  : 'https://mahmoudbkanaan.github.io/al-qaryatin-press/';
 
 function documentMarkup(path) {
   return readFile(new URL(`${path}index.html`, site), 'utf8');

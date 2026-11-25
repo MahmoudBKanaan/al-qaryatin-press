@@ -1,8 +1,9 @@
 import { business, getProduct, isAvailable } from './catalog.js';
 import { copy } from './copy.js';
 import { routePath } from './routes.js';
+import { SITE_URL } from './site-url.js';
 
-export const SITE_URL = 'https://mahmoudbkanaan.github.io/al-qaryatin-press/';
+export { SITE_URL };
 
 const businessId = SITE_URL + '#press';
 const heroImage = new URL('media/hero-print.webp', SITE_URL).href;

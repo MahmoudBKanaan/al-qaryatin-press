@@ -5,7 +5,6 @@ import { cataloguePage } from '../src/catalogue-view.js';
 import { isAvailable, products } from '../src/catalog.js';
 import { copy } from '../src/copy.js';
 import { route, routePath } from '../src/routes.js';
-import { renderHead, SITE_URL } from '../src/seo-head.js';
 import { about, escapeHtml, footer, header, home, productDetail } from '../src/views.js';
 
 const languages = ['en', 'ar'];
@@ -20,7 +19,7 @@ const hooks = {
   noscript: /<noscript>[\s\S]*?<\/noscript>/,
 };
 
-function renderDocument(template, { path, page, content }, lang, indexable) {
+function renderDocument(template, { path, page, content }, lang, indexable, renderHead) {
   const t = copy[lang];
   const arabic = lang === 'ar';
   const depth = routePath(path, lang).split('/').filter(Boolean).length;
@@ -40,8 +39,8 @@ function renderDocument(template, { path, page, content }, lang, indexable) {
     .replace(hooks.noscript, () => `<noscript><p class="noscript">${noscript}</p></noscript>`);
 }
 
-function sitemapEntry(path, lang) {
-  const url = language => escapeHtml(new URL(routePath(path, language), SITE_URL).href);
+function sitemapEntry(path, lang, siteUrl) {
+  const url = language => escapeHtml(new URL(routePath(path, language), siteUrl).href);
   return `  <url>\n    <loc>${url(lang)}</loc>\n` +
     ['en', 'ar', 'x-default'].map(language =>
       `    <xhtml:link rel="alternate" hreflang="${language}" href="${url(language === 'x-default' ? 'en' : language)}"/>\n`).join('') +
@@ -62,6 +61,7 @@ async function removeStaleProducts(dist, lang, availableIds) {
 }
 
 export async function buildSeo(dist, { indexable }) {
+  const { renderHead, SITE_URL: siteUrl } = await import(new URL('src/seo-head.js', dist));
   const template = await readFile(new URL('index.html', dist), 'utf8');
   for (const [name, hook] of Object.entries(hooks)) {
     if (!(typeof hook === 'string' ? template.includes(hook) : hook.test(template))) {
@@ -89,8 +89,8 @@ export async function buildSeo(dist, { indexable }) {
     for (const document of documents) {
       const directory = new URL(routePath(document.path, lang), dist);
       await mkdir(directory, { recursive: true });
-      await writeFile(new URL('index.html', directory), renderDocument(template, document, lang, indexable));
-      if (indexable && document.page !== 'cart') sitemap.push(sitemapEntry(document.path, lang));
+      await writeFile(new URL('index.html', directory), renderDocument(template, document, lang, indexable, renderHead));
+      if (indexable && document.page !== 'cart') sitemap.push(sitemapEntry(document.path, lang, siteUrl));
     }
   }
 
