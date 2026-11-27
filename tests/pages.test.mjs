@@ -7,6 +7,7 @@ import { categories, getProduct, getSmallOrderTier, products } from '../dist/src
 import { calculateQuote, getPricePresets, getPriceRange, getUnitPriceRange } from '../dist/src/quote.js';
 import { about, categoryChip, escapeHtml, footer, header, home, money, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage, makeBrief } from '../dist/src/calculator-view.js';
+import { cataloguePage } from '../dist/src/catalogue-view.js';
 import { cartPage } from '../dist/src/cart-view.js';
 import { copy } from '../dist/src/copy.js';
 import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, removeCartItem, summarizeCart, updateCartQuantity, whatsappOrderUrl } from '../dist/src/cart.js';
@@ -188,6 +189,21 @@ test('localized home, catalogue and product content is crawlable without running
     assert.deepEqual(breadcrumbs.itemListElement.map(crumb => crumb.item), [
       publishedSite + prefix, publishedSite + prefix + 'catalogue/', publishedSite + prefix + `product/${product.id}/`,
     ]);
+  }
+});
+
+test('catalogue search renders folded by default and opens for a shared query', async () => {
+  for (const lang of ['en', 'ar']) {
+    const catalogue = await documentMarkup(lang === 'ar' ? 'ar/catalogue/' : 'catalogue/');
+    assert.match(catalogue, /data-action="toggle-search"\s+aria-expanded="false" aria-controls="catalogue-search-form"/);
+    assert.match(catalogue, /id="catalogue-search-form" role="search" hidden>/);
+    assert.ok(catalogue.includes('<span>' + copy[lang].searchToggle + '</span>'));
+    const shared = cataloguePage({ category: 'all', query: 'A0022', order: '' }, copy[lang], lang);
+    assert.match(shared, /data-action="toggle-search"\s+aria-expanded="true" aria-controls="catalogue-search-form"/);
+    assert.match(shared, /id="catalogue-search-form" role="search">/);
+    assert.match(shared, /<bdi class="catalogue-search-query">A0022<\/bdi>/);
+    assert.match(shared, /id="catalogue-search"[^>]*\bvalue="A0022"/);
+    assert.equal((shared.match(/class="product-link"/g) ?? []).length, 2);
   }
 });
 

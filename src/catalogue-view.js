@@ -29,15 +29,25 @@ export function catalogueResults(catalogue, t, lang) {
 
 export function cataloguePage(catalogue, t, lang) {
   const list = catalogueResults(catalogue, t, lang);
+  const query = catalogue.query.trim();
+  const searchOpen = Boolean(query);
   return `${pageHeading(t.catalogTitle, t.catalogText)}
     <div class="wrap catalogue-content">
-      <form class="catalogue-toolbar" id="catalogue-search-form" role="search">
-        <div class="search-field">
-          <label class="sr-only" for="catalogue-search">${t.search}</label>${icon('search')}
-          <input id="catalogue-search" type="search" enterkeyhint="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off">
-          <button type="button" class="icon-button clear-search" data-action="clear-search" aria-label="${t.clearSearch}"${catalogue.query ? '' : ' hidden'}>${icon('close')}</button>
-        </div>
-      </form>
+      <div class="catalogue-toolbar">
+        <button type="button" class="button button-tonal catalogue-search-toggle" data-action="toggle-search"
+          aria-expanded="${searchOpen}" aria-controls="catalogue-search-form">
+          ${icon('search')}<span>${t.searchToggle}</span>
+          <bdi class="catalogue-search-query"${query ? '' : ' hidden'}>${escapeHtml(query)}</bdi>
+          ${icon('chevron', 'search-toggle-chevron')}
+        </button>
+        <form class="catalogue-search-panel" id="catalogue-search-form" role="search"${searchOpen ? '' : ' hidden'}>
+          <div class="search-field">
+            <label class="sr-only" for="catalogue-search">${t.search}</label>${icon('search')}
+            <input id="catalogue-search" type="search" dir="auto" enterkeyhint="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off">
+            <button type="button" class="icon-button clear-search" data-action="clear-search" aria-label="${t.clearSearch}"${catalogue.query ? '' : ' hidden'}>${icon('close')}</button>
+          </div>
+        </form>
+      </div>
       <ul class="filters m3-chip-set" role="list" aria-label="${t.category}">
         <li>${categoryChip('all', t.all, catalogue.category)}</li>
         ${categories.map(category => `<li>${categoryChip(category.id, label(category, 'label', lang), catalogue.category)}</li>`).join('')}

@@ -201,6 +201,9 @@ function updateCatalogue({ animateCards = false } = {}) {
   document.querySelectorAll('[data-category]').forEach(button =>
     button.setAttribute('aria-pressed', String(button.dataset.category === catalogue.category)));
   document.querySelector('.clear-search').hidden = catalogue.query === '';
+  const searchQuery = app.querySelector('.catalogue-search-query');
+  searchQuery.textContent = catalogue.query.trim();
+  searchQuery.hidden = !searchQuery.textContent;
   revealCatalogueCategory();
   const { count, html } = catalogueResults(catalogue, t, language);
   document.querySelector('#result-count').textContent = count;
@@ -313,6 +316,12 @@ async function copyBrief() {
   }
 }
 
+function setSearchExpanded(button, expanded) {
+  button.setAttribute('aria-expanded', String(expanded));
+  app.querySelector('#catalogue-search-form').hidden = !expanded;
+  (expanded ? app.querySelector('#catalogue-search') : button).focus();
+}
+
 function setMenuExpanded(button, expanded) {
   button.setAttribute('aria-expanded', String(expanded));
   document.querySelector('#main-navigation').classList.toggle('is-open', expanded);
@@ -376,6 +385,9 @@ app.addEventListener('click', event => {
       setMenuExpanded(button, !expanded);
       break;
     }
+    case 'toggle-search':
+      setSearchExpanded(button, button.getAttribute('aria-expanded') === 'false');
+      break;
     case 'clear-search':
     case 'clear-filters': {
       const resetCategory = button.dataset.action === 'clear-filters';
@@ -478,8 +490,15 @@ skipLink.addEventListener('click', event => {
   document.querySelector('#main')?.focus();
 });
 document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || event.isComposing) return;
+  const search = app.querySelector('.catalogue-search-toggle[aria-expanded="true"]');
+  if (search?.parentElement.contains(event.target)) {
+    event.preventDefault();
+    setSearchExpanded(search, false);
+    return;
+  }
   const expanded = document.querySelector('.menu-toggle[aria-expanded="true"]');
-  if (event.key === 'Escape' && expanded) {
+  if (expanded) {
     setMenuExpanded(expanded, false);
     expanded.focus();
   }
