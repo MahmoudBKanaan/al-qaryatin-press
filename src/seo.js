@@ -71,12 +71,13 @@ function pageNode(path, lang, name, description, type = 'WebPage') {
 
 function businessSchema(lang, page) {
   const arabic = lang === 'ar';
+  const alternateName = [arabic ? business.name : business.nameAr, 'مطبعة القريتين'];
   return schema({
     '@type': 'WebSite',
     '@id': websiteId,
     url: SITE_URL,
     name: arabic ? business.nameAr : business.name,
-    alternateName: arabic ? business.name : business.nameAr,
+    alternateName,
     inLanguage: ['en', 'ar'],
     publisher: { '@id': businessId },
   }, {
@@ -84,7 +85,7 @@ function businessSchema(lang, page) {
     '@id': businessId,
     url: SITE_URL,
     name: arabic ? business.nameAr : business.name,
-    alternateName: arabic ? business.name : business.nameAr,
+    alternateName,
     description: copy[lang].brandPromise,
     logo,
     image: heroImage,

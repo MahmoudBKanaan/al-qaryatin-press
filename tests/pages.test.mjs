@@ -169,6 +169,13 @@ test('localized home, catalogue and product content is crawlable without running
     assert.deepEqual(website.inLanguage, ['en', 'ar']);
     assert.equal(website.publisher['@id'], business['@id']);
     assert.equal(business.name, arabic ? 'مطابع القريتين' : 'Al Qaryatin Press');
+    assert.equal(website.name, business.name);
+    for (const entity of [website, business]) {
+      assert.ok(Array.isArray(entity.alternateName));
+      assert.ok(entity.alternateName.includes(arabic ? 'Al Qaryatin Press' : 'مطابع القريتين'));
+      assert.ok(entity.alternateName.includes('مطبعة القريتين'));
+    }
+    if (arabic) assert.match(homepage.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)[1], /مطبعة القريتين/);
     assert.equal(business.address.addressCountry, 'SA');
     assert.equal(business.telephone, '+966568080265');
     const collection = schemaGraph(catalogue).find(node => node['@type'] === 'CollectionPage');
