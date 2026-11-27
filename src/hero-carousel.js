@@ -43,6 +43,7 @@ export function mountHeroCarousel(root) {
 
     const image = images[index];
     unavailable.delete(index);
+    if (image.dataset.srcset) image.srcset = image.dataset.srcset;
     if (image.dataset.src) image.src = image.dataset.src;
     const request = image.decode().then(
       () => true,

@@ -37,6 +37,13 @@ function schemaGraph(markup) {
 }
 
 test('the site ships valid scripts, mockups, and bundled Arabic fonts', async () => {
+  const favicon = await readFile(new URL('media/favicon.png', site));
+  assert.equal(favicon.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+  assert.equal(favicon.readUInt32BE(16), 96);
+  assert.equal(favicon.readUInt32BE(20), 96);
+  for (const path of ['', 'ar/']) {
+    assert.match(await documentMarkup(path), /rel="icon" type="image\/png" sizes="96x96" href="\.\/media\/favicon\.png"/);
+  }
   const modules = await readdir(new URL('src/', site));
   for (const module of modules) {
     const path = fileURLToPath(new URL('src/' + module, site));
@@ -181,6 +188,7 @@ test('localized home, catalogue and product content is crawlable without running
     }
     if (arabic) assert.match(homepage.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)[1], /مطبعة القريتين/);
     assert.equal(business.address.addressCountry, 'SA');
+    assert.deepEqual(business.geo, { '@type': 'GeoCoordinates', latitude: 28.4243072, longitude: 45.9528997 });
     assert.equal(business.telephone, '+966568080265');
     const collection = schemaGraph(catalogue).find(node => node['@type'] === 'CollectionPage');
     assert.equal(collection.mainEntity.numberOfItems, products.length);
@@ -295,6 +303,11 @@ test('both homepages ship five localized hero slides with an immediately visible
     const asset = await readFile(new URL(path, site));
     assert.equal(asset.toString('ascii', 0, 4), 'RIFF', path);
     assert.equal(asset.toString('ascii', 8, 12), 'WEBP', path);
+    for (const width of [768, 1152]) {
+      const variant = await readFile(new URL(path.replace('.webp', `-${width}.webp`), site));
+      assert.equal(variant.toString('ascii', 8, 12), 'WEBP', path);
+      assert.ok(variant.length < asset.length, path);
+    }
   }
 
   const attribute = (tag, name) => tag.match(new RegExp('\\s' + name + '="([^"]*)"'))?.[1];
@@ -314,6 +327,10 @@ test('both homepages ship five localized hero slides with an immediately visible
       assert.equal(attribute(tag, 'aria-hidden') === 'true', !lead);
       assert.equal(attribute(image, lead ? 'src' : 'data-src'), imagePaths[index]);
       assert.equal(attribute(image, lead ? 'data-src' : 'src'), undefined);
+      const responsive = attribute(image, lead ? 'srcset' : 'data-srcset');
+      assert.deepEqual(responsive.split(', '), [768, 1152, 1440].map(width =>
+        (width === 1440 ? imagePaths[index] : imagePaths[index].replace('.webp', `-${width}.webp`)) + ` ${width}w`));
+      assert.equal(attribute(image, lead ? 'data-srcset' : 'srcset'), undefined);
       assert.equal(attribute(image, 'fetchpriority') === 'high', lead);
       assert.equal(Number(attribute(image, 'width')) / Number(attribute(image, 'height')), 3 / 2);
       assert.match(caption.replace(/<[^>]+>/g, ''), language);

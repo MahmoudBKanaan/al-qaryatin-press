@@ -157,10 +157,13 @@ export function contact(t, lang) {
 
 function heroCarousel(t) {
   const images = ['print', 'packaging', 'displays', 'labels', 'gifts'];
+  const sizes = '(max-width: 650px) calc(100vw - 2rem), (max-width: 800px) calc(100vw - 4.5rem), (max-width: 1320px) 50vw, 660px';
   const slides = t.heroSlides.map(([title, description], index) => {
-    const image = `./media/hero-${images[index]}.webp`;
+    const base = `./media/hero-${images[index]}`;
+    const image = base + '.webp';
+    const srcset = `${base}-768.webp 768w, ${base}-1152.webp 1152w, ${image} 1440w`;
     return `<figure class="hero-slide${index === 0 ? ' is-active' : ''}" data-hero-slide${index === 0 ? '' : ' aria-hidden="true"'}>
-      <img ${index === 0 ? `src="${image}" fetchpriority="high"` : `data-src="${image}"`} alt="" width="1440" height="960">
+      <img sizes="${sizes}" ${index === 0 ? `srcset="${srcset}" src="${image}" fetchpriority="high"` : `data-srcset="${srcset}" data-src="${image}"`} alt="" width="1440" height="960">
       <figcaption class="hero-caption"><strong>${title}</strong><span>${description}</span></figcaption>
     </figure>`;
   }).join('');

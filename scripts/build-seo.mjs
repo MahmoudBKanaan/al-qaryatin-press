@@ -35,7 +35,7 @@ function renderDocument(template, { path, page, content, baseHref }, lang, index
     .replace(hooks.base, `<base href="${baseHref ?? ('../'.repeat(depth) || './')}">`)
     .replace(hooks.head, () => `<!-- page-head:start -->\n${renderHead(path, lang, { indexable: indexable && page !== 'cart' })}\n  <!-- page-head:end -->`)
     .replace(hooks.skip, () => `<a class="skip-link" href="${escapeHtml(route(path, undefined, lang))}#main">${escapeHtml(t.skip)}</a>`)
-    .replace(hooks.app, () => `<div id="app">${app}</div>`)
+    .replace(hooks.app, () => `<div id="app" data-prerendered-page="${page}" data-prerendered-route="${escapeHtml(routePath(path, lang))}">${app}</div>`)
     .replace(hooks.noscript, () => `<noscript><p class="noscript">${noscript}</p></noscript>`);
 }
 

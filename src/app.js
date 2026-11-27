@@ -9,7 +9,7 @@ import { icon } from './icons.js';
 import { mountPaperChase } from './paper-chase.js';
 import { mountProductTape } from './product-tape.js';
 import { getPricePresets, getStandardOrder, normalizeDigits } from './quote.js';
-import { categoryFromPath, categoryPath, categoryRoute, isPage, route, routeFromURL } from './routes.js';
+import { categoryFromPath, categoryPath, categoryRoute, isPage, route, routeFromURL, routePath } from './routes.js';
 import { renderHead } from './seo-head.js';
 import { about, footer, header, home, number, productDetail } from './views.js';
 
@@ -91,6 +91,26 @@ function readCatalogue(params, category) {
   };
 }
 
+function usePrerenderedDocument() {
+  const page = app.dataset.prerenderedPage;
+  if (!page || page === 'cart' || page === 'calculator' || page === 'not-found') return false;
+  const { path, params, lang } = readRoute();
+  if (routePath(path, lang) !== app.dataset.prerenderedRoute || (page === 'catalogue' && params.size)) return false;
+
+  language = lang;
+  currentPage = page;
+  metadataKey = `${lang}/${path}`;
+  if (page === 'catalogue') catalogue = readCatalogue(params, categoryFromPath(path));
+  if (params.size) {
+    app.querySelector('.language').href = routeURL(path, params, lang === 'ar' ? 'en' : 'ar');
+    skipLink.href = routeURL(path, params).href + '#main';
+  }
+  if (cart.length) updateCartBadge();
+  app.insertAdjacentHTML('beforeend', briefDialog(copy[lang]));
+  mountPageControls();
+  return true;
+}
+
 function render({ focusPage = false, animateEntry = false } = {}) {
   const { path, params, lang } = readRoute();
   language = lang;
@@ -145,13 +165,7 @@ function render({ focusPage = false, animateEntry = false } = {}) {
   app.innerHTML = header(currentPage, t, language, cart.length, alternate) +
     `<main id="main"${animateEntry ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
     footer(t, language) + briefDialog(t);
-  updateProductTape(language, document.querySelector('.footer-tape-controls'));
-  unmountHeroCarousel = mountHeroCarousel(app.querySelector('[data-hero-carousel]'));
-  unmountPaperChase = mountPaperChase(app.querySelector('#main'), {
-    autoplay: !paperChasePlayed,
-    onPlay() { paperChasePlayed = true; },
-  });
-  if (currentPage === 'catalogue') revealCatalogueCategory();
+  mountPageControls();
   if (focusPage) {
     const restore = currentPage === 'catalogue' && history.state?.catalogueReturn;
     const card = restore && Array.from(document.querySelectorAll('.product-link'))
@@ -159,6 +173,16 @@ function render({ focusPage = false, animateEntry = false } = {}) {
     window.scrollTo(0, restore ? restore.top : 0);
     (card || document.querySelector('#page-title'))?.focus({ preventScroll: true });
   }
+}
+
+function mountPageControls() {
+  updateProductTape(language, document.querySelector('.footer-tape-controls'));
+  unmountHeroCarousel = mountHeroCarousel(app.querySelector('[data-hero-carousel]'));
+  unmountPaperChase = mountPaperChase(app.querySelector('#main'), {
+    autoplay: !paperChasePlayed,
+    onPlay() { paperChasePlayed = true; },
+  });
+  if (currentPage === 'catalogue') revealCatalogueCategory();
 }
 
 function renderNavigation({ commit, switchLanguage = false, selectCategory = false } = {}) {
@@ -245,6 +269,10 @@ function updateSummary() {
 function saveCart(updated) {
   cart = updated;
   persistCart(undefined, cart);
+  updateCartBadge();
+}
+
+function updateCartBadge() {
   const link = document.querySelector('#header-cart');
   const count = number(cart.length, language);
   const badge = link.querySelector('.cart-badge');
@@ -537,4 +565,4 @@ window.addEventListener('popstate', () => renderNavigation());
 window.addEventListener('hashchange', () => {
   if (location.hash.startsWith('#/')) renderNavigation();
 });
-render();
+if (!usePrerenderedDocument()) render();

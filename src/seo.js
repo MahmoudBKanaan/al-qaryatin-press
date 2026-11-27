@@ -104,6 +104,11 @@ function businessSchema(lang, page) {
     image: heroImage,
     foundingDate: String(business.founded),
     hasMap: business.mapsUrl,
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 28.4243072,
+      longitude: 45.9528997,
+    },
     telephone: business.orderPhone,
     contactPoint: {
       '@type': 'ContactPoint',
