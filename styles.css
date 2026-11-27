@@ -427,7 +427,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: var(--on-surface-varian
 .page-heading .eyebrow { color: var(--gold-ink); margin-bottom: .65rem; }
 .page-heading p:not(.eyebrow) { max-width: 47rem; margin-top: .95rem; color: var(--on-surface-variant); font-size: 1.0625rem; }
 .catalogue-content { padding-block: 2rem 4.8rem; }
-.catalogue-title-row { display: flex; align-items: center; gap: clamp(.65rem, 2vw, 1.45rem); }
+.catalogue-title-row { display: flex; align-items: center; justify-content: space-between; gap: clamp(.65rem, 2vw, 1.45rem); }
 .catalogue-title-row h1 { min-inline-size: 0; overflow-wrap: anywhere; }
 .catalogue-search-toggle { flex: none; max-inline-size: min(48%, 18rem); min-block-size: 44px; gap: .5rem; padding-inline: .85rem; white-space: nowrap; }
 .catalogue-search-toggle .search-toggle-chevron {
