@@ -955,7 +955,7 @@ export const products = [
       "طول الدفتر",
       "عرض الدفتر"
     ],
-    "image": "./media/product-20.webp",
+    "image": "./media/product-20-v2.webp",
     "options": []
   },
   {
@@ -994,7 +994,7 @@ export const products = [
       "عرض الدفتر",
       "ورق فاخر سميك أو رقيق"
     ],
-    "image": "./media/product-21.webp",
+    "image": "./media/product-20.webp",
     "options": []
   },
   {
