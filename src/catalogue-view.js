@@ -1,7 +1,7 @@
 import { categories, isAvailable, products } from './catalog.js';
 import { icon } from './icons.js';
 import { normalizeDigits } from './quote.js';
-import { categoryChip, escapeHtml, label, localeId, number, pageHeading, productGrid } from './views.js';
+import { categoryChip, escapeHtml, label, localeId, number, productGrid } from './views.js';
 
 function normalized(value) {
   return normalizeDigits(value.toLocaleLowerCase().normalize('NFKC'))
@@ -31,28 +31,33 @@ export function cataloguePage(catalogue, t, lang) {
   const list = catalogueResults(catalogue, t, lang);
   const query = catalogue.query.trim();
   const searchOpen = Boolean(query);
-  return `${pageHeading(t.catalogTitle, t.catalogText)}
-    <div class="wrap catalogue-content">
-      <div class="catalogue-toolbar">
+  return `<div class="page-heading">
+    <div class="wrap">
+      <div class="catalogue-title-row">
+        <h1 id="page-title" tabindex="-1">${t.catalogTitle}</h1>
         <button type="button" class="button button-tonal catalogue-search-toggle" data-action="toggle-search"
           aria-expanded="${searchOpen}" aria-controls="catalogue-search-form">
           ${icon('search')}<span>${t.searchToggle}</span>
           <bdi class="catalogue-search-query"${query ? '' : ' hidden'}>${escapeHtml(query)}</bdi>
           ${icon('chevron', 'search-toggle-chevron')}
         </button>
-        <form class="catalogue-search-panel" id="catalogue-search-form" role="search"${searchOpen ? '' : ' hidden'}>
-          <div class="search-field">
-            <label class="sr-only" for="catalogue-search">${t.search}</label>${icon('search')}
-            <input id="catalogue-search" type="search" dir="auto" enterkeyhint="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off">
-            <button type="button" class="icon-button clear-search" data-action="clear-search" aria-label="${t.clearSearch}"${catalogue.query ? '' : ' hidden'}>${icon('close')}</button>
-          </div>
-        </form>
       </div>
-      <ul class="filters m3-chip-set" role="list" aria-label="${t.category}">
-        <li>${categoryChip('all', t.all, catalogue.category)}</li>
-        ${categories.map(category => `<li>${categoryChip(category.id, label(category, 'label', lang), catalogue.category)}</li>`).join('')}
-      </ul>
-      <div class="catalogue-meta"><p id="result-count" role="status">${list.count}</p><label><span>${t.sort}</span><select id="catalogue-order"><option value="">${t.catalogOrder}</option><option value="name" ${catalogue.order === 'name' ? 'selected' : ''}>${t.nameOrder}</option></select></label></div>
-      <div id="catalogue-results">${list.html}</div>
-    </div>`;
+      <p>${t.catalogText}</p>
+      <form class="catalogue-search-panel" id="catalogue-search-form" role="search"${searchOpen ? '' : ' hidden'}>
+        <div class="search-field">
+          <label class="sr-only" for="catalogue-search">${t.search}</label>${icon('search')}
+          <input id="catalogue-search" type="search" dir="auto" enterkeyhint="search" placeholder="${t.search}" value="${escapeHtml(catalogue.query)}" maxlength="100" autocomplete="off">
+          <button type="button" class="icon-button clear-search" data-action="clear-search" aria-label="${t.clearSearch}"${catalogue.query ? '' : ' hidden'}>${icon('close')}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="wrap catalogue-content">
+    <ul class="filters m3-chip-set" role="list" aria-label="${t.category}">
+      <li>${categoryChip('all', t.all, catalogue.category)}</li>
+      ${categories.map(category => `<li>${categoryChip(category.id, label(category, 'label', lang), catalogue.category)}</li>`).join('')}
+    </ul>
+    <div class="catalogue-meta"><p id="result-count" role="status">${list.count}</p><label><span>${t.sort}</span><select id="catalogue-order"><option value="">${t.catalogOrder}</option><option value="name" ${catalogue.order === 'name' ? 'selected' : ''}>${t.nameOrder}</option></select></label></div>
+    <div id="catalogue-results">${list.html}</div>
+  </div>`;
 }

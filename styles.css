@@ -427,8 +427,9 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: var(--on-surface-varian
 .page-heading .eyebrow { color: var(--gold-ink); margin-bottom: .65rem; }
 .page-heading p:not(.eyebrow) { max-width: 47rem; margin-top: .95rem; color: var(--on-surface-variant); font-size: 1.0625rem; }
 .catalogue-content { padding-block: 2rem 4.8rem; }
-.catalogue-toolbar { display: flex; align-items: center; gap: .75rem; }
-.catalogue-search-toggle { flex: none; max-inline-size: 100%; min-block-size: 44px; gap: .5rem; padding-inline: .85rem; }
+.catalogue-title-row { display: flex; align-items: center; gap: clamp(.65rem, 2vw, 1.45rem); }
+.catalogue-title-row h1 { min-inline-size: 0; overflow-wrap: anywhere; }
+.catalogue-search-toggle { flex: none; max-inline-size: min(48%, 18rem); min-block-size: 44px; gap: .5rem; padding-inline: .85rem; white-space: nowrap; }
 .catalogue-search-toggle .search-toggle-chevron {
   inline-size: .9rem;
   block-size: .9rem;
@@ -449,7 +450,7 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: var(--on-surface-varian
   font-weight: 500;
 }
 .catalogue-search-toggle[aria-expanded="true"] .catalogue-search-query { display: none; }
-.catalogue-search-panel { flex: 1 1 24rem; min-inline-size: 0; max-inline-size: 36rem; }
+.catalogue-search-panel { inline-size: min(100%, 36rem); margin-block-start: 1rem; }
 .catalogue-search-panel:not([hidden]) { animation: soft-pop var(--motion-standard) var(--ease-emphasized); }
 .search-field {
   display: flex;
@@ -1009,8 +1010,9 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
   .page-heading h1, .section-heading h2 { overflow-wrap: anywhere; }
   .page-heading p:not(.eyebrow) { margin-top: .6rem; font-size: 1rem; }
   .catalogue-content { padding-block: 1.2rem 3rem; }
-  .catalogue-toolbar { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; }
-  .catalogue-search-panel { inline-size: 100%; }
+  .catalogue-title-row h1 { font-size: clamp(1.85rem, 8vw, 3.2rem); }
+  .catalogue-search-toggle { max-inline-size: 44%; gap: .38rem; padding-inline: .65rem; }
+  .catalogue-search-query { max-inline-size: 8ch; }
   .filters { flex-wrap: nowrap; gap: .4rem; overflow-x: auto; overscroll-behavior-x: contain; padding: .25rem .2rem .55rem; margin-block: .75rem; }
   .filters > li { flex: none; }
   .filter-chip { font-size: .8rem; padding-inline: .62rem; }

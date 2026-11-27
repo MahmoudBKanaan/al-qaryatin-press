@@ -193,10 +193,10 @@ test('localized home, catalogue and product content is crawlable without running
   }
 });
 
-test('catalogue search renders folded by default and opens for a shared query', async () => {
+test('the catalogue title has a search button that starts folded and opens for a shared query', async () => {
   for (const lang of ['en', 'ar']) {
     const catalogue = await documentMarkup(lang === 'ar' ? 'ar/catalogue/' : 'catalogue/');
-    assert.match(catalogue, /data-action="toggle-search"\s+aria-expanded="false" aria-controls="catalogue-search-form"/);
+    assert.match(catalogue, /<div class="catalogue-title-row">\s*<h1 id="page-title"[^>]*>[^<]+<\/h1>\s*<button[^>]+data-action="toggle-search"\s+aria-expanded="false" aria-controls="catalogue-search-form"/);
     assert.match(catalogue, /id="catalogue-search-form" role="search" hidden>/);
     assert.ok(catalogue.includes('<span>' + copy[lang].searchToggle + '</span>'));
     const shared = cataloguePage({ category: 'all', query: 'A0022', order: '' }, copy[lang], lang);

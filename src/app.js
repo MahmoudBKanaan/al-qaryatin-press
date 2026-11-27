@@ -500,7 +500,7 @@ skipLink.addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape' || event.isComposing) return;
   const search = app.querySelector('.catalogue-search-toggle[aria-expanded="true"]');
-  if (search?.parentElement.contains(event.target)) {
+  if (search && event.target.closest?.('.catalogue-search-toggle, #catalogue-search-form')) {
     event.preventDefault();
     setSearchExpanded(search, false);
     return;
