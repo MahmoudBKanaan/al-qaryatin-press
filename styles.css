@@ -497,7 +497,13 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: var(--on-surface-varian
 .filter-chip[aria-current="page"] .chip-leading { display: none; }
 .catalogue-meta { display: flex; align-items: center; justify-content: space-between; gap: .7rem; padding-block: 0 1rem; color: var(--on-surface-variant); font-size: .91rem; }
 .catalogue-meta label { display: flex; gap: .65rem; align-items: center; }
-.catalogue-meta select { min-height: 44px; font-size: .86rem; padding-block: .3rem; }
+.catalogue-meta select {
+  min-height: 44px;
+  padding: .3rem 2.25rem;
+  font-size: .86rem;
+  line-height: 1.4;
+  text-align: center;
+}
 .empty-state { box-shadow: var(--elevation-1); text-align: center; padding: 3.4rem 1rem 4rem; border-radius: var(--radius); background: var(--list-tonal); }
 .m3-empty-state > .category-icon { background: var(--list-warm); color: var(--on-gold); }
 .empty-state h2 { margin: .8rem 0 .5rem; font-size: 2.6rem; }
@@ -620,6 +626,13 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
       background: currentColor;
       mask: var(--select-arrow) center / contain no-repeat;
       transition: rotate var(--motion-standard) var(--ease-emphasized);
+    }
+    .catalogue-meta select { position: relative; align-items: center; justify-content: center; }
+    .catalogue-meta select::picker-icon {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-end: .72rem;
+      translate: 0 -50%;
     }
     select:open::picker-icon { rotate: 180deg; }
     ::picker(select) {
