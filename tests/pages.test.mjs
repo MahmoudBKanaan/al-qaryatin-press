@@ -4,7 +4,7 @@ import { access, readFile, readdir } from 'node:fs/promises';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { categories, getProduct, getSmallOrderTier, products } from '../dist/src/catalog.js';
-import { calculateQuote, getPricePresets, getPriceRange, getUnitPriceRange } from '../dist/src/quote.js';
+import { calculateQuote, getAreaMinimumQuantity, getPricePresets, getPriceRange, getStandardOrder, getUnitPriceRange, isStandardPreset } from '../dist/src/quote.js';
 import { about, categoryChip, escapeHtml, footer, header, home, money, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage, makeBrief } from '../dist/src/calculator-view.js';
 import { cataloguePage } from '../dist/src/catalogue-view.js';
@@ -426,25 +426,51 @@ test('catalogue cards show localized unit prices and product details show minimu
   }
 });
 
-test('every published size matches the product detail price at the minimum quantity', () => {
+function assertUnpricedReview(quote, context) {
+  assert.equal(quote.status, 'review', context);
+  assert.equal(quote.subtotal, null, context);
+  assert.equal(quote.baseSubtotal, null, context);
+  assert.equal(quote.quantityMultiplier, null, context);
+}
+
+test('published detail prices use each size’s standard minimum quantity', () => {
   const excluded = ['rate', 'unit', 'sellingUnit', 'formula', 'conversionValue', 'dimensions'];
   for (const product of products) {
     assert.ok(excluded.every(key => !Object.hasOwn(product, key)), product.id);
     const presets = getPricePresets(product);
     assert.equal(presets.length, 3, product.id);
-    const amounts = presets.map((preset, index) => {
-      assert.ok(preset.size && preset.sizeAr, product.id);
-      assert.ok(!Object.hasOwn(preset, 'quantity'), product.id);
-      const quote = calculateQuote(product, { preset: index });
-      assert.equal(quote.status, 'estimate', product.id);
-      assert.equal(quote.quantity, product.minimum, product.id);
-      assert.equal(quote.quantityMultiplier, 1, product.id);
-      assert.ok(quote.subtotal > 0, product.id);
-      return quote.subtotal;
-    });
+    const standardOrders = [];
+    for (const [presetIndex, preset] of presets.entries()) {
+      const context = product.id + ' size ' + presetIndex;
+      assert.ok(preset.size && preset.sizeAr, context);
+      assert.ok(!Object.hasOwn(preset, 'quantity'), context);
+      const areaMinimum = product.minimumOrderAreaCm2
+        ? Math.ceil(product.minimumOrderAreaCm2 / preset.areaCm2)
+        : 1;
+      const quantity = Math.max(product.minimum, areaMinimum);
+      const standardSize = !(preset.areaCm2 > product.maximumStandardAreaCm2);
+      assert.equal(getAreaMinimumQuantity(product, preset), areaMinimum, context);
+      assert.equal(isStandardPreset(product, preset), standardSize, context);
+      if (!standardSize || quantity > product.maximum) {
+        assertUnpricedReview(calculateQuote(product, { preset: presetIndex, quantity: product.minimum }), context);
+        continue;
+      }
+      const quote = calculateQuote(product, { preset: presetIndex });
+      assert.equal(quote.status, 'estimate', context);
+      assert.equal(quote.quantity, quantity, context);
+      assert.equal(quote.quantityMultiplier, 1, context);
+      assert.ok(quote.subtotal > 0, context);
+      standardOrders.push({ presetIndex, quantity, subtotal: quote.subtotal });
+    }
     const range = getPriceRange(product);
+    const amounts = standardOrders.map(order => order.subtotal);
     assert.equal(range.minimum, Math.min(...amounts), product.id);
     assert.equal(range.maximum, Math.max(...amounts), product.id);
+    assert.equal(range.small, presets[standardOrders[0].presetIndex], product.id);
+    assert.equal(range.large, presets[standardOrders.at(-1).presetIndex], product.id);
+    const { presetIndex, quantity } = standardOrders.sort((a, b) => a.quantity - b.quantity)[0];
+    assert.deepEqual(getStandardOrder(product), { presetIndex, quantity }, product.id);
+    assert.deepEqual(calculateQuote(product), calculateQuote(product, { preset: presetIndex, quantity }), product.id);
   }
 });
 
@@ -470,19 +496,25 @@ test('catalogue small-order tiers apply at their exact quantity boundaries', () 
     assert.equal(product.minimum, standardMinimum, product.id);
     assert.equal(product.maximum, 100000, product.id);
     assert.deepEqual(getSmallOrderTier(product), { minimum, multiplier }, product.id);
-    const quantities = new Map([
-      [minimum, multiplier],
-      [standardMinimum - 1, multiplier],
-      [standardMinimum, 1],
-      [product.maximum, 1],
-    ]);
-    for (const [preset, { unitPrice }] of getPricePresets(product).entries()) {
-      for (const [quantity, expectedMultiplier] of quantities) {
+    for (const [preset, specification] of getPricePresets(product).entries()) {
+      const areaMinimum = getAreaMinimumQuantity(product, specification);
+      const standardSize = isStandardPreset(product, specification);
+      const quantities = new Set([minimum, standardMinimum - 1, standardMinimum, product.maximum]);
+      if (areaMinimum > minimum && areaMinimum <= product.maximum) {
+        quantities.add(areaMinimum - 1);
+        quantities.add(areaMinimum);
+      }
+      for (const quantity of quantities) {
         const quote = calculateQuote(product, { quantity, preset });
         const context = `${product.id} size ${preset} quantity ${quantity}`;
-        const subtotal = Math.round((unitPrice * quantity * expectedMultiplier) * 100 + 1e-9) / 100;
-        assert.equal(quote.status, 'estimate', context);
         assert.equal(quote.quantity, quantity, context);
+        if (!standardSize || quantity < areaMinimum) {
+          assertUnpricedReview(quote, context);
+          continue;
+        }
+        const expectedMultiplier = quantity < standardMinimum ? multiplier : 1;
+        const subtotal = Math.round(specification.unitPrice * quantity * expectedMultiplier * 100 + 1e-9) / 100;
+        assert.equal(quote.status, 'estimate', context);
         assert.equal(quote.quantityMultiplier, expectedMultiplier, context);
         assert.equal(quote.subtotal, subtotal, context);
       }
@@ -528,10 +560,10 @@ test('small-order pricing accepts localized quantities and combines separate fin
 
 test('volume-based specifications use the workbook conversion for every size', () => {
   const productRates = [
-    ['paper-boxes', [0.25, 0.54, 1.408], [250, 540, 1408]],
-    ['paper-bags', [0.09504, 0.216, 0.41472], [95.04, 216, 414.72]],
-    ['acrylic-desk-nameplate', [0.45, 1.6, 3.6], [0.45, 1.6, 3.6]],
-    ['custom-acrylic-award', [1.5, 4, 7.5], [1.5, 4, 7.5]],
+    ['paper-boxes', [2.5, 5.4, 14.08], [2500, 5400, 14080]],
+    ['paper-bags', [0.9504, 2.16, 4.1472], [950.4, 2160, 4147.2]],
+    ['acrylic-desk-nameplate', [4.5, 16, 36], [4.5, 16, 36]],
+    ['custom-acrylic-award', [15, 40, 75], [15, 40, 75]],
   ];
   for (const [id, rates, totals] of productRates) {
     const product = getProduct(id);
@@ -542,15 +574,117 @@ test('volume-based specifications use the workbook conversion for every size', (
   }
 });
 
-test('every size preserves a supplied quantity', () => {
+test('every size preserves a supplied quantity, including quantities requiring review', () => {
   for (const product of products) {
     const quantity = Math.min(product.minimum + 7, product.maximum);
     for (const [preset, specification] of getPricePresets(product).entries()) {
       const quote = calculateQuote(product, { preset, quantity });
-      assert.equal(quote.status, 'estimate', product.id);
+      const priced = isStandardPreset(product, specification) &&
+        quantity >= getAreaMinimumQuantity(product, specification);
+      assert.equal(quote.status, priced ? 'estimate' : 'review', product.id);
       assert.equal(quote.quantity, quantity, product.id);
       assert.deepEqual(quote.preset, specification, product.id);
     }
+  }
+});
+
+test('large A4 stickers need 17 pieces to reach the workbook order-area minimum', () => {
+  for (const [id, subtotal] of [
+    ['large-a4-nylon-stickers', 53.01],
+    ['large-a4-german-vinyl-stickers', 74.22],
+  ]) {
+    const product = getProduct(id);
+    assert.equal(product.minimumOrderAreaCm2, 10000, id);
+    assert.equal(product.maximumStandardAreaCm2, 1000000, id);
+    assert.equal(getPricePresets(product)[0].areaCm2, 623.7, id);
+    assert.deepEqual(getStandardOrder(product), { presetIndex: 0, quantity: 17 }, id);
+    for (const quantity of [1, 9, 10, 16]) {
+      assertUnpricedReview(calculateQuote(product, { quantity, preset: 0 }), id + ' quantity ' + quantity);
+    }
+    const atMinimum = calculateQuote(product, { preset: 0, quantity: 17 });
+    assert.equal(atMinimum.status, 'estimate', id);
+    assert.equal(atMinimum.quantityMultiplier, 1, id);
+    assert.equal(atMinimum.subtotal, subtotal, id);
+    assert.deepEqual(calculateQuote(product), atMinimum, id);
+  }
+});
+
+test('panels and stands use their workbook order-area minimums per specification', () => {
+  const foam = getProduct('foam-wall-panels');
+  const canvas = getProduct('stretched-canvas-wall-art');
+  const stand = getProduct('foam-floor-display-stands');
+  for (const [product, area, minimums, defaultOrder, totals] of [
+    [foam, 3500, [3, 1, 1], { presetIndex: 1, quantity: 1 }, [39.6, 38.5, 77]],
+    [canvas, 7000, [6, 2, 1], { presetIndex: 2, quantity: 1 }, [129.6, 126, 126]],
+    [stand, 10000, [5, 3, 2], { presetIndex: 2, quantity: 2 }, [168, 196.35, 215.6]],
+  ]) {
+    assert.equal(product.minimumOrderAreaCm2, area, product.id);
+    assert.deepEqual(getStandardOrder(product), defaultOrder, product.id);
+    for (const [preset, quantity] of minimums.entries()) {
+      const estimate = calculateQuote(product, { preset });
+      assert.equal(estimate.quantity, quantity, product.id);
+      assert.equal(estimate.subtotal, totals[preset], product.id);
+      if (quantity > 1) {
+        assertUnpricedReview(calculateQuote(product, { preset, quantity: quantity - 1 }), product.id);
+      }
+    }
+  }
+
+  // The medium presets have the same 3,500 cm² face but different order minimums.
+  assert.equal(getPricePresets(foam)[1].areaCm2, 3500);
+  assert.equal(getPricePresets(canvas)[1].areaCm2, 3500);
+  assert.equal(calculateQuote(foam, { preset: 1, quantity: 1 }).subtotal, 38.5);
+  assertUnpricedReview(calculateQuote(canvas, { preset: 1, quantity: 1 }), canvas.id);
+});
+
+test('maximum standard area applies to each piece, and oversized presets stay outside price ranges', () => {
+  const product = { ...getProduct('foam-wall-panels'), maximumStandardAreaCm2: 3500 };
+  const [small, medium, large] = getPricePresets(product);
+  assert.equal(isStandardPreset(product, medium), true);
+  assert.equal(isStandardPreset(product, large), false);
+  assert.deepEqual(getStandardOrder(product), { presetIndex: 1, quantity: 1 });
+  assert.deepEqual(getUnitPriceRange(product), { minimum: 13.2, maximum: 38.5 });
+  assert.deepEqual(getPriceRange(product), { minimum: 38.5, maximum: 39.6, small, large: medium });
+  // Two medium panels exceed 3,500 cm² together without either piece exceeding it.
+  assert.equal(calculateQuote(product, { quantity: 2, preset: 1 }).subtotal, 77);
+  assertUnpricedReview(calculateQuote(product, { quantity: 1, preset: 2 }), product.id);
+});
+
+test('the bilingual calculator and detail pages show area-adjusted piece limits', () => {
+  const product = getProduct('large-a4-nylon-stickers');
+  const state = { productId: product.id, preset: 0, quantity: 17, options: [] };
+  for (const lang of ['en', 'ar']) {
+    const t = copy[lang];
+    const calculator = calculatorPage(state, t, lang);
+    const detail = productDetail(product, t, lang, []);
+    assert.match(calculator, /id="quote-quantity"[^>]*\bvalue="17"/);
+    assert.match(calculator, /id="qty-note">[^<]+<bdi dir="ltr">17–100,000<\/bdi>/);
+    assert.ok(detail.includes(t.range + '</dt><dd><bdi dir="ltr">17–100,000</bdi>'));
+
+    const canvas = calculatorPage({ ...state, productId: 'stretched-canvas-wall-art', preset: 1, quantity: 1 }, t, lang);
+    assert.match(canvas, /id="quote-quantity"[^>]*\bvalue="1"/);
+    assert.match(canvas, /id="qty-note">[^<]+<bdi dir="ltr">2–100,000<\/bdi>/);
+    assert.ok(canvas.includes(t.review));
+  }
+});
+
+test('cart estimates and handoff reprice when a quantity falls below the order-area minimum', () => {
+  const product = getProduct('large-a4-nylon-stickers');
+  const cart = addCartItem([], { productId: product.id, preset: 0, quantity: 17 });
+  assert.deepEqual(summarizeCart(cart), { estimatedSubtotal: 53.01, reviewCount: 0 });
+  const revised = updateCartQuantity(cart, 0, '١٦');
+  assert.equal(revised[0].quantity, 16);
+  assert.deepEqual(summarizeCart(revised), { estimatedSubtotal: null, reviewCount: 1 });
+  for (const lang of ['en', 'ar']) {
+    const t = copy[lang];
+    const quote = describeCartItem(revised[0], t, lang).result;
+    assertUnpricedReview(quote, lang);
+    const message = orderMessage(revised, t, lang);
+    assert.match(message, /\b16\b/);
+    assert.ok(message.includes(t.review));
+    assert.ok(!message.includes(t.ready));
+    assert.ok(!message.includes(t.baseSubtotal));
+    assert.ok(!message.includes(t.smallOrderMultiplier));
   }
 });
 
@@ -564,7 +698,13 @@ test('the calculator rounds the order total and keeps custom quotes separate', (
   assert.equal(rollUp.quantityMultiplier, 1);
   assert.equal(rollUp.subtotal, 182);
   assert.equal(cards.subtotal, 11.25);
-  assert.equal(paperBoxes.subtotal, 250);
+  assert.equal(paperBoxes.subtotal, 2500);
+  assert.equal(customBoxes.baseSubtotal, 2500);
+  assert.equal(calculateQuote(getProduct('paper-boxes'), { quantity: 1000, preset: 0, options: ['matte-lamination'] }).subtotal, 3750);
+  const badges = getProduct('acrylic-badges');
+  assert.deepEqual(getUnitPriceRange(badges), { minimum: 25, maximum: 25 });
+  assert.equal(calculateQuote(badges).subtotal, 250);
+  assert.equal(calculateQuote(badges, { quantity: 2 }).subtotal, 100);
   const documents = getProduct('black-and-white-document-printing');
   const order = { productId: documents.id, preset: 0, quantity: 12, options: [] };
   assert.equal(calculateQuote(documents, order).subtotal, 0.75);

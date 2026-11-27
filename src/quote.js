@@ -8,6 +8,8 @@ const messages = {
   quantity: ['Enter a positive whole-number quantity.', 'أدخل كمية صحيحة أكبر من صفر.'],
   aboveMaximum: ['Reduce the quantity to the catalogue maximum.', 'خفّض الكمية إلى الحد الأقصى المدوّن في الكتالوج.'],
   belowMinimum: ['Ask the press to confirm whether this quantity can be supplied and at what price.', 'تواصل مع المطبعة لتأكيد إمكانية تنفيذ هذه الكمية وسعرها.'],
+  belowMinimumArea: ['Increase the quantity or choose a larger size to meet the minimum order area. The press can review smaller orders.', 'زد الكمية أو اختر مقاسًا أكبر لبلوغ الحد الأدنى لمساحة الطلب. يمكن للمطبعة مراجعة الطلبات الأصغر.'],
+  aboveStandardArea: ['This size is above the standard size limit and requires a quote from the press.', 'يتجاوز هذا المقاس الحد القياسي ويتطلب عرض سعر من المطبعة.'],
   unknownOption: ['Confirm the requested option with the press.', 'أكّد الخيار المطلوب مع المطبعة.'],
   optionConflict: ['Select one alternative per finish or size.', 'اختر بديلًا واحدًا لكل مقاس أو تشطيب.'],
   combinedOptions: ['Ask the press how the selected options are priced together.', 'تواصل مع المطبعة لمعرفة سعر الخيارات المحددة عند جمعها.'],
@@ -43,22 +45,56 @@ export function getPricePresets(product) {
   return isAvailable(product) ? pricePresets[product.row] ?? [] : [];
 }
 
+export function isStandardPreset(product, preset) {
+  return Boolean(preset) && (!Number.isFinite(product?.maximumStandardAreaCm2) ||
+    !Number.isFinite(preset.areaCm2) || preset.areaCm2 <= product.maximumStandardAreaCm2);
+}
+
+export function getAreaMinimumQuantity(product, preset) {
+  const minimum = product?.minimumOrderAreaCm2;
+  if (!Number.isFinite(minimum) || minimum <= 0) return 1;
+
+  const area = preset?.areaCm2;
+  if (!Number.isFinite(area) || area <= 0) return Infinity;
+  return Math.ceil(minimum / area);
+}
+
+function getStandardMinimumQuantity(product, preset) {
+  return Math.max(product.minimum, getAreaMinimumQuantity(product, preset));
+}
+
+function getStandardConfigurations(product) {
+  return getPricePresets(product).flatMap((preset, presetIndex) => {
+    const quantity = getStandardMinimumQuantity(product, preset);
+    if (!isStandardPreset(product, preset) || quantity > product.maximum) return [];
+    return [{ preset, presetIndex, quantity }];
+  });
+}
+
+export function getStandardOrder(product) {
+  let order = null;
+  for (const { presetIndex, quantity } of getStandardConfigurations(product)) {
+    if (!order || quantity < order.quantity) order = { presetIndex, quantity };
+  }
+  return order;
+}
+
 export function getUnitPriceRange(product) {
-  const prices = getPricePresets(product).map(preset => preset.unitPrice);
+  const prices = getStandardConfigurations(product).map(({ preset }) => preset.unitPrice);
   if (!prices.length) return null;
   return { minimum: Math.min(...prices), maximum: Math.max(...prices) };
 }
 
 export function getPriceRange(product) {
-  const presets = getPricePresets(product);
-  if (!presets.length) return null;
+  const configurations = getStandardConfigurations(product);
+  if (!configurations.length) return null;
 
-  const totals = presets.map(item => subtotalInRiyals(item.unitPrice, product.minimum));
+  const totals = configurations.map(({ preset, quantity }) => subtotalInRiyals(preset.unitPrice, quantity));
   return {
     minimum: Math.min(...totals),
     maximum: Math.max(...totals),
-    small: presets[0],
-    large: presets.at(-1),
+    small: configurations[0].preset,
+    large: configurations.at(-1).preset,
   };
 }
 
@@ -78,9 +114,10 @@ export function calculateQuote(product, {
   const distinctIds = [...new Set(options)];
   const sizeSelections = presets.filter(item => item.optionId && distinctIds.includes(item.optionId));
   const selected = preset === undefined
-    ? sizeSelections[0] ?? presets[0]
+    ? sizeSelections[0] ?? presets[getStandardOrder(product)?.presetIndex ?? 0]
     : Number.isInteger(preset) ? presets[preset] : undefined;
-  const count = numericInput(quantity ?? product?.minimum);
+  const standardMinimum = selected ? getStandardMinimumQuantity(product, selected) : product?.minimum;
+  const count = numericInput(quantity ?? (Number.isFinite(standardMinimum) ? standardMinimum : product?.minimum));
   let baseSubtotal = null;
   let multiplier = null;
   let quantityMultiplier = null;
@@ -123,6 +160,11 @@ export function calculateQuote(product, {
 
   const issueKeys = [];
   if (quantityMultiplier === null) issueKeys.push('belowMinimum');
+  const belowMinimumArea = count < getAreaMinimumQuantity(product, selected);
+  const aboveStandardArea = !isStandardPreset(product, selected);
+  if (belowMinimumArea) issueKeys.push('belowMinimumArea');
+  if (aboveStandardArea) issueKeys.push('aboveStandardArea');
+  if (belowMinimumArea || aboveStandardArea) quantityMultiplier = null;
   if (selectedOptions.length !== extraIds.length) issueKeys.push('unknownOption');
   if (typeof customRequirements === 'string' ? customRequirements.trim() : customRequirements) {
     issueKeys.push('customRequirements');

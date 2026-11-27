@@ -1,5 +1,5 @@
 import { business, categories, featuredProducts, getSmallOrderTier, isOptionAvailable, whatsappUrl } from './catalog.js';
-import { formatSAR, getPricePresets, getPriceRange, getUnitPriceRange } from './quote.js';
+import { formatSAR, getAreaMinimumQuantity, getPricePresets, getPriceRange, getStandardOrder, getUnitPriceRange, isStandardPreset } from './quote.js';
 import { icon } from './icons.js';
 import { categoryRoute, productRoute, quoteRoute, route } from './routes.js';
 
@@ -36,14 +36,18 @@ function quantityRange(minimum, maximum, t, lang) {
   return `<bdi dir="ltr">${range}</bdi> ${quantityUnit(maximum, t, lang)}`;
 }
 
-export function quantityPricingDetails(product, t, lang) {
+export function quantityPricingDetails(product, t, lang, preset) {
   const tier = getSmallOrderTier(product);
-  const minimum = tier?.minimum ?? product.minimum;
-  const range = quantityRange(minimum, product.maximum, t, lang);
-  const smallOrder = tier ? t.smallOrderRule
-    .replace('{range}', quantityRange(tier.minimum, product.minimum - 1, t, lang))
+  const presets = preset ? [preset] : getPricePresets(product);
+  const minimums = presets.filter(item => isStandardPreset(product, item))
+    .map(item => Math.max(tier?.minimum ?? product.minimum, getAreaMinimumQuantity(product, item)))
+    .filter(minimum => minimum <= product.maximum);
+  const minimum = Math.min(...minimums);
+  const range = minimums.length ? quantityRange(minimum, product.maximum, t, lang) : '';
+  const smallOrder = tier && minimum < product.minimum ? t.smallOrderRule
+    .replace('{range}', quantityRange(minimum, product.minimum - 1, t, lang))
     .replace('{multiplier}', `<bdi dir="ltr">${priceMultiplier(tier.multiplier, lang)}</bdi>`) : '';
-  return { minimum, range, smallOrder };
+  return { minimum, range, smallOrder, variesBySize: new Set(minimums).size > 1 };
 }
 
 function priceRange({ minimum, maximum }, lang) {
@@ -111,7 +115,7 @@ export function productCard(product, t, lang) {
       <div class="card-info">
         <p class="card-category">${escapeHtml(label(category, 'label', lang))}</p>
         <h3 id="name-${product.id}">${name}</h3>
-        <div class="card-bottom"><span class="card-pricing" id="price-${product.id}"><span>${t.unitPrice}</span><bdi dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${priceRange(perItem, lang)}</bdi></span><span class="card-more">${icon('diagonal')}</span></div>
+        <div class="card-bottom"><span class="card-pricing" id="price-${product.id}">${perItem ? `<span>${t.unitPrice}</span><bdi dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${priceRange(perItem, lang)}</bdi>` : t.review}</span><span class="card-more">${icon('diagonal')}</span></div>
       </div>
     </a>
   </article>`;
@@ -218,10 +222,11 @@ export function productDetail(product, t, lang, related) {
   const category = categories.find(item => item.id === product.category);
   const options = product.options.filter(option => option.id !== 'number-of-folds' && isOptionAvailable(option));
   const range = getPriceRange(product);
+  const standardOrder = getStandardOrder(product);
   const quantityPricing = quantityPricingDetails(product, t, lang);
-  const sizeExamples = range.small.size === range.large.size
+  const sizeExamples = range && (range.small.size === range.large.size
     ? [[t.preset, range.small]]
-    : [[t.smallSize, range.small], [t.largeSize, range.large]];
+    : [[t.smallSize, range.small], [t.largeSize, range.large]]);
   const catalogueBack = categoryRoute(product.category, lang);
   const requirements = [label(product, 'requirements', lang), ...label(product, 'intake', lang)].filter(Boolean);
   return `<div class="wrap product-page">
@@ -238,19 +243,19 @@ export function productDetail(product, t, lang, related) {
         <p class="eyebrow">${escapeHtml(label(category, 'label', lang))}</p>
         <h1 id="page-title" tabindex="-1">${name}</h1>
         <p class="product-description">${escapeHtml(label(product, 'description', lang))}</p>
-        <div class="product-pricing">
+        ${range ? `<div class="product-pricing">
           <p class="price-caption">${t.priceRange}</p>
           <bdi class="product-price" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${priceRange(range, lang)}</bdi>
-          <p class="range-note">${t.rangeNote}</p>
+          <p class="range-note">${quantityPricing.variesBySize ? t.quantityVariesBySize + ' ' : ''}${t.rangeNote}</p>
           <dl class="order-examples m3-list">${sizeExamples.map(([title, size]) =>
             `<div class="m3-list-item"><dt>${title}</dt><dd>${formatNumericText(label(size, 'size', lang))}</dd></div>`).join('')}</dl>
-        </div>
+        </div>` : `<p class="range-note">${t.review}</p>`}
         <dl class="product-stats m3-list">
-          <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.min}</dt><dd>${number(product.minimum, lang)} ${quantityUnit(product.minimum, t, lang)}</dd></div>
+          ${standardOrder ? `<div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.min}</dt><dd>${quantityRange(standardOrder.quantity, standardOrder.quantity, t, lang)}</dd></div>` : ''}
           <div class="m3-list-item"><dt>${icon('clock', 'm3-list-leading')}${t.lead}</dt><dd>${escapeHtml(label(product, 'turnaround', lang).replace(/^(Approximately |حوالي )/, ''))}</dd></div>
         </dl>
         <div class="product-order-actions">
-          <button type="button" class="button button-primary" data-action="add-product-to-cart" data-product-id="${product.id}">${icon('cart')}${t.addMinimumOrder}</button>
+          ${standardOrder ? `<button type="button" class="button button-primary" data-action="add-product-to-cart" data-product-id="${product.id}">${icon('cart')}${t.addMinimumOrder}</button>` : ''}
           <a class="button button-tonal" href="${quoteRoute(product.id, lang)}">${icon('calculator')}${t.estimate}</a>
         </div>
       </section>
@@ -260,7 +265,7 @@ export function productDetail(product, t, lang, related) {
         <dl class="specification-list m3-list">
           <div class="m3-list-item"><dt>${icon('layers', 'm3-list-leading')}${t.material}</dt><dd>${escapeHtml(label(product, 'material', lang))}</dd></div>
           <div class="m3-list-item"><dt>${icon('print', 'm3-list-leading')}${t.specification}</dt><dd>${escapeHtml(label(product, 'specifications', lang))}</dd></div>
-          <div class="m3-list-item"><dt>${icon('packaging', 'm3-list-leading')}${t.range}</dt><dd>${quantityPricing.range}</dd></div>
+          ${quantityPricing.range ? `<div class="m3-list-item"><dt>${icon('packaging', 'm3-list-leading')}${t.range}</dt><dd>${quantityPricing.range}</dd></div>` : ''}
           ${quantityPricing.smallOrder ? `<div class="m3-list-item"><dt>${icon('receipt', 'm3-list-leading')}${t.smallOrderPricing}</dt><dd>${quantityPricing.smallOrder}</dd></div>` : ''}
         </dl>
       </div>

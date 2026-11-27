@@ -27,6 +27,13 @@ export function calculatorPage(state, t, lang) {
     </div>`;
 }
 
+export function quoteQuantityNote(product, presetIndex, t, lang) {
+  const preset = getPricePresets(product)[presetIndex];
+  const { minimum, range, smallOrder } = quantityPricingDetails(product, t, lang, preset);
+  if (!range) return t.unpricedNote;
+  return [`${t.range} — ${range}`, smallOrder, minimum > 1 ? t.qtyHint : ''].filter(Boolean).join('. ');
+}
+
 function orderFields(product, state, t, lang) {
   const presets = getPricePresets(product);
   const selectedSize = presets[state.preset]?.size;
@@ -51,16 +58,12 @@ function orderFields(product, state, t, lang) {
     (option.dimensions ? ' · ' + escapeHtml(label(option, 'dimensions', lang)) : '');
   const isSelected = option => state.options.includes(option.id);
   const groupLabel = group => group === 'size' ? (lang === 'ar' ? 'المقاس' : 'Size') : (lang === 'ar' ? 'السلفان' : 'Lamination');
-  const quantityPricing = quantityPricingDetails(product, t, lang);
-  const quantityNote = [`${t.range} — ${quantityPricing.range}`, quantityPricing.smallOrder];
-  if (quantityPricing.minimum > 1) quantityNote.push(t.qtyHint);
-
   return `<fieldset class="preset-field" aria-describedby="preset-note">
       <legend>${t.preset}</legend>
       <p class="preset-note" id="preset-note">${t.presetHint}</p>
       <ul class="preset-options m3-list" role="list">${sizes}</ul>
     </fieldset>
-    <label class="field"><span>${t.quantity}</span><input id="quote-quantity" name="quantity" inputmode="numeric" value="${escapeHtml(state.quantity)}" aria-describedby="qty-note"><small id="qty-note">${quantityNote.filter(Boolean).join('. ')}</small></label>
+    <label class="field"><span>${t.quantity}</span><input id="quote-quantity" name="quantity" inputmode="numeric" value="${escapeHtml(state.quantity)}" aria-describedby="qty-note"><small id="qty-note">${quoteQuantityNote(product, state.preset, t, lang)}</small></label>
     ${options.length ? `<fieldset class="field-block"><legend>${t.finishes}</legend>
       ${optionGroups.size ? `<ul class="m3-list option-groups" role="list">${[...optionGroups].map(([group, items]) => `<li class="m3-list-item"><label class="field"><span>${groupLabel(group)}</span><select name="group-${group}"><option value="">${t.noOptions}</option>
         ${items.map(option => `<option value="${option.id}" ${isSelected(option) ? 'selected' : ''}>${optionText(option)}</option>`).join('')}</select></label></li>`).join('')}</ul>` : ''}

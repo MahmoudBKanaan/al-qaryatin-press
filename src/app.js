@@ -1,5 +1,5 @@
 import { business, categories, getProduct, isAvailable, products } from './catalog.js';
-import { calculatorPage, makeBrief, quoteSummary } from './calculator-view.js';
+import { calculatorPage, makeBrief, quoteQuantityNote, quoteSummary } from './calculator-view.js';
 import { addCartItem, persistCart, readCart, removeCartItem, updateCartQuantity } from './cart.js';
 import { cartCopy, cartPage, updateCartEstimate } from './cart-view.js';
 import { cataloguePage, catalogueResults } from './catalogue-view.js';
@@ -8,7 +8,7 @@ import { mountHeroCarousel } from './hero-carousel.js';
 import { icon } from './icons.js';
 import { mountPaperChase } from './paper-chase.js';
 import { mountProductTape } from './product-tape.js';
-import { getPricePresets, normalizeDigits } from './quote.js';
+import { getPricePresets, getStandardOrder, normalizeDigits } from './quote.js';
 import { isPage, route, routeFromURL } from './routes.js';
 import { renderHead } from './seo-head.js';
 import { about, footer, header, home, number, productDetail } from './views.js';
@@ -40,10 +40,11 @@ let navigationRequest = 0;
 function emptyQuote(productId) {
   const found = getProduct(productId);
   const product = isAvailable(found) ? found : null;
+  const standardOrder = getStandardOrder(product);
   return {
     productId: product?.id || '',
-    quantity: product?.minimum ?? '',
-    preset: 0,
+    quantity: standardOrder?.quantity ?? product?.minimum ?? '',
+    preset: standardOrder?.presetIndex ?? 0,
     options: [],
     extraEnabled: false,
     extra: '',
@@ -470,8 +471,10 @@ app.addEventListener('change', event => {
   }
   if (field.name === 'preset' && field.checked) {
     const index = Number(field.value);
-    if (!getPricePresets(getProduct(quote.productId))[index]) return;
+    const product = getProduct(quote.productId);
+    if (!getPricePresets(product)[index]) return;
     quote.preset = index;
+    app.querySelector('#qty-note').innerHTML = quoteQuantityNote(product, index, copy[language], language);
     updateSummary();
   }
   if (field.name === 'option' || field.name?.startsWith('group-')) {
