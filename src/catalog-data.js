@@ -955,7 +955,7 @@ export const products = [
       "طول الدفتر",
       "عرض الدفتر"
     ],
-    "image": "./media/product-20-v2.webp",
+    "image": "./media/product-20-v3.webp",
     "options": []
   },
   {
