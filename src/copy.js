@@ -5,6 +5,7 @@ export const copy = {
     skip: 'Skip to content', home: 'Home', catalog: 'Catalogue', calculator: 'Price calculator', about: 'About', visit: 'Visit the press', directions: 'Get directions', lang: 'Arabic', switchLanguage: 'Switch to Arabic',
     area: 'Hafr Al Batin, Saudi Arabia', heroOne: 'Print made to', heroTwo: 'stand out.', heroDescription: 'Commercial print, custom packaging and signage from Al Qaryatin Press. Serving Hafr Al Batin since 2005.', explore: 'Explore catalogue', estimate: 'Calculate a price', browseTitle: 'Find what you need', featured: 'Featured products', featuredText: 'Explore some of our most requested print formats.', viewAll: 'View all products',
     heroGallery: 'Featured print services', heroChooseSlide: 'Show {service}', heroPause: 'Pause', heroPlay: 'Play',
+    paperChasePlay: 'Play paper chase', paperChaseStop: 'Stop paper chase',
     heroSlides: [
       ['Commercial printing', 'Business cards, brochures and letterheads'],
       ['Custom packaging', 'Printed paper bags, gift boxes and cartons'],
@@ -37,6 +38,7 @@ export const copy = {
     skip: 'انتقل إلى المحتوى', home: 'الرئيسية', catalog: 'الكتالوج', calculator: 'حاسبة الأسعار', about: 'عن المطابع', visit: 'زيارة المطابع', directions: 'احصل على الاتجاهات', lang: 'الإنجليزية', switchLanguage: 'التبديل إلى الإنجليزية',
     area: 'حفر الباطن، المملكة العربية السعودية', heroOne: 'مطبوعات', heroTwo: 'تلفت الأنظار.', heroDescription: 'منذ عام 2005، تقدّم مطبعة القريتين خدمات الطباعة التجارية والتغليف المخصّص واللوحات في حفر الباطن.', explore: 'تصفح الكتالوج', estimate: 'احسب السعر', browseTitle: 'اعثر على ما تحتاجه', featured: 'منتجات مختارة', featuredText: 'تعرّف على مجموعة من منتجات الطباعة والتغليف.', viewAll: 'عرض جميع المنتجات',
     heroGallery: 'خدمات طباعة مختارة', heroChooseSlide: 'عرض شريحة {service}', heroPause: 'إيقاف مؤقت', heroPlay: 'تشغيل',
+    paperChasePlay: 'شغّل المطاردة الورقية', paperChaseStop: 'أوقف المطاردة الورقية',
     heroSlides: [
       ['المطبوعات التجارية', 'بطاقات أعمال وبروشورات وأوراق مراسلات'],
       ['التغليف المخصص', 'أكياس ورقية وعلب هدايا وعبوات كرتونية'],

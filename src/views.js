@@ -184,6 +184,14 @@ export function home(t, lang) {
         <h1 id="page-title" tabindex="-1"><span>${t.heroOne}</span><em>${t.heroTwo}</em></h1>
         <p class="hero-description">${t.heroDescription}</p>
         <div class="hero-actions"><a class="button button-gold" href="${route('catalogue', undefined, lang)}">${icon('grid')}${t.explore}</a><a class="button button-tonal" href="${route('calculator', undefined, lang)}">${icon('calculator')}${t.estimate}</a></div>
+        <button type="button" class="button button-text paper-chase-toggle" data-paper-chase-toggle
+          data-play-label="${t.paperChasePlay}" data-stop-label="${t.paperChaseStop}" hidden>
+          <span class="paper-chase-toggle-icon">
+            <span data-paper-chase-play>${icon('play')}</span>
+            <span data-paper-chase-stop hidden>${icon('close')}</span>
+          </span>
+          <span data-paper-chase-label>${t.paperChasePlay}</span>
+        </button>
       </div>
       ${heroCarousel(t)}
     </div>
@@ -200,7 +208,8 @@ export function home(t, lang) {
     </section>
     ${quoteBand(t, lang)}
     ${contact(t, lang)}
-  </div>`;
+  </div>
+  <canvas class="paper-chase-canvas" data-paper-chase-canvas width="0" height="0" aria-hidden="true" hidden></canvas>`;
 }
 
 export function productDetail(product, t, lang, related) {

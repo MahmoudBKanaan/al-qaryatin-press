@@ -11,6 +11,7 @@ import { cataloguePage } from '../dist/src/catalogue-view.js';
 import { cartPage } from '../dist/src/cart-view.js';
 import { copy } from '../dist/src/copy.js';
 import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, removeCartItem, summarizeCart, updateCartQuantity, whatsappOrderUrl } from '../dist/src/cart.js';
+import { createPaperChaseRoute, paperChaseFrame } from '../dist/src/paper-chase.js';
 import { mountProductTape } from '../dist/src/product-tape.js';
 import { readPreview, verifyJpeg } from '../scripts/verify-link-preview.mjs';
 
@@ -204,6 +205,39 @@ test('catalogue search renders folded by default and opens for a shared query', 
     assert.match(shared, /<bdi class="catalogue-search-query">A0022<\/bdi>/);
     assert.match(shared, /id="catalogue-search"[^>]*\bvalue="A0022"/);
     assert.equal((shared.match(/class="product-link"/g) ?? []).length, 2);
+  }
+});
+
+test('the homepage offers a localized replay control and the paper chase clears both screen edges', async () => {
+  for (const [lang, prefix] of [['en', ''], ['ar', 'ar/']]) {
+    const homepage = await documentMarkup(prefix);
+    const catalogue = await documentMarkup(prefix + 'catalogue/');
+    assert.match(homepage, /<canvas[^>]*data-paper-chase-canvas[^>]*aria-hidden="true" hidden><\/canvas>/);
+    assert.match(homepage, /<button[^>]*data-paper-chase-toggle[\s\S]*?hidden>/);
+    assert.ok(homepage.includes('<span data-paper-chase-label>' + copy[lang].paperChasePlay + '</span>'));
+    assert.doesNotMatch(catalogue, /data-paper-chase-canvas|data-paper-chase-toggle/);
+  }
+
+  const first = [0.1, 0.25, 0.8, 0.6, 0.5];
+  const second = [0.9, 0.75, 0.15, 0.3, 0.5];
+  const routes = [first, second].map(values => createPaperChaseRoute(() => values.shift()));
+  assert.deepEqual(routes.map(route => route.direction), [1, -1]);
+  assert.ok(routes[0].entry < routes[0].exit && routes[1].entry > routes[1].exit);
+  for (const route of routes) {
+    for (const [width, height] of [[320, 740], [840, 320], [1440, 900]]) {
+      const start = paperChaseFrame(route, width, height, 0);
+      const near = paperChaseFrame(route, width, height, route.reach);
+      const end = paperChaseFrame(route, width, height, 1);
+      for (const actor of ['box', 'runner']) {
+        const from = route.direction === 1 ? start[actor].x : width - start[actor].x;
+        const to = route.direction === 1 ? end[actor].x : width - end[actor].x;
+        assert.ok(from < -72 * start.scale && to > width + 72 * end.scale, actor);
+        assert.equal(Math.sign(end[actor].y - start[actor].y), Math.sign(route.exit - route.entry));
+        assert.ok(near[actor].y > 80 + 116 * near.scale && near[actor].y < height, actor);
+      }
+      assert.ok((near.box.x - near.runner.x) * route.direction > 0);
+      assert.ok(Math.abs(near.box.x - near.runner.x) < Math.abs(start.box.x - start.runner.x));
+    }
   }
 });
 

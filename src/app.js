@@ -6,6 +6,7 @@ import { cataloguePage, catalogueResults } from './catalogue-view.js';
 import { copy } from './copy.js';
 import { mountHeroCarousel } from './hero-carousel.js';
 import { icon } from './icons.js';
+import { mountPaperChase } from './paper-chase.js';
 import { mountProductTape } from './product-tape.js';
 import { getPricePresets, normalizeDigits } from './quote.js';
 import { isPage, route, routeFromURL } from './routes.js';
@@ -30,6 +31,8 @@ let quote = emptyQuote('');
 let cart = readCart();
 let noticeTimer;
 let unmountHeroCarousel = () => {};
+let unmountPaperChase = () => {};
+let paperChasePlayed = false;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let activePageTransition;
 let navigationRequest = 0;
@@ -127,11 +130,16 @@ function render({ focusPage = false, animateEntry = false } = {}) {
   }
   const alternate = route(currentPage === 'not-found' ? '' : path, params, language === 'ar' ? 'en' : 'ar');
   unmountHeroCarousel();
+  unmountPaperChase();
   app.innerHTML = header(currentPage, t, language, cart.length, alternate) +
     `<main id="main"${animateEntry ? ' class="page-enter"' : ''} tabindex="-1">${content}</main>` +
     footer(t, language) + briefDialog(t);
   updateProductTape(language, document.querySelector('.footer-tape-controls'));
   unmountHeroCarousel = mountHeroCarousel(app.querySelector('[data-hero-carousel]'));
+  unmountPaperChase = mountPaperChase(app.querySelector('#main'), {
+    autoplay: !paperChasePlayed,
+    onPlay() { paperChasePlayed = true; },
+  });
   if (currentPage === 'catalogue') revealCatalogueCategory();
   if (focusPage) {
     const restore = currentPage === 'catalogue' && history.state?.catalogueReturn;

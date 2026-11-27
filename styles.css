@@ -273,6 +273,33 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: var(--on-surface-varian
 [dir="rtl"] .hero-description { line-height: 1.8; }
 .hero-description { max-width: 365px; margin-top: 1.45rem; color: var(--on-surface-variant); font-size: 1.0625rem; }
 .hero-actions { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: 1.7rem; }
+.paper-chase-toggle.button {
+  margin-block-start: .65rem;
+  min-block-size: 44px;
+  padding-block: .22rem;
+  padding-inline: .22rem .7rem;
+  gap: .48rem;
+  font-size: .81rem;
+}
+.paper-chase-toggle-icon {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.72rem;
+  block-size: 1.72rem;
+  border-radius: 50%;
+  background: var(--list-warm);
+  color: var(--gold-ink);
+}
+.paper-chase-toggle-icon > span { display: flex; }
+.paper-chase-toggle-icon .icon { inline-size: .88rem; block-size: .88rem; }
+.paper-chase-canvas {
+  position: fixed;
+  z-index: 3;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}
 
 .home-content { padding-bottom: 5rem; }
 .category-section { margin-block: 2rem 3.6rem; }
