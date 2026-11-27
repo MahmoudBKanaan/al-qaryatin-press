@@ -1,3 +1,5 @@
+import { categories } from './catalog.js';
+
 export function routePath(path = '', lang = 'en') {
   return (lang === 'ar' ? 'ar/' : '') + (path ? path + '/' : '');
 }
@@ -16,9 +18,12 @@ export function routeFromURL(url, base) {
 }
 
 export function isPage(path) {
-  return ['', 'catalogue', 'calculator', 'about', 'cart', 'not-found'].includes(path) || /^product\/[a-z0-9-]+$/.test(path);
+  return ['', 'catalogue', 'calculator', 'about', 'cart', 'not-found'].includes(path) ||
+    /^product\/[a-z0-9-]+$/.test(path) || Boolean(categoryFromPath(path));
 }
 
-export const categoryRoute = (id, lang) => route('catalogue', new URLSearchParams({ category: id }), lang);
+export const categoryPath = id => id === 'all' ? 'catalogue' : 'catalogue/' + id;
+export const categoryFromPath = path => categories.find(category => categoryPath(category.id) === path);
+export const categoryRoute = (id, lang, params) => route(categoryPath(id), params, lang);
 export const quoteRoute = (id, lang) => route('calculator', new URLSearchParams({ product: id }), lang);
 export const productRoute = (id, lang) => route('product/' + id, undefined, lang);

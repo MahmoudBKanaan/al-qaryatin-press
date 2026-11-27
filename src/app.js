@@ -1,15 +1,15 @@
-import { business, categories, getProduct, isAvailable, products } from './catalog.js';
+import { business, getProduct, isAvailable, products } from './catalog.js';
 import { calculatorPage, makeBrief, quoteQuantityNote, quoteSummary } from './calculator-view.js';
 import { addCartItem, persistCart, readCart, removeCartItem, updateCartQuantity } from './cart.js';
 import { cartCopy, cartPage, updateCartEstimate } from './cart-view.js';
-import { cataloguePage, catalogueResults } from './catalogue-view.js';
+import { cataloguePage, catalogueParams, catalogueResults } from './catalogue-view.js';
 import { copy } from './copy.js';
 import { mountHeroCarousel } from './hero-carousel.js';
 import { icon } from './icons.js';
 import { mountPaperChase } from './paper-chase.js';
 import { mountProductTape } from './product-tape.js';
 import { getPricePresets, getStandardOrder, normalizeDigits } from './quote.js';
-import { isPage, route, routeFromURL } from './routes.js';
+import { categoryFromPath, categoryPath, categoryRoute, isPage, route, routeFromURL } from './routes.js';
 import { renderHead } from './seo-head.js';
 import { about, footer, header, home, number, productDetail } from './views.js';
 
@@ -54,29 +54,38 @@ function emptyQuote(productId) {
 function readRoute() {
   const current = routeFromURL(new URL(location.href), siteBase) ??
     { path: 'not-found', lang: 'en', params: new URLSearchParams() };
-  if (!location.hash.startsWith('#/')) return current;
-
-  const [legacyPath, query = ''] = location.hash.slice(2).split('?');
-  const path = isPage(legacyPath) ? legacyPath : 'not-found';
-  const params = new URLSearchParams(query);
-  let lang = current.lang;
-  if (!current.path && lang === 'en') {
-    try {
-      if (localStorage.getItem('qaryatin-language') === 'ar') lang = 'ar';
-    } catch { /* Local storage may be unavailable. */ }
+  const legacyHash = location.hash.startsWith('#/');
+  if (legacyHash) {
+    const [legacyPath, query = ''] = location.hash.slice(2).split('?');
+    if (!current.path && current.lang === 'en') {
+      try {
+        if (localStorage.getItem('qaryatin-language') === 'ar') current.lang = 'ar';
+      } catch { /* Local storage may be unavailable. */ }
+    }
+    current.path = isPage(legacyPath) ? legacyPath : 'not-found';
+    current.params = new URLSearchParams(query);
   }
-  history.replaceState(history.state, '', routeURL(path, params, lang));
-  return { path, params, lang };
+  const legacyCategory = current.path === 'catalogue' && current.params.has('category');
+  if (legacyCategory) {
+    const path = categoryPath(current.params.get('category'));
+    if (categoryFromPath(path)) current.path = path;
+    current.params.delete('category');
+  }
+  if (legacyHash || legacyCategory) {
+    const url = routeURL(current.path, current.params, current.lang);
+    if (!legacyHash) url.hash = location.hash;
+    history.replaceState(history.state, '', url);
+  }
+  return current;
 }
 
 function routeURL(path, params, lang = language) {
   return new URL(route(path, params, lang), siteBase);
 }
 
-function readCatalogue(params) {
-  const id = params.get('category');
+function readCatalogue(params, category) {
   return {
-    category: categories.some(item => item.id === id) ? id : 'all',
+    category: category?.id || 'all',
     query: (params.get('q') || '').slice(0, 100),
     order: params.get('sort') === 'name' ? 'name' : '',
   };
@@ -92,10 +101,11 @@ function render({ focusPage = false, animateEntry = false } = {}) {
   skipLink.href = routeURL(path, params).href + '#main';
 
   let content;
-  if (path === 'catalogue') {
+  const category = categoryFromPath(path);
+  if (path === 'catalogue' || category) {
     currentPage = 'catalogue';
-    catalogue = readCatalogue(params);
-    content = cataloguePage(catalogue, t, language);
+    catalogue = readCatalogue(params, category);
+    content = cataloguePage(catalogue, t, language, params);
   } else if (path.startsWith('product/')) {
     const found = getProduct(path.slice('product/'.length));
     const product = isAvailable(found) ? found : null;
@@ -151,7 +161,7 @@ function render({ focusPage = false, animateEntry = false } = {}) {
   }
 }
 
-function renderNavigation({ commit, switchLanguage = false } = {}) {
+function renderNavigation({ commit, switchLanguage = false, selectCategory = false } = {}) {
   const request = ++navigationRequest;
   activePageTransition?.skipTransition();
 
@@ -159,8 +169,9 @@ function renderNavigation({ commit, switchLanguage = false } = {}) {
     // A skipped native transition can still call its update after a newer navigation.
     if (request !== navigationRequest) return;
     commit?.();
-    render({ focusPage: !switchLanguage, animateEntry });
+    render({ focusPage: !switchLanguage && !selectCategory, animateEntry });
     if (switchLanguage) app.querySelector('.language').focus({ preventScroll: true });
+    if (selectCategory) app.querySelector('.filter-chip[aria-current="page"]').focus({ preventScroll: true });
   }
 
   const root = document.documentElement;
@@ -192,7 +203,7 @@ function renderNavigation({ commit, switchLanguage = false } = {}) {
 function revealCatalogueCategory() {
   const filters = document.querySelector('.filters');
   if (filters.scrollWidth <= filters.clientWidth) return;
-  const active = filters.querySelector('[aria-pressed="true"]').getBoundingClientRect();
+  const active = filters.querySelector('[aria-current="page"]').getBoundingClientRect();
   const bounds = filters.getBoundingClientRect();
   if (active.left < bounds.left) filters.scrollLeft += active.left - bounds.left;
   if (active.right > bounds.right) filters.scrollLeft += active.right - bounds.right;
@@ -200,15 +211,14 @@ function revealCatalogueCategory() {
 
 function updateCatalogue({ animateCards = false } = {}) {
   const t = copy[language];
-  const params = new URLSearchParams();
-  if (catalogue.category !== 'all') params.set('category', catalogue.category);
-  if (catalogue.query) params.set('q', catalogue.query);
-  if (catalogue.order) params.set('sort', catalogue.order);
-  history.replaceState(null, '', routeURL('catalogue', params));
-  app.querySelector('.language').href = routeURL('catalogue', params, language === 'ar' ? 'en' : 'ar');
+  const path = categoryPath(catalogue.category);
+  const params = catalogueParams(catalogue, location.search);
+  history.replaceState(null, '', routeURL(path, params));
+  app.querySelector('.language').href = routeURL(path, params, language === 'ar' ? 'en' : 'ar');
   skipLink.href = location.href + '#main';
-  document.querySelectorAll('[data-category]').forEach(button =>
-    button.setAttribute('aria-pressed', String(button.dataset.category === catalogue.category)));
+  app.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.href = categoryRoute(chip.dataset.category, language, params);
+  });
   document.querySelector('.clear-search').hidden = catalogue.query === '';
   const searchQuery = app.querySelector('.catalogue-search-query');
   searchQuery.textContent = catalogue.query.trim();
@@ -365,6 +375,7 @@ app.addEventListener('click', event => {
       const switchLanguage = link.dataset.action === 'language';
       renderNavigation({
         switchLanguage,
+        selectCategory: link.classList.contains('filter-chip'),
         commit() {
           if (currentPage === 'catalogue' && link.classList.contains('product-link')) {
             history.replaceState({ catalogueReturn: { top: window.scrollY, productHref: destination.href } }, '');
@@ -381,13 +392,6 @@ app.addEventListener('click', event => {
 
   const button = event.target.closest('button');
   if (!button) return;
-  if (button.dataset.category) {
-    if (catalogue.category !== button.dataset.category) {
-      catalogue.category = button.dataset.category;
-      updateCatalogue({ animateCards: true });
-    }
-    return;
-  }
   switch (button.dataset.action) {
     case 'menu': {
       const expanded = button.getAttribute('aria-expanded') === 'true';
@@ -400,8 +404,12 @@ app.addEventListener('click', event => {
     case 'clear-search':
     case 'clear-filters': {
       const resetCategory = button.dataset.action === 'clear-filters';
-      if (resetCategory) catalogue.category = 'all';
       catalogue.query = '';
+      if (resetCategory && catalogue.category !== 'all') {
+        const params = catalogueParams(catalogue, location.search);
+        renderNavigation({ selectCategory: true, commit: () => history.pushState(null, '', routeURL('catalogue', params)) });
+        break;
+      }
       const field = document.querySelector('#catalogue-search');
       field.value = '';
       updateCatalogue({ animateCards: true });

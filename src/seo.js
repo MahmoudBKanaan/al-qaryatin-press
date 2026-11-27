@@ -1,6 +1,6 @@
 import { business, categories, getProduct, isAvailable, products, whatsappUrl } from './catalog.js';
 import { copy } from './copy.js';
-import { routePath } from './routes.js';
+import { categoryFromPath, categoryPath, routePath } from './routes.js';
 import { SITE_URL } from './site-url.js';
 
 export { SITE_URL };
@@ -24,10 +24,10 @@ function shareImage(source, imageAlt) {
 
 const pages = {
   '': {
-    en: ['Printing, Packaging & Signage in Hafr Al Batin',
-      'Al Qaryatin Press in Hafr Al Batin offers commercial printing, custom packaging, stickers, signs and displays. Browse products and estimate your print order.'],
+    en: ['Print Shop, Packaging & Signage in Hafr Al Batin',
+      'Visit Al Qaryatin Press in Hafr Al Batin for business card printing, branded packaging and signage. Browse the print catalogue, estimate your order or find the shop.'],
     ar: ['طباعة وتغليف ولوحات في حفر الباطن',
-      'مطابع القريتين في حفر الباطن للمطبوعات التجارية والتغليف المخصص والملصقات واللوحات. تصفّح الكتالوج واحسب تكلفة طلب الطباعة.'],
+      'تقدّم مطبعة القريتين في حفر الباطن طباعة بطاقات الأعمال والأكياس الورقية والملصقات واللوحات. تصفّح المنتجات واحسب تكلفة طلبك أو اعثر على موقع المطبعة.'],
   },
   catalogue: {
     en: ['Print & Packaging Catalogue',
@@ -36,16 +36,16 @@ const pages = {
       'تصفّح كروت وبروشورات وعلب وأكياس وملصقات ولوحات مطابع القريتين في حفر الباطن. قارن المقاسات وتقديرات الأسعار قبل الطلب.'],
   },
   calculator: {
-    en: ['Print Price Calculator',
-      'Estimate your print order with Al Qaryatin Press. Select a product, size and quantity to see a price estimate or prepare a quote request.'],
+    en: ['Printing Cost Calculator & Quote Request',
+      'Estimate printing costs in Saudi riyals by product, size and quantity. Add finishes and send your specifications to Al Qaryatin Press for a print quote.'],
     ar: ['حاسبة أسعار الطباعة',
-      'احسب التكلفة التقديرية لطلبك لدى مطابع القريتين. اختر المنتج والمقاس والكمية لعرض تقدير السعر أو إعداد طلب عرض سعر.'],
+      'احسب تكلفة الطباعة بالريال السعودي حسب المنتج والمقاس والكمية. اختر التشطيب وأرسل المواصفات إلى مطابع القريتين لطلب عرض سعر طباعة.'],
   },
   about: {
-    en: ['About the Print Shop in Hafr Al Batin',
-      'Al Qaryatin Press has served Hafr Al Batin since 2005. Find our address, opening hours and directions, and learn how to place a print order.'],
-    ar: ['عن المطابع وموقعها في حفر الباطن',
-      'تخدم مطابع القريتين حفر الباطن منذ عام 2005. تعرّف على خطوات طلب الطباعة وموقع المطابع وساعات العمل وطريقة الوصول.'],
+    en: ['Print Shop Address & Opening Hours in Hafr Al Batin',
+      'Find Al Qaryatin Press on Prince Sultan bin Abdulaziz Street in Al Khalidiyyah, Hafr Al Batin. Check opening hours, get directions or contact the press on WhatsApp.'],
+    ar: ['عنوان مطابع القريتين وساعات العمل في حفر الباطن',
+      'تقع مطبعة القريتين في حي الخالدية بحفر الباطن على شارع الأمير سلطان بن عبدالعزيز. اطّلع على أوقات الدوام واتجاهات الوصول ورقم واتساب المطبعة.'],
   },
   cart: {
     en: ['Cart', 'Review the items in your Al Qaryatin Press order.'],
@@ -69,6 +69,19 @@ function pageNode(path, lang, name, description, type = 'WebPage') {
   };
 }
 
+function breadcrumbNode(path, lang, trail) {
+  return {
+    '@type': 'BreadcrumbList',
+    '@id': pageUrl(path, lang) + '#breadcrumbs',
+    itemListElement: trail.map(([route, name], index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name,
+      item: pageUrl(route, lang),
+    })),
+  };
+}
+
 function businessSchema(lang, page) {
   const arabic = lang === 'ar';
   const alternateName = [arabic ? business.name : business.nameAr, 'مطبعة القريتين'];
@@ -77,7 +90,7 @@ function businessSchema(lang, page) {
     '@id': websiteId,
     url: SITE_URL,
     name: arabic ? business.nameAr : business.name,
-    alternateName,
+    alternateName: [...alternateName, new URL(SITE_URL).hostname],
     inLanguage: ['en', 'ar'],
     publisher: { '@id': businessId },
   }, {
@@ -105,6 +118,11 @@ function businessSchema(lang, page) {
       postalCode: business.postcode,
       addressCountry: 'SA',
     },
+    areaServed: {
+      '@type': 'City',
+      name: arabic ? business.cityAr : business.city,
+      alternateName: [arabic ? business.city : business.cityAr, 'Hafar Al-Batin'],
+    },
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
@@ -123,7 +141,7 @@ function productMetadata(product, path, lang) {
   const category = categories.find(category => category.id === product.category);
   const categoryName = arabic ? category.labelAr : category.label;
   const isService = product.category === 'services';
-  const trail = [['', copy[lang].home], ['catalogue', copy[lang].catalog], [path, name]];
+  const trail = [['', copy[lang].home], ['catalogue', copy[lang].catalog], [categoryPath(category.id), categoryName], [path, name]];
   return {
     title: `${name} | ${arabic ? business.nameAr : business.name}`,
     description: arabic
@@ -145,28 +163,19 @@ function productMetadata(product, path, lang) {
       ...(isService
         ? { provider: { '@id': businessId } }
         : { material: arabic ? product.materialAr : product.material }),
-    }, {
-      '@type': 'BreadcrumbList',
-      '@id': url + '#breadcrumbs',
-      itemListElement: trail.map(([route, title], index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        name: title,
-        item: pageUrl(route, lang),
-      })),
-    }),
+    }, breadcrumbNode(path, lang, trail)),
   };
 }
 
-function contentSchema(path, lang, label, description) {
+function contentSchema(path, lang, label, description, category) {
   if (path === '' || path === 'about') {
     const type = path === 'about' ? 'AboutPage' : 'WebPage';
     return businessSchema(lang, pageNode(path, lang, label, description, type));
   }
   if (path === 'calculator') return schema(pageNode(path, lang, label, description));
-  if (path !== 'catalogue') return null;
-  const items = products.filter(isAvailable);
-  return schema({
+  if (path !== 'catalogue' && !category) return null;
+  const items = products.filter(product => isAvailable(product) && (!category || product.category === category.id));
+  const collection = {
     ...pageNode(path, lang, label, description, 'CollectionPage'),
     mainEntity: {
       '@type': 'ItemList',
@@ -178,7 +187,11 @@ function contentSchema(path, lang, label, description) {
         url: pageUrl('product/' + product.id, lang),
       })),
     },
-  });
+  };
+  if (!category) return schema(collection);
+  const categoryLabel = lang === 'ar' ? category.labelAr : category.label;
+  const breadcrumb = breadcrumbNode(path, lang, [['', copy[lang].home], ['catalogue', copy[lang].catalog], [path, categoryLabel]]);
+  return schema({ ...collection, breadcrumb: { '@id': breadcrumb['@id'] } }, breadcrumb);
 }
 
 export function pageMetadata(path = '', lang = 'en') {
@@ -188,19 +201,24 @@ export function pageMetadata(path = '', lang = 'en') {
     if (isAvailable(product)) return productMetadata(product, path, lang);
   }
 
-  const localizedPage = Object.hasOwn(pages, path) ? pages[path][lang] : null;
+  const category = categoryFromPath(path);
+  const localizedPage = category
+    ? [arabic ? category.titleAr : category.title, arabic ? category.descriptionAr : category.description]
+    : Object.hasOwn(pages, path) ? pages[path][lang] : null;
   const [label, description] = localizedPage ?? (arabic
     ? ['الصفحة غير موجودة', 'ارجع إلى مطابع القريتين أو تصفّح كتالوج المطبوعات.']
     : ['Page not found', 'Visit Al Qaryatin Press or browse our print catalogue.']);
+  const preview = category && products.find(product => isAvailable(product) && product.category === category.id);
+  const share = preview
+    ? shareImage(preview.image, arabic ? preview.nameAr : preview.name)
+    : shareImage(heroImage, arabic ? 'كتيب وبطاقات ومجلد مطبوعة بألوان كحلية وذهبية' : 'A printed booklet, cards and presentation folder in navy and gold');
   const name = arabic ? business.nameAr : business.name;
   return {
     title: path === '' ? `${name} | ${label}` : `${label} | ${name}`,
     description,
-    ...shareImage(heroImage, arabic
-      ? 'كتيب وبطاقات ومجلد مطبوعة بألوان كحلية وذهبية'
-      : 'A printed booklet, cards and presentation folder in navy and gold'),
+    ...share,
     type: 'website',
     indexable: Boolean(localizedPage) && path !== 'cart',
-    structuredData: contentSchema(path, lang, label, description),
+    structuredData: contentSchema(path, lang, label, description, category),
   };
 }

@@ -7,7 +7,7 @@ import { categories, getProduct, getSmallOrderTier, products } from '../dist/src
 import { calculateQuote, getAreaMinimumQuantity, getPricePresets, getPriceRange, getStandardOrder, getUnitPriceRange, isStandardPreset } from '../dist/src/quote.js';
 import { about, categoryChip, escapeHtml, footer, header, home, money, productDetail, productGrid, productRoute, quoteRoute } from '../dist/src/views.js';
 import { calculatorPage, makeBrief } from '../dist/src/calculator-view.js';
-import { cataloguePage } from '../dist/src/catalogue-view.js';
+import { cataloguePage, catalogueResults } from '../dist/src/catalogue-view.js';
 import { cartPage } from '../dist/src/cart-view.js';
 import { copy } from '../dist/src/copy.js';
 import { addCartItem, describeCartItem, orderMessage, persistCart, readCart, removeCartItem, summarizeCart, updateCartQuantity, whatsappOrderUrl } from '../dist/src/cart.js';
@@ -104,7 +104,7 @@ test('the bilingual sitemap lists every public page with reciprocal language lin
   assert.match(sitemap, /xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9"/);
   const blocks = [...sitemap.matchAll(/<url>([\s\S]*?)<\/url>/g)];
   const byUrl = new Map(blocks.map(([, block]) => [block.match(/<loc>([^<]+)<\/loc>/)[1], block]));
-  const paths = ['', 'catalogue/', 'calculator/', 'about/', ...products.map(product => `product/${product.id}/`)];
+  const paths = ['', 'catalogue/', 'calculator/', 'about/', ...categories.map(category => `catalogue/${category.id}/`), ...products.map(product => `product/${product.id}/`)];
   assert.equal(blocks.length, paths.length * 2);
   assert.equal(byUrl.size, blocks.length, 'The sitemap has no duplicate URLs');
 
@@ -172,6 +172,8 @@ test('localized home, catalogue and product content is crawlable without running
     assert.equal(website.publisher['@id'], business['@id']);
     assert.equal(business.name, arabic ? 'مطابع القريتين' : 'Al Qaryatin Press');
     assert.equal(website.name, business.name);
+    assert.ok(website.alternateName.includes('qaryatain.com'));
+    assert.equal(business.areaServed.name, arabic ? 'حفر الباطن' : 'Hafr Al Batin');
     for (const entity of [website, business]) {
       assert.ok(Array.isArray(entity.alternateName));
       assert.ok(entity.alternateName.includes(arabic ? 'Al Qaryatin Press' : 'مطابع القريتين'));
@@ -188,8 +190,53 @@ test('localized home, catalogue and product content is crawlable without running
     assert.equal(entity.image, new URL(product.image, publishedSite).href);
     const breadcrumbs = schemaGraph(item).find(node => node['@type'] === 'BreadcrumbList');
     assert.deepEqual(breadcrumbs.itemListElement.map(crumb => crumb.item), [
-      publishedSite + prefix, publishedSite + prefix + 'catalogue/', publishedSite + prefix + `product/${product.id}/`,
+      publishedSite + prefix, publishedSite + prefix + 'catalogue/', publishedSite + prefix + `catalogue/${product.category}/`, publishedSite + prefix + `product/${product.id}/`,
     ]);
+  }
+});
+
+test('each catalogue category has a linked bilingual landing page for its own products', async () => {
+  for (const [lang, prefix] of [['en', ''], ['ar', 'ar/']]) {
+    const [homePage, catalogue] = await Promise.all([documentMarkup(prefix), documentMarkup(prefix + 'catalogue/')]);
+    const categoryTitles = new Set();
+    for (const category of categories) {
+      const path = prefix + `catalogue/${category.id}/`;
+      const title = lang === 'ar' ? category.titleAr : category.title;
+      const intro = lang === 'ar' ? category.descriptionAr : category.description;
+      const doc = await documentMarkup(path);
+      assert.ok(homePage.includes(`href="./${path}"`) && catalogue.includes(`href="./${path}"`), path);
+      assert.ok(doc.includes(`>${escapeHtml(title)}</h1>`), path);
+      assert.ok(doc.includes(`>${escapeHtml(intro)}</p>`), path);
+      const publishedTitle = doc.match(/<title\b[^>]*>([^<]+)<\/title>/)[1];
+      assert.ok(publishedTitle.includes(escapeHtml(title)), path);
+      categoryTitles.add(publishedTitle);
+      const expected = products.filter(item => item.available && item.category === category.id);
+      const links = [...doc.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*class="product-link"/g)].map(match => match[1]);
+      assert.deepEqual(links, expected.map(item => productRoute(item.id, lang)), path);
+      const graph = schemaGraph(doc);
+      const listing = graph.find(node => node['@type'] === 'CollectionPage');
+      const crumbs = graph.find(node => node['@type'] === 'BreadcrumbList');
+      assert.equal(listing.breadcrumb['@id'], crumbs['@id']);
+      assert.deepEqual(crumbs.itemListElement.map(item => item.item), [publishedSite + prefix, publishedSite + prefix + 'catalogue/', publishedSite + path]);
+      assert.deepEqual(listing.mainEntity.itemListElement.map(item => item.url), expected.map(item => publishedSite + prefix + 'product/' + item.id + '/'));
+      assert.equal(listing.mainEntity.numberOfItems, expected.length);
+    }
+    assert.equal(categoryTitles.size, categories.length);
+  }
+});
+
+test('catalogue search finds products by the terminology used on their public pages', () => {
+  const queries = [
+    ['en', 'invoice pads', 'invoice-books'],
+    ['en', 'foam board signs', 'foam-wall-panels'],
+    ['en', 'pull-up banner', 'roll-up-display-stands'],
+    ['ar', 'طباعة كروت عمل', 'business-cards'],
+    ['ar', 'فوم بورد', 'foam-wall-panels'],
+    ['ar', 'قوائم طعام', 'menu-printing'],
+  ];
+  for (const [lang, query, id] of queries) {
+    const { html } = catalogueResults({ category: 'all', order: '', query }, copy[lang], lang);
+    assert.ok(html.includes(`href="${productRoute(id, lang)}"`), query);
   }
 });
 
@@ -319,7 +366,7 @@ test('search crawlers can discover the sitemap and receive non-indexable error d
 });
 
 test('published pages and order controls use only the selected language', async () => {
-  const paths = ['', 'catalogue/', 'calculator/', 'about/', 'cart/', ...products.map(product => `product/${product.id}/`)];
+  const paths = ['', 'catalogue/', 'calculator/', 'about/', 'cart/', ...categories.map(category => `catalogue/${category.id}/`), ...products.map(product => `product/${product.id}/`)];
   const brochure = getProduct('brochures-and-flyers');
   const garmentPrinting = getProduct('dtf-garment-printing');
 
@@ -879,7 +926,7 @@ test('card collections and option lists preserve native list and selection seman
       }
     }
     assert.match(productGrid(products, t, lang), /<ul class="product-grid m3-card-list" role="list">/);
-    assert.match(categoryChip('all', t.all, 'all'), /aria-pressed="true".*class="icon chip-check"/);
+    assert.match(categoryChip('all', t.all, 'all', lang), /aria-current="page".*class="icon chip-check"/);
     const calculator = calculatorPage(state, t, lang);
     assert.equal((calculator.match(/type="radio" name="preset"/g) ?? []).length, 3);
     assert.ok(calculator.includes(lang === 'ar' ? 'المقاس أو المواصفة' : 'Size or specification'));

@@ -126,8 +126,8 @@ export function productGrid(items, t, lang) {
     `<li class="product-grid-item">${productCard(product, t, lang)}</li>`).join('')}</ul>`;
 }
 
-export function categoryChip(id, title, current) {
-  return `<button type="button" class="filter-chip" data-category="${id}" aria-pressed="${id === current}">${icon(id === 'all' ? 'grid' : id, 'chip-leading')}${icon('check', 'chip-check')}${escapeHtml(title)}</button>`;
+export function categoryChip(id, title, current, lang = 'en', params) {
+  return `<a class="filter-chip" data-category="${id}" href="${escapeHtml(categoryRoute(id, lang, params))}"${id === current ? ' aria-current="page"' : ''}>${icon(id === 'all' ? 'grid' : id, 'chip-leading')}${icon('check', 'chip-check')}${escapeHtml(title)}</a>`;
 }
 
 export function pageHeading(title, text, eyebrow = '') {
@@ -234,6 +234,7 @@ export function productDetail(product, t, lang, related) {
       <ol class="breadcrumb-list m3-card-list" role="list">
         <li><a href="${route('', undefined, lang)}">${t.home}</a></li>
         <li>${icon('chevron')}<a href="${route('catalogue', undefined, lang)}">${t.catalog}</a></li>
+        <li>${icon('chevron')}<a href="${catalogueBack}">${escapeHtml(label(category, 'label', lang))}</a></li>
         <li>${icon('chevron')}<span aria-current="page">${name}</span></li>
       </ol>
     </nav>

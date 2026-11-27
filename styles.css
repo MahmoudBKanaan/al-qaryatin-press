@@ -490,11 +490,11 @@ svg.m3-list-trailing { width: 1rem; height: 1rem; color: var(--on-surface-varian
 .filter-chip .chip-check { display: none; }
 .filter-chip:hover { background: var(--list-tonal); }
 .filter-chip:active { background: var(--list-pressed); box-shadow: none; transform: translateY(1px); }
-.filter-chip[aria-pressed="true"] { background: var(--primary-container); color: var(--on-primary-container); font-weight: 700; }
-.filter-chip[aria-pressed="true"]:hover { background: color-mix(in srgb, var(--primary) 8%, var(--primary-container)); }
-.filter-chip[aria-pressed="true"]:active { background: color-mix(in srgb, var(--primary) 12%, var(--primary-container)); }
-.filter-chip[aria-pressed="true"] .chip-check { display: inline-block; }
-.filter-chip[aria-pressed="true"] .chip-leading { display: none; }
+.filter-chip[aria-current="page"] { background: var(--primary-container); color: var(--on-primary-container); font-weight: 700; }
+.filter-chip[aria-current="page"]:hover { background: color-mix(in srgb, var(--primary) 8%, var(--primary-container)); }
+.filter-chip[aria-current="page"]:active { background: color-mix(in srgb, var(--primary) 12%, var(--primary-container)); }
+.filter-chip[aria-current="page"] .chip-check { display: inline-block; }
+.filter-chip[aria-current="page"] .chip-leading { display: none; }
 .catalogue-meta { display: flex; align-items: center; justify-content: space-between; gap: .7rem; padding-block: 0 1rem; color: var(--on-surface-variant); font-size: .91rem; }
 .catalogue-meta label { display: flex; gap: .65rem; align-items: center; }
 .catalogue-meta select { min-height: 44px; font-size: .86rem; padding-block: .3rem; }
@@ -796,13 +796,13 @@ input::placeholder, textarea::placeholder { color: var(--on-surface-variant); op
 .noscript { padding: 2rem; }
 
 
-:is(.button, .icon-button, .brand, .filter-chip[aria-pressed], .navigation a, .category-links a,
+:is(.button, .icon-button, .brand, .filter-chip, .navigation a, .category-links a,
   .breadcrumb a, .faq-list summary, .footer-nav a, .footer-visit, .estimate-product a):focus-visible {
   background: var(--focus-fill);
   color: var(--focus-text);
   box-shadow: var(--elevation-2);
 }
-:is(.button-tonal, .filter-chip[aria-pressed="true"], .navigation a[aria-current],
+:is(.button-tonal, .filter-chip[aria-current="page"], .navigation a[aria-current],
   .header-cart[aria-current], .site-footer .footer-nav a, .site-footer .footer-visit):focus-visible {
   background: var(--gold);
   color: var(--on-gold);

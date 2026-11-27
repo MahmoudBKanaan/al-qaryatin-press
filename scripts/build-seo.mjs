@@ -2,9 +2,9 @@ import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { calculatorPage } from '../src/calculator-view.js';
 import { cartPage } from '../src/cart-view.js';
 import { cataloguePage } from '../src/catalogue-view.js';
-import { isAvailable, products } from '../src/catalog.js';
+import { categories, isAvailable, products } from '../src/catalog.js';
 import { copy } from '../src/copy.js';
-import { route, routePath } from '../src/routes.js';
+import { categoryPath, route, routePath } from '../src/routes.js';
 import { about, escapeHtml, footer, header, home, productDetail } from '../src/views.js';
 
 const languages = ['en', 'ar'];
@@ -48,8 +48,8 @@ function sitemapEntry({ path, image }, lang, siteUrl) {
     '  </url>';
 }
 
-async function removeStaleProducts(dist, lang, availableIds) {
-  const directory = new URL(routePath('product', lang), dist);
+async function removeStalePages(dist, lang, parent, availableIds) {
+  const directory = new URL(routePath(parent, lang), dist);
   const entries = await readdir(directory, { withFileTypes: true }).catch(error => {
     if (error.code === 'ENOENT') return [];
     throw error;
@@ -72,14 +72,20 @@ export async function buildSeo(dist, { indexable, mountPath = '/' }) {
 
   const available = products.filter(isAvailable);
   const availableIds = new Set(available.map(product => product.id));
+  const categoryIds = new Set(categories.map(category => category.id));
   const sitemap = [];
   const redirects = [];
   for (const lang of languages) {
     const t = copy[lang];
-    await removeStaleProducts(dist, lang, availableIds);
+    await removeStalePages(dist, lang, 'product', availableIds);
+    await removeStalePages(dist, lang, 'catalogue', categoryIds);
     const documents = [
       { path: '', page: 'home', content: home(t, lang), image: 'media/hero-print.webp' },
       { path: 'catalogue', page: 'catalogue', content: cataloguePage(catalogue, t, lang) },
+      ...categories.map(category => ({
+        path: categoryPath(category.id), page: 'catalogue',
+        content: cataloguePage({ ...catalogue, category: category.id }, t, lang),
+      })),
       { path: 'calculator', page: 'calculator', content: calculatorPage(emptyQuote, t, lang) },
       { path: 'about', page: 'about', content: about(t, lang) },
       { path: 'cart', page: 'cart', content: cartPage([], t, lang) },
